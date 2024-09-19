@@ -81,7 +81,7 @@ function SideNavbar() {
     ]
 
     return (
-        <div className=' min-h-screen border-r w-[250px]'>
+        <div className='min-h-screen border-r min-w-[250px]'>
             <Command className="rounded-lg  ">
                 <div className='p-4 flex items-center gap-2 font-bold'>
                     <img src={Logo} alt="Logo" className="h-6 w-6" />
