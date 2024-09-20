@@ -14,7 +14,7 @@
 .map {
     flex: 3;
     position: relative;
-    border-radius: 10px;
+    border-radius: 4px;
     margin-left: 10px;
     overflow: hidden; /* Ensure map does not overflow */
 }
@@ -57,6 +57,13 @@
 }
 
 
+
+
+
+
+
+
+
 /* GeoMetrics CSS */
 
 /* Container for the map and sidebar */
@@ -64,7 +71,8 @@
     display: flex;
     height: 100vh;
     width: 100%;
-    margin-top: 10px;
+    padding: 10px;
+    /* margin-top: 10px; */
     overflow: hidden; /* Prevent scrollbars */
     gap: 10px; /* Space between map and sidebar */
 }
@@ -74,7 +82,7 @@
     flex: 1; /* Take up 1/4 of the width */
     padding: 20px;
     background: #ffffff; /* Clean white background */
-    border-radius: 10px; /* Rounded corners for a modern look */
+    border-radius: 4px; /* Rounded corners for a modern look */
     border: 1px solid #e0e0e0; /* Light border */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
     overflow-y: auto; /* Ensure scrollability */
@@ -96,27 +104,24 @@
 
 /* Dropdown select container */
 .select-container {
-    margin-bottom: 20px;
+    margin-top: 20px; /* Space below the period selection */
+    max-width: 400px; /* Set maximum width */
 }
 
 /* Dropdown label */
-label {
-    color: #555;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 8px;
+.select-container label {
+    margin-right: 10px; /* Space between label and dropdown */
+    font-size: 1rem; /* Adjust font size as needed */
 }
 
 /* Dropdown select styles */
-select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 1em;
-    background-color: #fafafa;
-    outline: none;
-    transition: border-color 0.3s ease;
+.select-container select {
+    font-size: 1rem; /* Adjust font size as needed */
+    padding: 5px; /* Add padding for better appearance */
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    width: 400px;
+    border-radius: 4px;
 }
 
 select:focus {
@@ -147,9 +152,9 @@ select:focus {
 
 /* Map container */
 .geo-map {
-    flex: 3; /* Take up 3/4 of the width */
+    flex: 1.5; /* Take up 3/4 of the width */
     position: relative;
-    border-radius: 10px; /* Rounded corners for map */
+    border-radius: 4px; /* Rounded corners for map */
     margin-right: 10px;
     overflow: hidden;
     border: 1px solid #e0e0e0;

@@ -46,51 +46,77 @@ const GeoMetrics = () => {
     const [drivers, setDrivers] = useState([]);
     const [viewMode, setViewMode] = useState(''); // State to control map view
     const [analysis, setAnalysis] = useState(''); // State to control analysis text
+    const [mapLoading, setMapLoading] = useState(true); // Loading state for the map
 
-    // Fetch ride clusters for heatmap
+    useEffect(() => {
+        // Simulate loading for the map
+        const timer = setTimeout(() => {
+            setMapLoading(false); // Set loading to false after 1 second (or adjust as needed)
+        }, 1000);
+
+        return () => clearTimeout(timer); // Clear timeout on unmount
+    }, []);
+
+    const fetchRideDistribution = () => {
+        axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/ride-distribution')
+            .then(response => {
+                const data = response.data.map(cluster => [
+                    cluster.center.lat,
+                    cluster.center.lng,
+                    cluster.numRides
+                ]);
+                setHeatmapData(data);
+                setAnalysis('This heatmap represents the distribution of completed rides. Areas with higher ride counts are shown in more intense colors.');
+            })
+            .catch(error => {
+                console.error('Error fetching ride distribution:', error);
+                setAnalysis('Error fetching ride distribution data.');
+            });
+    };
+
+    const fetchDriverLocations = () => {
+        axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/online-drivers')
+            .then(response => {
+                const drivers = response.data.drivers.map(driver => {
+                    const latitude = parseFloat(driver.driverLiveLocation.latitude);
+                    const longitude = parseFloat(driver.driverLiveLocation.longitude);
+                    return {
+                        ...driver,
+                        driverLiveLocation: {
+                            latitude: isNaN(latitude) ? 0 : latitude, // Fallback to 0 if invalid
+                            longitude: isNaN(longitude) ? 0 : longitude
+                        }
+                    };
+                });
+                setDrivers(drivers);
+                setAnalysis('This map shows the locations of all active drivers. Click on a marker for more information.');
+            })
+            .catch(error => {
+                console.error('Error fetching driver locations:', error);
+                setAnalysis('Error fetching driver locations.');
+            });
+    };
+
+    // Fetch data based on viewMode
     useEffect(() => {
         if (viewMode === 'heatmap') {
-            axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/ride-distribution')
-                .then(response => {
-                    const data = response.data.map(cluster => [
-                        cluster.center.lat,
-                        cluster.center.lng,
-                        cluster.numRides
-                    ]);
-                    setHeatmapData(data);
-                    setAnalysis('This heatmap represents the distribution of completed rides. Areas with higher ride counts are shown in more intense colors.');
-                })
-                .catch(error => {
-                    console.error('Error fetching ride distribution:', error);
-                    setAnalysis('Error fetching ride distribution data.');
-                });
+            fetchRideDistribution();
+        } else if (viewMode === 'drivers') {
+            fetchDriverLocations();
         }
     }, [viewMode]);
 
-    // Fetch driver locations
+    // Refresh data every 2 seconds
     useEffect(() => {
-        if (viewMode === 'drivers') {
-            axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/online-drivers')
-                .then(response => {
-                    const drivers = response.data.drivers.map(driver => {
-                        const latitude = parseFloat(driver.driverLiveLocation.latitude);
-                        const longitude = parseFloat(driver.driverLiveLocation.longitude);
-                        return {
-                            ...driver,
-                            driverLiveLocation: {
-                                latitude: isNaN(latitude) ? 0 : latitude, // Fallback to 0 if invalid
-                                longitude: isNaN(longitude) ? 0 : longitude
-                            }
-                        };
-                    });
-                    setDrivers(drivers);
-                    setAnalysis('This map shows the locations of all active drivers. Click on a marker for more information.');
-                })
-                .catch(error => {
-                    console.error('Error fetching driver locations:', error);
-                    setAnalysis('Error fetching driver locations.');
-                });
-        }
+        const interval = setInterval(() => {
+            if (viewMode === 'heatmap') {
+                fetchRideDistribution();
+            } else if (viewMode === 'drivers') {
+                fetchDriverLocations();
+            }
+        }, 2000);
+
+        return () => clearInterval(interval); // Clear interval on unmount
     }, [viewMode]);
 
     return (
@@ -99,7 +125,6 @@ const GeoMetrics = () => {
             <div className="geo-sidebar">
                 <h2 className="geo-sidebar-title">Map View Options</h2>
                 <div className="select-container">
-                    <label htmlFor="viewMode">Select a view:</label>
                     <select id="viewMode" value={viewMode} onChange={(e) => setViewMode(e.target.value)}>
                         <option value="">Select a view</option>
                         <option value="heatmap">Rides Heatmap</option>
@@ -115,6 +140,9 @@ const GeoMetrics = () => {
 
             {/* Map Section */}
             <div className="geo-map">
+            {mapLoading ? (
+                    <div className="loading-indicator">Loading Map...</div> // Loading indicator
+                ) : (
                 <MapContainer style={{ height: '100vh', width: '100%' }} center={[23.031129, 72.529016]} zoom={10} zoomControl={false}>
                     <TileLayer
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -136,12 +164,10 @@ const GeoMetrics = () => {
                         </Marker>
                     ))}
                 </MapContainer>
+                )}
             </div>
         </div>
     );
 };
-
-
-
 
 export default GeoMetrics;
