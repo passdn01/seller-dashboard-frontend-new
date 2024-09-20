@@ -23,7 +23,7 @@ function SideNavbar() {
         {
             id: "1",
             title: "Home",
-            link: "/dashboard/home",
+            link: "/",
             submenu: false,
             icon: Home,
         },
@@ -37,13 +37,13 @@ function SideNavbar() {
                 {
                     id: '1',
                     title: 'Live Drivers',
-                    link: '/dashboard/drivers/live',
+                    link: '/drivers/live',
                     icon: '',
                 },
                 {
                     id: '2',
                     title: 'All Drivers',
-                    link: '/dashboard/drivers/allDrivers',
+                    link: '/drivers/allDrivers',
                     icon: '',
                 }
             ]
@@ -58,13 +58,13 @@ function SideNavbar() {
                 {
                     id: '1',
                     title: 'Live Drivers',
-                    link: '/dashboard/drivers/live',
+                    link: '/drivers/live',
                     icon: '',
                 },
                 {
                     id: '2',
                     title: 'Example2',
-                    link: '/dashboard/drivers/somthing',
+                    link: '/drivers/somthing',
                     icon: '',
                 }
             ]
@@ -72,21 +72,21 @@ function SideNavbar() {
         {
             id: "4",
             title: "Offer",
-            link: "/dashboard/home",
+            link: "/home",
             submenu: false,
             icon: Home,
         },
         {
             id: "5",
             title: "Tech Cost",
-            link: "/dashboard/home",
+            link: "/home",
             submenu: false,
             icon: Home,
         },
         {
             id: "6",
             title: "Fare Price",
-            link: "/dashboard/home",
+            link: "/home",
             submenu: false,
             icon: Home,
         },
@@ -100,13 +100,13 @@ function SideNavbar() {
                 {
                     id: '1',
                     title: 'Live Drivers',
-                    link: '/dashboard/drivers/live',
+                    link: '/drivers/live',
                     icon: '',
                 },
                 {
                     id: '2',
                     title: 'Example2',
-                    link: '/dashboard/drivers/somthing',
+                    link: '/drivers/somthing',
                     icon: '',
                 }
             ]
@@ -121,13 +121,13 @@ function SideNavbar() {
                 {
                     id: '1',
                     title: 'Live Drivers',
-                    link: '/dashboard/drivers/live',
+                    link: '/drivers/live',
                     icon: '',
                 },
                 {
                     id: '2',
                     title: 'Example2',
-                    link: '/dashboard/drivers/somthing',
+                    link: '/drivers/somthing',
                     icon: '',
                 }
             ]
@@ -142,13 +142,13 @@ function SideNavbar() {
                 {
                     id: '1',
                     title: 'Live Drivers',
-                    link: '/dashboard/drivers/live',
+                    link: '/drivers/live',
                     icon: '',
                 },
                 {
                     id: '2',
                     title: 'Example2',
-                    link: '/dashboard/drivers/somthing',
+                    link: '/drivers/somthing',
                     icon: '',
                 }
             ]
@@ -163,13 +163,13 @@ function SideNavbar() {
                 {
                     id: '1',
                     title: 'Live Drivers',
-                    link: '/dashboard/drivers/live',
+                    link: '/drivers/live',
                     icon: '',
                 },
                 {
                     id: '2',
                     title: 'Example2',
-                    link: '/dashboard/drivers/somthing',
+                    link: '/drivers/somthing',
                     icon: '',
                 }
             ]
@@ -184,13 +184,13 @@ function SideNavbar() {
                 {
                     id: '1',
                     title: 'Live Drivers',
-                    link: '/dashboard/drivers/live',
+                    link: '/drivers/live',
                     icon: '',
                 },
                 {
                     id: '2',
                     title: 'Example2',
-                    link: '/dashboard/drivers/somthing',
+                    link: '/drivers/somthing',
                     icon: '',
                 }
             ]
@@ -205,13 +205,13 @@ function SideNavbar() {
                 {
                     id: '1',
                     title: 'Live Drivers',
-                    link: '/dashboard/drivers/live',
+                    link: '/drivers/live',
                     icon: '',
                 },
                 {
                     id: '2',
                     title: 'Example2',
-                    link: '/dashboard/drivers/somthing',
+                    link: '/drivers/somthing',
                     icon: '',
                 }
             ]
@@ -219,21 +219,21 @@ function SideNavbar() {
         {
             id: "13",
             title: "I AM Admin",
-            link: "/dashboard/home",
+            link: "/home",
             submenu: false,
             icon: Home,
         },
         {
             id: "14",
             title: "Logs",
-            link: "/dashboard/home",
+            link: "/home",
             submenu: false,
             icon: Home,
         },
         {
             id: "15",
             title: "Log out",
-            link: "/dashboard/home",
+            link: "/home",
             submenu: false,
             icon: Home,
         },
