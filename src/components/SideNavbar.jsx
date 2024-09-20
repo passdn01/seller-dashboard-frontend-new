@@ -13,9 +13,22 @@ import {
     AccordionTrigger,
 } from "./ui/accordion"
 
-import Home from '../assets/NavIcons/Home.svg'
-import Driver from '../assets/NavIcons/Driver.svg'
-import Logo from '../assets/NavIcons/Logo.svg'
+import HomeIcon from '../assets/NavIcons/Home.svg';
+import DriverIcon from '../assets/NavIcons/Driver.svg';
+import AgentIcon from '../assets/NavIcons/Agent.svg';
+import FarePriceIcon from '../assets/NavIcons/FarePrice.svg';
+import FinancialMetricsIcon from '../assets/NavIcons/FinancialMetrics.svg';
+import FinancialServicesIcon from '../assets/NavIcons/FinancialServices.svg';
+import IAMAdminIcon from '../assets/NavIcons/IAMAdmin.svg';
+import LogoutIcon from '../assets/NavIcons/Logout.svg';
+import Logo from '../assets/NavIcons/Logo.svg';
+import LogsIcon from '../assets/NavIcons/Logs.svg';
+import OfferIcon from '../assets/NavIcons/Offer.svg';
+import QuizDashboardIcon from '../assets/NavIcons/QuizDashboard.svg';
+import TechCostIcon from '../assets/NavIcons/TechCost.svg';
+import WebsiteIcon from '../assets/NavIcons/Website.svg';
+import IssueSolverIcon from '../assets/NavIcons/IssueSolver.svg';
+
 import { Link } from 'react-router-dom'
 
 function SideNavbar() {
@@ -25,14 +38,14 @@ function SideNavbar() {
             title: "Home",
             link: "/",
             submenu: false,
-            icon: Home,
+            icon: HomeIcon,
         },
         {
             id: "2",
             title: "Driver",
             link: '',
             submenu: true,
-            icon: Driver,
+            icon: DriverIcon,
             subMenuList: [
                 {
                     id: '1',
@@ -53,18 +66,18 @@ function SideNavbar() {
             title: "Agent",
             link: '',
             submenu: true,
-            icon: Driver,
+            icon: AgentIcon,
             subMenuList: [
                 {
                     id: '1',
-                    title: 'Live Drivers',
-                    link: '/drivers/live',
+                    title: 'Live Agents',
+                    link: '/agents/live',
                     icon: '',
                 },
                 {
                     id: '2',
-                    title: 'Example2',
-                    link: '/drivers/somthing',
+                    title: 'All Agents',
+                    link: '/agents/allAgents',
                     icon: '',
                 }
             ]
@@ -74,39 +87,39 @@ function SideNavbar() {
             title: "Offer",
             link: "/home",
             submenu: false,
-            icon: Home,
+            icon: OfferIcon,
         },
         {
             id: "5",
             title: "Tech Cost",
             link: "/home",
             submenu: false,
-            icon: Home,
+            icon: TechCostIcon,
         },
         {
             id: "6",
             title: "Fare Price",
             link: "/home",
             submenu: false,
-            icon: Home,
+            icon: FarePriceIcon,
         },
         {
             id: "7",
             title: "Website",
             link: '',
             submenu: true,
-            icon: Driver,
+            icon: WebsiteIcon,
             subMenuList: [
                 {
                     id: '1',
-                    title: 'Live Drivers',
-                    link: '/drivers/live',
+                    title: 'Website Overview',
+                    link: '/website/overview',
                     icon: '',
                 },
                 {
                     id: '2',
-                    title: 'Example2',
-                    link: '/drivers/somthing',
+                    title: 'Website Settings',
+                    link: '/website/settings',
                     icon: '',
                 }
             ]
@@ -116,18 +129,18 @@ function SideNavbar() {
             title: "Finance Metrics",
             link: '',
             submenu: true,
-            icon: Driver,
+            icon: FinancialMetricsIcon,
             subMenuList: [
                 {
                     id: '1',
-                    title: 'Live Drivers',
-                    link: '/drivers/live',
+                    title: 'Metrics Overview',
+                    link: '/finance/overview',
                     icon: '',
                 },
                 {
                     id: '2',
-                    title: 'Example2',
-                    link: '/drivers/somthing',
+                    title: 'Reports',
+                    link: '/finance/reports',
                     icon: '',
                 }
             ]
@@ -137,18 +150,18 @@ function SideNavbar() {
             title: "Issue Solver",
             link: '',
             submenu: true,
-            icon: Driver,
+            icon: IssueSolverIcon,
             subMenuList: [
                 {
                     id: '1',
-                    title: 'Live Drivers',
-                    link: '/drivers/live',
+                    title: 'Open Issues',
+                    link: '/issues/open',
                     icon: '',
                 },
                 {
                     id: '2',
-                    title: 'Example2',
-                    link: '/drivers/somthing',
+                    title: 'Resolved Issues',
+                    link: '/issues/resolved',
                     icon: '',
                 }
             ]
@@ -158,18 +171,18 @@ function SideNavbar() {
             title: "Air Share",
             link: '',
             submenu: true,
-            icon: Driver,
+            icon: DriverIcon,
             subMenuList: [
                 {
                     id: '1',
-                    title: 'Live Drivers',
-                    link: '/drivers/live',
+                    title: 'Air Share Overview',
+                    link: '/airshare/overview',
                     icon: '',
                 },
                 {
                     id: '2',
-                    title: 'Example2',
-                    link: '/drivers/somthing',
+                    title: 'Air Share Settings',
+                    link: '/airshare/settings',
                     icon: '',
                 }
             ]
@@ -179,18 +192,18 @@ function SideNavbar() {
             title: "Quiz Share",
             link: '',
             submenu: true,
-            icon: Driver,
+            icon: QuizDashboardIcon,
             subMenuList: [
                 {
                     id: '1',
-                    title: 'Live Drivers',
-                    link: '/drivers/live',
+                    title: 'Active Quizzes',
+                    link: '/quizzes/active',
                     icon: '',
                 },
                 {
                     id: '2',
-                    title: 'Example2',
-                    link: '/drivers/somthing',
+                    title: 'Quiz Reports',
+                    link: '/quizzes/reports',
                     icon: '',
                 }
             ]
@@ -200,18 +213,18 @@ function SideNavbar() {
             title: "Financial Services",
             link: '',
             submenu: true,
-            icon: Driver,
+            icon: FinancialServicesIcon,
             subMenuList: [
                 {
                     id: '1',
-                    title: 'Live Drivers',
-                    link: '/drivers/live',
+                    title: 'Service Overview',
+                    link: '/finance/services/overview',
                     icon: '',
                 },
                 {
                     id: '2',
-                    title: 'Example2',
-                    link: '/drivers/somthing',
+                    title: 'Service Settings',
+                    link: '/finance/services/settings',
                     icon: '',
                 }
             ]
@@ -221,26 +234,23 @@ function SideNavbar() {
             title: "I AM Admin",
             link: "/home",
             submenu: false,
-            icon: Home,
+            icon: IAMAdminIcon,
         },
         {
             id: "14",
             title: "Logs",
             link: "/home",
             submenu: false,
-            icon: Home,
+            icon: LogsIcon,
         },
         {
             id: "15",
             title: "Log out",
             link: "/home",
             submenu: false,
-            icon: Home,
+            icon: LogoutIcon,
         },
-
-
-
-    ]
+    ];
 
     return (
         <div className='fixed border-r min-w-[250px] z-50 min-h-screen bg-white h-full overflow-hidden'>
