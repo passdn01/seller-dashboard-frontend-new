@@ -40,7 +40,7 @@ const RideStatistics = () => {
     // Fetch data for both total rides, drivers, cancelled rides, and earnings
     const fetchData = async () => {
         try {
-            const response = await axios.post('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/total-completed-rides', { period });
+            const response = await axios.post('https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/total-completed-rides', { period });
             const result = response.data;
 
             const formattedRideData = [
@@ -204,11 +204,11 @@ const RideStatistics = () => {
             const value = item[1];
             return sum + (typeof value === 'number' && !isNaN(value) ? value : 0);
         }, 0);
-    
+
         return data.length > 1 ? (total / (data.length - 1)) : 0; // Subtract 1 to account for the header row
     };
-    
-    
+
+
     // Get totals for each dataset (check if the dataset has more than just the header)
     const totalCompletedRides = rideData.length > 1 ? calculateTotal(rideData) : 0;
     const totalNewDrivers = driverData.length > 1 ? calculateTotal(driverData) : 0;
@@ -219,10 +219,10 @@ const RideStatistics = () => {
     const averageBookingCancellationRate = bookingCancellationRateData.length > 1 ? calculateAveragePercentage(bookingCancellationRateData).toFixed(2) : '0.00';
     const averageConversionRate = conversionRateData.length > 1 ? calculateAveragePercentage(conversionRateData).toFixed(2) : '0.00';
 
-    
+
 
     // In your component
-    const options = getXAxisOptions(period);    
+    const options = getXAxisOptions(period);
 
     return (
         <div className='statistics-container'>
@@ -296,7 +296,7 @@ const RideStatistics = () => {
 
                 <div className="ride-statistics-container">
                     <h1 className="chart-title">Rider Fare Acceptance Rate</h1>
-                    <h3>{averageRiderFareAcceptanceRate} %</h3> 
+                    <h3>{averageRiderFareAcceptanceRate} %</h3>
                     <div className="chart-container">
                         <Chart
                             chartType="LineChart"
@@ -310,7 +310,7 @@ const RideStatistics = () => {
 
                 <div className="ride-statistics-container">
                     <h1 className="chart-title">Driver Quote Acceptance Rate</h1>
-                    <h3>{averageDriverQuoteAcceptanceRate} %</h3> 
+                    <h3>{averageDriverQuoteAcceptanceRate} %</h3>
                     <div className="chart-container">
                         <Chart
                             chartType="LineChart"
@@ -324,7 +324,7 @@ const RideStatistics = () => {
 
                 <div className="ride-statistics-container">
                     <h1 className="chart-title">Booking Cancellation Rate</h1>
-                    <h3>{averageBookingCancellationRate} %</h3> 
+                    <h3>{averageBookingCancellationRate} %</h3>
                     <div className="chart-container">
                         <Chart
                             chartType="LineChart"
@@ -338,7 +338,7 @@ const RideStatistics = () => {
 
                 <div className="ride-statistics-container">
                     <h1 className="chart-title">Conversion Rate</h1>
-                    <h3>{averageConversionRate} %</h3> 
+                    <h3>{averageConversionRate} %</h3>
                     <div className="chart-container">
                         <Chart
                             chartType="LineChart"
