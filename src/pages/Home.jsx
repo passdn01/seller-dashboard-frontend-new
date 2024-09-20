@@ -20,16 +20,17 @@ function Home() {
     return (
         <div className='flex items-start gap-x-2'>
             <SideNavbar></SideNavbar>
-            <div>
+            <div className='ml-[250px]'>
+
                 <MapComponent
                     selectedDriver={selectedDriver}
                     onDriverSelect={handleDriverSelect}
-                    />
+                />
                 <DriverTable onDriverSelect={handleDriverSelect} />
                 <GeoMetrics
                     selectedDriver={selectedDriver}
                     onDriverSelect={handleDriverSelect}
-                    />
+                />
                 <RideStatistics />
             </div>
         </div>

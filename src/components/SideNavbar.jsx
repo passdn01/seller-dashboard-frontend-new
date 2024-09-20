@@ -75,13 +75,175 @@ function SideNavbar() {
             link: "/dashboard/home",
             submenu: false,
             icon: Home,
-        }
+        },
+        {
+            id: "5",
+            title: "Tech Cost",
+            link: "/dashboard/home",
+            submenu: false,
+            icon: Home,
+        },
+        {
+            id: "6",
+            title: "Fare Price",
+            link: "/dashboard/home",
+            submenu: false,
+            icon: Home,
+        },
+        {
+            id: "7",
+            title: "Website",
+            link: '',
+            submenu: true,
+            icon: Driver,
+            subMenuList: [
+                {
+                    id: '1',
+                    title: 'Live Drivers',
+                    link: '/dashboard/drivers/live',
+                    icon: '',
+                },
+                {
+                    id: '2',
+                    title: 'Example2',
+                    link: '/dashboard/drivers/somthing',
+                    icon: '',
+                }
+            ]
+        },
+        {
+            id: "8",
+            title: "Finance Metrics",
+            link: '',
+            submenu: true,
+            icon: Driver,
+            subMenuList: [
+                {
+                    id: '1',
+                    title: 'Live Drivers',
+                    link: '/dashboard/drivers/live',
+                    icon: '',
+                },
+                {
+                    id: '2',
+                    title: 'Example2',
+                    link: '/dashboard/drivers/somthing',
+                    icon: '',
+                }
+            ]
+        },
+        {
+            id: "9",
+            title: "Issue Solver",
+            link: '',
+            submenu: true,
+            icon: Driver,
+            subMenuList: [
+                {
+                    id: '1',
+                    title: 'Live Drivers',
+                    link: '/dashboard/drivers/live',
+                    icon: '',
+                },
+                {
+                    id: '2',
+                    title: 'Example2',
+                    link: '/dashboard/drivers/somthing',
+                    icon: '',
+                }
+            ]
+        },
+        {
+            id: "10",
+            title: "Air Share",
+            link: '',
+            submenu: true,
+            icon: Driver,
+            subMenuList: [
+                {
+                    id: '1',
+                    title: 'Live Drivers',
+                    link: '/dashboard/drivers/live',
+                    icon: '',
+                },
+                {
+                    id: '2',
+                    title: 'Example2',
+                    link: '/dashboard/drivers/somthing',
+                    icon: '',
+                }
+            ]
+        },
+        {
+            id: "11",
+            title: "Quiz Share",
+            link: '',
+            submenu: true,
+            icon: Driver,
+            subMenuList: [
+                {
+                    id: '1',
+                    title: 'Live Drivers',
+                    link: '/dashboard/drivers/live',
+                    icon: '',
+                },
+                {
+                    id: '2',
+                    title: 'Example2',
+                    link: '/dashboard/drivers/somthing',
+                    icon: '',
+                }
+            ]
+        },
+        {
+            id: "12",
+            title: "Financial Services",
+            link: '',
+            submenu: true,
+            icon: Driver,
+            subMenuList: [
+                {
+                    id: '1',
+                    title: 'Live Drivers',
+                    link: '/dashboard/drivers/live',
+                    icon: '',
+                },
+                {
+                    id: '2',
+                    title: 'Example2',
+                    link: '/dashboard/drivers/somthing',
+                    icon: '',
+                }
+            ]
+        },
+        {
+            id: "13",
+            title: "I AM Admin",
+            link: "/dashboard/home",
+            submenu: false,
+            icon: Home,
+        },
+        {
+            id: "14",
+            title: "Logs",
+            link: "/dashboard/home",
+            submenu: false,
+            icon: Home,
+        },
+        {
+            id: "15",
+            title: "Log out",
+            link: "/dashboard/home",
+            submenu: false,
+            icon: Home,
+        },
+
 
 
     ]
 
     return (
-        <div className='sticky min-h-screen border-r w-[250px]'>
+        <div className='fixed border-r min-w-[250px] z-50 min-h-screen bg-white h-full overflow-hidden'>
             <Command className="rounded-lg  ">
                 <div className='p-4 flex items-center gap-2 font-bold'>
                     <img src={Logo} alt="Logo" className="h-6 w-6" />

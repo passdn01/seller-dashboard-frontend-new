@@ -9,10 +9,10 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-function Header() {
+function Header({ title }) {
     return (
-        <div className='flex justify-between w-[85vw] px-8 py-2  items-center border-b-2 shadow-1'>
-            <div className='text-xl font-bold'>ALL DRIVERS</div>
+        <div className='flex justify-between px-8 py-2  items-center border-b-2 shadow-1'>
+            <div className='text-xl font-bold'>{title}</div>
 
 
             <DropdownMenu className='m-4'>
