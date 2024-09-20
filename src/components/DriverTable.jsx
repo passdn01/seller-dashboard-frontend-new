@@ -9,7 +9,7 @@ const DriverTable = ({ onDriverSelect }) => {
     const [itemsPerPage] = useState(10);
 
     useEffect(() => {
-        axios.get('https://bhk8mp0s-2011.inc1.devtunnels.ms/online-drivers')
+        axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/online-drivers')
             .then(response => {
                 setDrivers(response.data.drivers);
             })

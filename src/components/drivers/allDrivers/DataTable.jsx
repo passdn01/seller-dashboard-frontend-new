@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -120,7 +120,7 @@ export default function DriverTable() {
     const [statusFilter, setStatusFilter] = useState("all");
 
     useEffect(() => {
-        axios.get('https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/allDrivers')
+        axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/allDrivers')
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);

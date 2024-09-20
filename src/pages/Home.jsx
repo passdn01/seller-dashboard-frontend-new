@@ -4,6 +4,7 @@ import DriverTable from '@/components/DriverTable';
 import GeoMetrics from '@/components/GeoMetrics';
 import RideStatistics from '@/components/statistics';
 import SideNavbar from '@/components/SideNavbar';
+import NavStats from '@/components/navStats';
 function Home() {
     const [selectedDriver, setSelectedDriver] = useState(null);
 
@@ -29,7 +30,8 @@ function Home() {
                 <GeoMetrics
                     selectedDriver={selectedDriver}
                     onDriverSelect={handleDriverSelect}
-                />
+                /> 
+                <NavStats />
                 <RideStatistics />
             </div>
         </div>
