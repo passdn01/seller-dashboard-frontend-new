@@ -6,8 +6,8 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path='/dashboard/home' element={<Home />}></Route>
-          <Route path='/dashboard/drivers/allDrivers' element={<AllDrivers />} />
+          <Route path='/' element={<Home />}></Route>
+          <Route path='/drivers/allDrivers' element={<AllDrivers />} />
 
         </Routes>
       </BrowserRouter>

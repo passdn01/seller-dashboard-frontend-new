@@ -99,7 +99,7 @@ const columns = [
                             Copy Driver ID
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => navigate(`/dashboard/allDrivers/${driver._id}`)}>
+                        <DropdownMenuItem onClick={() => navigate(`/drivers/allDrivers/${driver._id}`)}>
                             View Driver Details
                         </DropdownMenuItem>
                     </DropdownMenuContent>
