@@ -21,7 +21,6 @@ function Home() {
         <div className='flex items-start gap-x-2'>
             <SideNavbar></SideNavbar>
             <div className='ml-[250px]'>
-
                 <MapComponent
                     selectedDriver={selectedDriver}
                     onDriverSelect={handleDriverSelect}
