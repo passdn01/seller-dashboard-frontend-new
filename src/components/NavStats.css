@@ -1,0 +1,51 @@
+
+
+.live-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.all-ride-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.live-container-info {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    flex: 1; /* Allow cards to grow equally */
+    margin: 0 10px; /* Space between cards */
+    transition: transform 0.2s;
+}
+
+
+.ride-total-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    flex: 1; /* Allow cards to grow equally */
+    margin: 0 10px; /* Space between cards */
+    transition: transform 0.2s;
+}
+
+.ride-total-container:hover {
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.ride-total-title {
+    font-size: 1.5em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+h3 {
+    font-size: 2em;
+    color: #555;
+}
