@@ -22,7 +22,7 @@ import FinancialServicesIcon from '../assets/NavIcons/FinancialServices.svg';
 import IAMAdminIcon from '../assets/NavIcons/IAMAdmin.svg';
 import LogoutIcon from '../assets/NavIcons/Logout.svg';
 import Logo from '../assets/NavIcons/Logo.svg';
-import LogsIcon from '../assets/NavIcons/Logs.svg';
+import LogsIcon from '../assets/NavIcons/logs.svg';
 import OfferIcon from '../assets/NavIcons/Offer.svg';
 import QuizDashboardIcon from '../assets/NavIcons/QuizDashboard.svg';
 import TechCostIcon from '../assets/NavIcons/TechCost.svg';
