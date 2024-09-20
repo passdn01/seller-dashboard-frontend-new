@@ -1,0 +1,72 @@
+/* Container for the entire statistics section */
+.statistics-container {
+    padding: 20px;
+    margin: 0 auto; /* Center align the container horizontally */
+}
+
+/* Container for period selection dropdown */
+.period-select {
+    margin-bottom: 20px; /* Space below the period selection */
+    max-width: 600px; /* Set maximum width */
+    margin: 0 auto; /* Center the container horizontally */
+}
+
+/* Style for the period selection label */
+.period-select label {
+    margin-right: 10px; /* Space between label and dropdown */
+    font-size: 1rem; /* Adjust font size as needed */
+}
+
+/* Style for the period selection dropdown */
+.period-select select {
+    font-size: 1rem; /* Adjust font size as needed */
+    padding: 5px; /* Add padding for better appearance */
+}
+
+/* Parent container to hold multiple graphs side by side */
+.graphs-wrapper {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping to next line */
+    gap: 20px; /* Adds some space between graphs */
+    padding: 20px;
+}
+
+/* Container for each individual graph */
+.ride-statistics-container {
+    flex: 1 1 calc(50% - 20px); /* Take up half the width minus gap space */
+    max-width: calc(50% - 20px); /* Ensure each container does not exceed 50% of the parent width */
+    padding: 0; /* Remove padding for proper sizing */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Slightly more prominent shadow */
+    border-radius: 12px; /* More rounded corners */
+    background: #f9f9f9; /* Light background color for contrast */
+    border: 1px solid #e0e0e0; /* Light border for definition */
+    box-sizing: border-box; /* Ensure padding is included in the element's width */
+    display: flex;
+    flex-direction: column; /* Align children elements vertically */
+    align-items: stretch; /* Stretch children horizontally to fit the container */
+}
+
+.ride-statistics-container h3 {
+    margin-left: 10px;
+}
+
+/* Title for each chart */
+.chart-title {
+    text-align: center;
+    margin: 20px 0; /* Adjust margins for spacing */
+    font-size: 1.5rem; /* Adjust font size as needed */
+    color: #333; /* Darker color for better readability */
+    font-weight: bold; /* Make the title bold */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
+}
+
+/* Container for the chart itself */
+.chart-container {
+    height: 400px; /* Fix the height of the chart */
+    width: 100%; /* Ensure the chart container takes full width */
+    flex: 1; /* Ensure the chart container stretches to fill available space */
+    /* margin-bottom: 20px; Increase space below the chart */
+    background: #fff; /* White background for charts */
+    border-radius: 8px; /* Rounded corners for charts */
+    border: 1px solid #e0e0e0; /* Light border around the chart */
+}

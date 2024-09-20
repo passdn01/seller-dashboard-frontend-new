@@ -1,0 +1,157 @@
+/* MapComponent.css */
+
+/* Container for the map and driver details */
+.map-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    margin-top: 10px;
+    overflow: hidden; /* Prevent scrollbars */
+    gap: 10px; /* Space between map and details */
+}
+
+/* Map container */
+.map {
+    flex: 3;
+    position: relative;
+    border-radius: 10px;
+    margin-left: 10px;
+    overflow: hidden; /* Ensure map does not overflow */
+}
+
+/* Driver details container */
+.driver-details {
+    flex: 1;
+    padding: 20px;
+    background: #ffffff; /* Clean white background */
+    border-radius: 10px; /* Rounded corners for a modern look */
+    border: 1px solid #e0e0e0; /* Light border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    overflow-y: auto; /* Ensure scrollability */
+    display: flex;
+    margin-right: 10px;
+    flex-direction: column;
+    transition: all 0.3s ease; /* Smooth transition for changes */
+}
+
+/* Styling for the header */
+.driver-details h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.8em; /* Larger font size for the heading */
+    font-weight: 600; /* Slightly bolder font weight */
+    border-bottom: 2px solid #f1f1f1; /* Bottom border for separation */
+    padding-bottom: 10px; /* Padding for better spacing */
+}
+
+/* Styling for the paragraphs */
+.driver-details p {
+    color: #555; /* Darker gray text color */
+    font-size: 1em; /* Standard font size for text */
+    margin: 10px 0; /* Space between paragraphs */
+}
+
+/* Bold labels */
+.driver-details p strong {
+    color: #333; /* Dark color for labels */
+}
+
+
+/* GeoMetrics CSS */
+
+/* Container for the map and sidebar */
+.geo-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+    margin-top: 10px;
+    overflow: hidden; /* Prevent scrollbars */
+    gap: 10px; /* Space between map and sidebar */
+}
+
+/* Sidebar container */
+.geo-sidebar {
+    flex: 1; /* Take up 1/4 of the width */
+    padding: 20px;
+    background: #ffffff; /* Clean white background */
+    border-radius: 10px; /* Rounded corners for a modern look */
+    border: 1px solid #e0e0e0; /* Light border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    overflow-y: auto; /* Ensure scrollability */
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease; /* Smooth transition for changes */
+    margin-left: 10px;
+}
+
+/* Sidebar title styling */
+.geo-sidebar-title {
+    color: #333;
+    font-size: 1.8em; /* Larger font size for the heading */
+    font-weight: 600; /* Slightly bolder font weight */
+    border-bottom: 2px solid #f1f1f1; /* Bottom border for separation */
+    padding-bottom: 10px; /* Padding for better spacing */
+    margin-top: 0;
+}
+
+/* Dropdown select container */
+.select-container {
+    margin-bottom: 20px;
+}
+
+/* Dropdown label */
+label {
+    color: #555;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Dropdown select styles */
+select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1em;
+    background-color: #fafafa;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+select:focus {
+    border-color: #007bff; /* Highlight border on focus */
+}
+
+/* Analysis section styles */
+.analysis-section {
+    margin-top: 20px;
+}
+
+/* Analysis heading */
+.analysis-section h3 {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #f1f1f1;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+/* Analysis paragraph */
+.analysis-section p {
+    color: #555;
+    font-size: 1em;
+    margin: 10px 0;
+}
+
+/* Map container */
+.geo-map {
+    flex: 3; /* Take up 3/4 of the width */
+    position: relative;
+    border-radius: 10px; /* Rounded corners for map */
+    margin-right: 10px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
