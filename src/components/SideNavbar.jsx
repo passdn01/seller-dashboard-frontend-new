@@ -13,9 +13,9 @@ import {
     AccordionTrigger,
 } from "./ui/accordion"
 
-import Home from '../assets/Home.svg'
-import Driver from '../assets/Driver.svg'
-import Logo from '../assets/Logo.svg'
+import Home from '../assets/NavIcons/Home.svg'
+import Driver from '../assets/NavIcons/Driver.svg'
+import Logo from '../assets/NavIcons/Logo.svg'
 import { Link } from 'react-router-dom'
 
 function SideNavbar() {
@@ -42,8 +42,8 @@ function SideNavbar() {
                 },
                 {
                     id: '2',
-                    title: 'Example2',
-                    link: '/dashboard/drivers/somthing',
+                    title: 'All Drivers',
+                    link: '/dashboard/drivers/allDrivers',
                     icon: '',
                 }
             ]
@@ -81,7 +81,7 @@ function SideNavbar() {
     ]
 
     return (
-        <div className=' min-h-screen border-r w-[250px]'>
+        <div className='sticky min-h-screen border-r w-[250px]'>
             <Command className="rounded-lg  ">
                 <div className='p-4 flex items-center gap-2 font-bold'>
                     <img src={Logo} alt="Logo" className="h-6 w-6" />
