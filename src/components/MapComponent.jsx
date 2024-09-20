@@ -22,7 +22,7 @@ const MapComponent = ({ selectedDriver, onDriverSelect }) => {
 
     // Fetch online drivers
     useEffect(() => {
-        axios.get('https://bhk8mp0s-2011.inc1.devtunnels.ms/online-drivers')
+        axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/online-drivers')
             .then(response => {
                 const drivers = response.data.drivers.map(driver => ({
                     ...driver,
