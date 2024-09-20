@@ -50,7 +50,7 @@ const GeoMetrics = () => {
     // Fetch ride clusters for heatmap
     useEffect(() => {
         if (viewMode === 'heatmap') {
-            axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/ride-distribution')
+            axios.get('https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/ride-distribution')
                 .then(response => {
                     const data = response.data.map(cluster => [
                         cluster.center.lat,
@@ -70,7 +70,7 @@ const GeoMetrics = () => {
     // Fetch driver locations
     useEffect(() => {
         if (viewMode === 'drivers') {
-            axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/online-drivers')
+            axios.get('https://bhk8mp0s-2011.inc1.devtunnels.ms/online-drivers')
                 .then(response => {
                     const drivers = response.data.drivers.map(driver => {
                         const latitude = parseFloat(driver.driverLiveLocation.latitude);
