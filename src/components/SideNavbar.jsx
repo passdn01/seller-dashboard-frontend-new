@@ -15,7 +15,7 @@ import {
 
 import HomeIcon from '../assets/NavIcons/Home.svg';
 import DriverIcon from '../assets/NavIcons/Driver.svg';
-import AgentIcon from '../assets/NavIcons/Agent.svg';
+import AgentIcon from '../assets/NavIcons/agent.svg';
 import FarePriceIcon from '../assets/NavIcons/FarePrice.svg';
 import FinancialMetricsIcon from '../assets/NavIcons/FinancialMetrics.svg';
 import FinancialServicesIcon from '../assets/NavIcons/FinancialServices.svg';
