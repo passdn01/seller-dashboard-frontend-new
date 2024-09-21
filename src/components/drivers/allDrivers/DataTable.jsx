@@ -67,9 +67,9 @@ const columns = [
         cell: ({ row }) => <div>{row.getValue("name")}</div>,
     },
     {
-        accessorKey: "licenseNumber",
+        accessorKey: "vehicleNumber",
         header: "RC Number",
-        cell: ({ row }) => <div>{row.getValue("licenseNumber")}</div>,
+        cell: ({ row }) => <div>{row.getValue("vehicleNumber")}</div>,
     },
     {
         accessorKey: "status",
@@ -120,7 +120,7 @@ export default function DriverTable() {
     const [statusFilter, setStatusFilter] = useState("all");
 
     useEffect(() => {
-        axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/allDrivers')
+        axios.get('https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/allDrivers')
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
