@@ -47,7 +47,7 @@ const NavStats = () => {
 
     const fetchOnlineDrivers = async () => {
         try {
-            const response = await axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/online-drivers');
+            const response = await axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/online-drivers');
             const totalOnlineDrivers = response.data.drivers.length;
             setOnlineDriversCount(totalOnlineDrivers);
         } catch (err) {
@@ -64,7 +64,7 @@ const NavStats = () => {
 
     const fetchOngoingRides = async () => {
         try {
-            const response = await axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/total-ongoing-rides');
+            const response = await axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/total-ongoing-rides');
             const totalOngoingRides = response.data.ongoingRides;
             console.log(totalOngoingRides);
             setOngoingRidesCount(totalOngoingRides);

@@ -120,7 +120,7 @@ export default function DriverTable() {
     const [statusFilter, setStatusFilter] = useState("all");
 
     useEffect(() => {
-        axios.get('https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/allDrivers')
+        axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/allDrivers')
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);

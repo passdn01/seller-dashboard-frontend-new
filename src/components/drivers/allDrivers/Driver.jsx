@@ -18,7 +18,7 @@ function Driver() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get(`https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/${id}`)
+        axios.get(`https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
