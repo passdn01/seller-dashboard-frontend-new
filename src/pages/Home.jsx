@@ -5,6 +5,7 @@ import GeoMetrics from '@/components/GeoMetrics';
 import RideStatistics from '@/components/statistics';
 import SideNavbar from '@/components/SideNavbar';
 import NavStats from '@/components/navStats';
+import DriverChart from '@/components/drivers/allDrivers/DriverCharts';
 function Home() {
     const [selectedDriver, setSelectedDriver] = useState(null);
 
@@ -33,6 +34,7 @@ function Home() {
                     onDriverSelect={handleDriverSelect}
                 /> 
                 <RideStatistics />
+                <DriverChart />
             </div>
         </div>
     );
