@@ -36,6 +36,39 @@ const defaultIcon = new L.Icon({
     shadowSize: [41, 41]
 });
 
+// Heatmap Legend for the Analysis Section
+const HeatmapLegend = ({ type }) => {
+    const heatmapColors = type === 'completed'
+        ? ['#4575b4', '#91bfdb', '#e0f3f8', '#fee090', '#fc8d59', '#d73027']
+        : ['#313695', '#4575b4', '#74add1', '#fdae61', '#f46d43', '#a50026'];
+
+    return (
+        <div className="legend-box">
+            <h4>{type === 'completed' ? 'Completed Rides Heatmap' : 'Cancelled Rides Heatmap'}</h4>
+            {/* Container for the continuous color bar */}
+            <div className="legend-range">
+                {/* Display all the colors connected */}
+                <div className="color-range">
+                    {heatmapColors.map((color, index) => (
+                        <div key={index} className="color-box" style={{ backgroundColor: color }}></div>
+                    ))}
+                </div>
+                {/* Labels for the range */}
+                <div className="range-labels">
+                    <span>Very Low</span>
+                    <span>Moderate</span>
+                    <span>Very High</span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+
+HeatmapLegend.propTypes = {
+    type: PropTypes.string.isRequired,
+};
+
 // Add PropTypes validation
 HeatmapLayer.propTypes = {
     data: PropTypes.arrayOf(PropTypes.array).isRequired // Validating that 'data' is an array of arrays
@@ -46,6 +79,7 @@ const GeoMetrics = () => {
     const [drivers, setDrivers] = useState([]);
     const [viewMode, setViewMode] = useState(''); // State to control map view
     const [analysis, setAnalysis] = useState(''); // State to control analysis text
+    const [rideType, setRideType] = useState('completed'); // State to control ride type selection
     const [mapLoading, setMapLoading] = useState(true); // Loading state for the map
 
     useEffect(() => {
@@ -67,6 +101,23 @@ const GeoMetrics = () => {
                 ]);
                 setHeatmapData(data);
                 setAnalysis('This heatmap represents the distribution of completed rides. Areas with higher ride counts are shown in more intense colors.');
+            })
+            .catch(error => {
+                console.error('Error fetching ride distribution:', error);
+                setAnalysis('Error fetching ride distribution data.');
+            });
+    };
+
+    const fetchCancelledRideDistribution = () => {
+        axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/cancelled-ride-distribution')
+            .then(response => {
+                const data = response.data.map(cluster => [
+                    cluster.center.lat,
+                    cluster.center.lng,
+                    cluster.numRides
+                ]);
+                setHeatmapData(data);
+                setAnalysis('This heatmap represents the distribution of cancelled rides. Areas with higher ride counts are shown in more intense colors.');
             })
             .catch(error => {
                 console.error('Error fetching ride distribution:', error);
@@ -100,11 +151,15 @@ const GeoMetrics = () => {
     // Fetch data based on viewMode
     useEffect(() => {
         if (viewMode === 'heatmap') {
-            fetchRideDistribution();
+            if (rideType === 'completed') {
+                fetchRideDistribution();
+            } else {
+                fetchCancelledRideDistribution();
+            }
         } else if (viewMode === 'drivers') {
             fetchDriverLocations();
         }
-    }, [viewMode]);
+    }, [viewMode, rideType]);
 
     // Refresh data every 2 seconds
     useEffect(() => {
@@ -131,39 +186,49 @@ const GeoMetrics = () => {
                         <option value="drivers">All Drivers Location</option>
                     </select>
                 </div>
-                {/* Analysis based on the selected view */}
+
+                {/* Conditionally show ride type selector when heatmap is selected */}
+                {viewMode === 'heatmap' && (
+                    <div className="select-container">
+                        <select id="rideType" value={rideType} onChange={(e) => setRideType(e.target.value)}>
+                            <option value="completed">Completed Rides</option>
+                            <option value="cancelled">Cancelled Rides</option>
+                        </select>
+                    </div>
+                )}
+
+                {/* Analysis and Heatmap Legend based on the selected view */}
                 <div className="analysis-section">
                     <h3>Analysis</h3>
                     <p>{analysis}</p>
+                    {viewMode === 'heatmap' && <HeatmapLegend type={rideType} />}
                 </div>
             </div>
 
             {/* Map Section */}
             <div className="geo-map">
-            {mapLoading ? (
-                    <div className="loading-indicator">Loading Map...</div> // Loading indicator
+                {mapLoading ? (
+                    <div className="loading-indicator">Loading Map...</div>
                 ) : (
-                <MapContainer style={{ height: '100vh', width: '100%' }} center={[23.031129, 72.529016]} zoom={10} zoomControl={false}>
-                    <TileLayer
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        attribution='Map data © OpenStreetMap contributors'
-                    />
-                    <ZoomControl position="topright" />
+                    <MapContainer style={{ height: '100vh', width: '100%' }} center={[23.031129, 72.529016]} zoom={10} zoomControl={false}>
+                        <TileLayer
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution='Map data © OpenStreetMap contributors'
+                        />
+                        <ZoomControl position="topright" />
 
-                    {/* Conditionally render heatmap layer */}
-                    {viewMode === 'heatmap' && <HeatmapLayer data={heatmapData} />}
+                        {/* Conditionally render heatmap layer */}
+                        {viewMode === 'heatmap' && <HeatmapLayer data={heatmapData} />}
 
-                    {/* Conditionally render driver markers */}
-                    {viewMode === 'drivers' && drivers.map(driver => (
-                        <Marker
-                            key={driver.driverId}
-                            position={[driver.driverLiveLocation.latitude, driver.driverLiveLocation.longitude]}
-                            icon={defaultIcon}
-                        >
-                            {/* Popup can show basic driver info if needed */}
-                        </Marker>
-                    ))}
-                </MapContainer>
+                        {/* Conditionally render driver markers */}
+                        {viewMode === 'drivers' && drivers.map(driver => (
+                            <Marker
+                                key={driver.driverId}
+                                position={[driver.driverLiveLocation.latitude, driver.driverLiveLocation.longitude]}
+                                icon={defaultIcon}
+                            />
+                        ))}
+                    </MapContainer>
                 )}
             </div>
         </div>
