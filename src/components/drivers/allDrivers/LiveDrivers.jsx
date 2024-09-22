@@ -2,6 +2,7 @@ import SideNavbar from '../../../components/SideNavbar.jsx'
 import MapComponent from '@/components/MapComponent'
 import { useState } from 'react'
 import LiveDriverTable from './LiveDataTable.jsx';
+import Header from './Header.jsx';
 
 function LiveDrivers() {
 
@@ -18,9 +19,10 @@ function LiveDrivers() {
     };
 
     return (
-        <div className="flex items-start gap-x-2 bg-[#F4F4F4]  h-auto">
+        <div className="flex items-start gap-x-2 bg-[#F4F4F4] h-auto">
             <SideNavbar />
-            <div className='ml-[250px]'>
+            <div className='flex-1 ml-[250px]'>
+                <Header className='w-full bg-[#ffffff]' title='LIVE DRIVERS' />
                 <MapComponent
                     selectedDriver={selectedDriver}
                     onDriverSelect={handleDriverSelect}

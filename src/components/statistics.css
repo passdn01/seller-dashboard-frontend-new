@@ -48,6 +48,7 @@ body {
 
 /* Container for each individual graph */
 .ride-statistics-container {
+    position: relative;
     flex: 1 1 calc(50% - 20px); /* Take up half the width minus gap space */
     max-width: calc(50% - 20px); /* Ensure each container does not exceed 50% of the parent width */
     padding: 0; /* Remove padding for proper sizing */
@@ -87,4 +88,50 @@ body {
     background: #fff; /* White background for charts */
     border-radius: 4px; /* Rounded corners for charts */
     /* border: 1px solid #e0e0e0; Light border around the chart */
+}
+
+/* Enlarged state for ride statistics containers */
+.ride-statistics-container.enlarged {
+    flex: 1 1 100%; /* Take full width of the parent */
+    max-width: 100%; /* Ensure it doesn't exceed full width */
+    margin-right: 20px;
+    position: relative; /* Position relative for potential overlays */
+    z-index: 10; /* Bring to front when enlarged */
+}
+
+/* Additional styling for the enlarged chart */
+.ride-statistics-container.enlarged .chart-container {
+    height: 600px; /* Increased height for better visibility */
+    transition: height 0.3s ease; /* Smooth transition for height change */
+}
+
+/* Styling for the expand button */
+.expand-button {
+    background: none; /* No background for button */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor on hover */
+    position: absolute; 
+    top: 10px; /* Space from the top */
+    right: 10px; /* Space from the right */
+    font-size: 1.5rem; /* Size of the button */
+    color: #5D6BB4; /* Button color */
+    transition: color 0.3s; /* Smooth color transition */
+    z-index: 15; /* Ensure it's above other elements */
+}
+
+/* Change button color on hover */
+.expand-button:hover {
+    color: #333; /* Darker color on hover */
+}
+
+/* Transition for smooth height change */
+.chart-container {
+    height: 400px; /* Default height */
+    width: 100%; /* Full width */
+    transition: height 0.3s ease; /* Smooth transition */
+}
+
+/* Optional: styles for the enlarged state */
+.chart-container.expanded {
+    height: 800px; /* Height when expanded (adjust as needed) */
 }

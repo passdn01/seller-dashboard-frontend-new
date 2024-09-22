@@ -141,7 +141,7 @@ export default function LiveDriverTable() {
     const categoryOptions = [...new Set(data.map(item => item.category))];
 
     return (
-        <div className="w-[100%] mx-5 mt-2">
+        <div className="w-[95%] mx-5 mt-2">
             <div className="flex items-center py-4">
                 <Input
                     placeholder="Filter names..."
