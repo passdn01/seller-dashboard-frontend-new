@@ -50,7 +50,7 @@ function SideNavbar() {
                 {
                     id: '1',
                     title: 'Live Drivers',
-                    link: '/drivers/live',
+                    link: '/drivers/liveDrivers',
                     icon: '',
                 },
                 {
