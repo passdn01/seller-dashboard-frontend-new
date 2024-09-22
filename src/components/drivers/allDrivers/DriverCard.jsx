@@ -14,14 +14,14 @@ const DriverCard = ({ data }) => {
                     <CardHeader className=' '>
                         <div className='flex gap-x-4'>
                             <Avatar>
-                                <AvatarImage src={driverInfo.profileUrl} alt={driverInfo.name} />
-                                <AvatarFallback>{driverInfo.name.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={driverInfo.profileUrl} alt={driverInfo?.name} />
+                                <AvatarFallback>{driverInfo?.name?.charAt(0) || 'NAN'}</AvatarFallback>
                             </Avatar>
 
                             <div>
-                                <CardTitle>{driverInfo.name}</CardTitle>
+                                <CardTitle>{driverInfo?.name || ''}</CardTitle>
                                 <CardDescription>
-                                    {driverInfo.phone} <br />    Joined: {new Date(driverInfo.createdAt).toLocaleDateString('en-US', {
+                                    {driverInfo?.phone || ''} <br />    Joined: {new Date(driverInfo.createdAt).toLocaleDateString('en-US', {
                                         year: 'numeric',
                                         month: 'long',
                                         day: 'numeric'

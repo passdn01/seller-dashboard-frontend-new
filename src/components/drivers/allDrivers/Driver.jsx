@@ -13,12 +13,14 @@ import {
 import { Button } from "@/components/ui/button"
 import backArrow from '../../../assets/backArrow.svg'
 import DriverCard from './DriverCard.jsx';
-
-
+import DriverLicense from './DriverLicense';
+import DriverRC from './DriverRC';
+import Performance from './Performance.jsx'
+import Subscription from './Subscription';
 import Header from './Header';
 
 function Driver() {
-    const { id } = useParams();  // Destructure the id param
+    const { id } = useParams();
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -50,6 +52,7 @@ function Driver() {
 
 
 
+
     return (
         <div className='flex'>
             <SideNavbar />
@@ -78,18 +81,17 @@ function Driver() {
                         <div>
                             <DriverCard data={data}></DriverCard>
                         </div>
-                        <div className='flex'>
-                            rc and driving license <div></div>
-                            <div></div>
+                        <div className="flex flex-col md:flex-row gap-4 p-4">
+                            <DriverLicense data={data} />
+                            <DriverRC data={data} />
                         </div>
                         <div>
-                            performance
+                            <Performance data={data}></Performance>
                         </div>
-                        <div>
-                            charts
-                        </div>
-                        <div>
-                            subscription
+
+                        <div className=''>
+
+                            <Subscription data={data}></Subscription>
                         </div>
                     </div>
 
