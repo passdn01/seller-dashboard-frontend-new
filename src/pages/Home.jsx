@@ -24,11 +24,6 @@ function Home() {
             <SideNavbar></SideNavbar>
             <div className='ml-[250px]'>
                 <NavStats />
-                {/* <MapComponent
-                    selectedDriver={selectedDriver}
-                    onDriverSelect={handleDriverSelect}
-                />
-                <DriverTable onDriverSelect={handleDriverSelect} /> */}
                 <GeoMetrics
                     selectedDriver={selectedDriver}
                     onDriverSelect={handleDriverSelect}
