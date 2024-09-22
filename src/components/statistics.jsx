@@ -3,6 +3,7 @@ import { Chart } from 'react-google-charts';
 import axios from 'axios';
 import moment from 'moment';
 import './statistics.css';
+import { ExpandIcon } from 'lucide-react';
 
 const RideStatistics = () => {
     const [period, setPeriod] = useState('monthly'); // Default period
@@ -15,6 +16,8 @@ const RideStatistics = () => {
     const [bookingCancellationRateData, setBookingCancellationRateData] = useState([]);
     const [conversionRateData, setConversionRateData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [enlargedChart, setEnlargedChart] = useState(null); // Track which chart is enlarged
+
 
     // Function to reduce x-axis labels based on selected period
     const filterXAxisLabels = (data) => {
@@ -36,6 +39,11 @@ const RideStatistics = () => {
 
         return filteredData;
     };
+
+    const handleExpand = (chart) => {
+        setEnlargedChart(enlargedChart === chart ? null : chart); // Toggle enlargement
+    };
+    
 
     // Fetch data for both total rides, drivers, cancelled rides, and earnings
     const fetchData = async () => {
@@ -249,9 +257,10 @@ const RideStatistics = () => {
             </div>
             <div className="graphs-wrapper">
 
-                <div className="ride-statistics-container" style={{ backgroundColor: getChartBackgroundColor(rideData) }}>
+                <div className={`ride-statistics-container ${enlargedChart === 'completedRides' ? 'enlarged' : ''}`} style={{ backgroundColor: getChartBackgroundColor(rideData) }}>
                     <h1 className="chart-title">Completed Rides</h1>
-                    <h3>{totalCompletedRides}</h3> {/* Display total */}
+                    <button onClick={() => handleExpand('completedRides')} className="expand-button"><ExpandIcon /></button>
+                    <h3>{totalCompletedRides}</h3>
                     <div className="chart-container">
                         <Chart
                             chartType="LineChart"
@@ -263,9 +272,10 @@ const RideStatistics = () => {
                     </div>
                 </div>
 
-                <div className="ride-statistics-container" style={{ backgroundColor: getChartBackgroundColor(driverData) }}>
+                <div className={`ride-statistics-container ${enlargedChart === 'newDrivers' ? 'enlarged' : ''}`} style={{ backgroundColor: getChartBackgroundColor(driverData) }}>
                     <h1 className="chart-title">New Drivers</h1>
-                    <h3>{totalNewDrivers}</h3> {/* Display total */}
+                    <button onClick={() => handleExpand('newDrivers')} className="expand-button"><ExpandIcon /></button>
+                    <h3>{totalNewDrivers}</h3>
                     <div className="chart-container">
                         <Chart
                             chartType="LineChart"
@@ -277,9 +287,10 @@ const RideStatistics = () => {
                     </div>
                 </div>
 
-                <div className="ride-statistics-container" style={{ backgroundColor: getChartBackgroundColor(cancelledRidesData) }}>
+                <div className={`ride-statistics-container ${enlargedChart === 'cancelledRides' ? 'enlarged' : ''}`} style={{ backgroundColor: getChartBackgroundColor(cancelledRidesData) }}>
                     <h1 className="chart-title">Cancelled Rides</h1>
-                    <h3>{totalCancelledRides}</h3> {/* Display total */}
+                    <button onClick={() => handleExpand('cancelledRides')} className="expand-button"><ExpandIcon /></button>
+                    <h3>{totalCancelledRides}</h3>
                     <div className="chart-container">
                         <Chart
                             chartType="LineChart"
@@ -291,9 +302,10 @@ const RideStatistics = () => {
                     </div>
                 </div>
 
-                <div className="ride-statistics-container" style={{ backgroundColor: getChartBackgroundColor(earningsData) }}>
+                <div className={`ride-statistics-container ${enlargedChart === 'earnings' ? 'enlarged' : ''}`} style={{ backgroundColor: getChartBackgroundColor(earningsData) }}>
                     <h1 className="chart-title">Drivers Earnings</h1>
-                    <h3>{totalEarnings}</h3> {/* Display total */}
+                    <button onClick={() => handleExpand('earnings')} className="expand-button"><ExpandIcon /></button>
+                    <h3>{totalEarnings}</h3>
                     <div className="chart-container">
                         <Chart
                             chartType="LineChart"
@@ -305,8 +317,9 @@ const RideStatistics = () => {
                     </div>
                 </div>
 
-                <div className="ride-statistics-container" style={{ backgroundColor: getChartBackgroundColor(riderFareAcceptanceData) }}>
+                <div className={`ride-statistics-container ${enlargedChart === 'riderFareAcceptance' ? 'enlarged' : ''}`} style={{ backgroundColor: getChartBackgroundColor(riderFareAcceptanceData) }}>
                     <h1 className="chart-title">Rider Fare Acceptance Rate</h1>
+                    <button onClick={() => handleExpand('riderFareAcceptance')} className="expand-button"><ExpandIcon /></button>
                     <h3>{averageRiderFareAcceptanceRate} %</h3>
                     <div className="chart-container">
                         <Chart
@@ -319,8 +332,9 @@ const RideStatistics = () => {
                     </div>
                 </div>
 
-                <div className="ride-statistics-container" style={{ backgroundColor: getChartBackgroundColor(driverQuoteAcceptanceData) }}>
+                <div className={`ride-statistics-container ${enlargedChart === 'driverQuoteAcceptance' ? 'enlarged' : ''}`} style={{ backgroundColor: getChartBackgroundColor(driverQuoteAcceptanceData) }}>
                     <h1 className="chart-title">Driver Quote Acceptance Rate</h1>
+                    <button onClick={() => handleExpand('driverQuoteAcceptance')} className="expand-button"><ExpandIcon /></button>
                     <h3>{averageDriverQuoteAcceptanceRate} %</h3>
                     <div className="chart-container">
                         <Chart
@@ -333,8 +347,9 @@ const RideStatistics = () => {
                     </div>
                 </div>
 
-                <div className="ride-statistics-container" style={{ backgroundColor: getChartBackgroundColor(bookingCancellationRateData) }}>
+                <div className={`ride-statistics-container ${enlargedChart === 'bookingCancellationRate' ? 'enlarged' : ''}`} style={{ backgroundColor: getChartBackgroundColor(bookingCancellationRateData) }}>
                     <h1 className="chart-title">Booking Cancellation Rate</h1>
+                    <button onClick={() => handleExpand('bookingCancellationRate')} className="expand-button"><ExpandIcon /></button>
                     <h3>{averageBookingCancellationRate} %</h3>
                     <div className="chart-container">
                         <Chart
@@ -347,8 +362,9 @@ const RideStatistics = () => {
                     </div>
                 </div>
 
-                <div className="ride-statistics-container" style={{ backgroundColor: getChartBackgroundColor(conversionRateData) }}>
+                <div className={`ride-statistics-container ${enlargedChart === 'conversionRate' ? 'enlarged' : ''}`} style={{ backgroundColor: getChartBackgroundColor(conversionRateData) }}>
                     <h1 className="chart-title">Conversion Rate</h1>
+                    <button onClick={() => handleExpand('conversionRate')} className="expand-button"><ExpandIcon /></button>
                     <h3>{averageConversionRate} %</h3>
                     <div className="chart-container">
                         <Chart
@@ -360,6 +376,7 @@ const RideStatistics = () => {
                         />
                     </div>
                 </div>
+
 
             </div>
         </div>
