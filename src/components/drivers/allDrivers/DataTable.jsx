@@ -119,21 +119,39 @@ export default function DriverTable() {
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("all");
 
+
     useEffect(() => {
-        axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/allDrivers')
-            .then((response) => {
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get('https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/allDrivers');
                 if (response.data.success) {
                     setData(response.data.data);
+                    sessionStorage.setItem('myData', JSON.stringify(response.data.data));
+                    sessionStorage.setItem('lastFetchTime', Date.now().toString());
                 } else {
                     throw new Error(response.data.message || 'Failed to fetch data');
                 }
-                setLoading(false);
-            })
-            .catch((error) => {
+            } catch (error) {
                 setError(error.message);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        const storedData = sessionStorage.getItem('myData');
+        const lastFetchTime = sessionStorage.getItem('lastFetchTime');
+        const currentTime = Date.now();
+        const timeSinceLastFetch = currentTime - (lastFetchTime ? parseInt(lastFetchTime) : 0);
+
+        if (storedData && timeSinceLastFetch < 60000) { // 60000 ms = 1 minute
+            setData(JSON.parse(storedData));
+            setLoading(false);
+        } else {
+            fetchData();
+        }
     }, []);
+
 
     const table = useReactTable({
         data,
