@@ -4,7 +4,7 @@ import { useState } from 'react'
 import GeoMetrics from '@/components/GeoMetrics';
 import RideStatistics from '@/components/statistics';
 import SideNavbar from '@/components/SideNavbar';
-import NavStats from '@/components/navStats';
+import NavStats from '../components/NavStats';
 import Header from '@/components/drivers/allDrivers/Header';
 function Home() {
     const [selectedDriver, setSelectedDriver] = useState(null);
@@ -28,7 +28,7 @@ function Home() {
                 <GeoMetrics
                     selectedDriver={selectedDriver}
                     onDriverSelect={handleDriverSelect}
-                /> 
+                />
                 <RideStatistics />
             </div>
         </div>
