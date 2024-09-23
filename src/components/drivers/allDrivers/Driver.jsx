@@ -18,7 +18,6 @@ import DriverRC from './DriverRC';
 import Performance from './Performance.jsx'
 import Subscription from './Subscription';
 import Header from './Header';
-import DrivingLicenseForm from './DrivingLicenseForm';
 function Driver() {
     const { id } = useParams();
     const [data, setData] = useState({});
