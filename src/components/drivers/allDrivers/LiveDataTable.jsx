@@ -80,9 +80,9 @@ const columns = [
         accessorKey: "drivingLicense",
         header: "Driving License",
         cell: ({ row }) => (
-            <a 
-                href={row.getValue("drivingLicense")} 
-                target="_blank" 
+            <a
+                href={row.getValue("drivingLicense")}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-500"
             >
@@ -101,7 +101,7 @@ export default function LiveDriverTable() {
     const [categoryFilter, setCategoryFilter] = useState("all");
 
     useEffect(() => {
-        axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/online-drivers')
+        axios.get('https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/online-drivers')
             .then(response => {
                 console.log(response.data);
                 setData(response.data.drivers);

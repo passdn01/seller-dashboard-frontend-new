@@ -43,12 +43,12 @@ const RideStatistics = () => {
     const handleExpand = (chart) => {
         setEnlargedChart(enlargedChart === chart ? null : chart); // Toggle enlargement
     };
-    
+
 
     // Fetch data for both total rides, drivers, cancelled rides, and earnings
     const fetchData = async () => {
         try {
-            const response = await axios.post('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period });
+            const response = await axios.post('https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period });
             const result = response.data;
 
             const formattedRideData = [
@@ -230,10 +230,10 @@ const RideStatistics = () => {
 
     const getChartBackgroundColor = (data) => {
         if (data.length < 3) return 'rgba(144, 238, 144, 0.3)'; // Default light green
-    
+
         const lastValue = data[data.length - 1][1];
         const secondLastValue = data[data.length - 2][1];
-    
+
         return lastValue < secondLastValue ? 'rgba(255, 99, 71, 0.3)' : 'rgba(144, 238, 144, 0.3)'; // Light red or light green
     };
 
@@ -241,7 +241,7 @@ const RideStatistics = () => {
     // In your component
     const options = getXAxisOptions(period);
 
-    
+
 
     return (
         <div className='statistics-container'>

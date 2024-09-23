@@ -8,11 +8,11 @@ import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
 
 // Default icon for markers
 const defaultIcon = new L.Icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
+  iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
 
 const mapContainerStyle = {
@@ -27,12 +27,12 @@ const center = {
 
 const MapComponent = ({ selectedDriver, onDriverSelect }) => {
   const [drivers, setDrivers] = useState([]);
-//   const [driverAddress, setDriverAddress] = useState('');
+  //   const [driverAddress, setDriverAddress] = useState('');
 
   // Fetch online drivers
   useEffect(() => {
     axios
-      .get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/online-drivers')
+      .get('https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/online-drivers')
       .then((response) => {
         const drivers = response.data.drivers.map((driver) => ({
           ...driver,
@@ -52,51 +52,51 @@ const MapComponent = ({ selectedDriver, onDriverSelect }) => {
   return (
     <div className="map-container">
       <div className="map">
-      <MapContainer
-        style={mapContainerStyle}
-        center={[center.lat, center.lng]}
-        zoom={12}
-        scrollWheelZoom={false}
+        <MapContainer
+          style={mapContainerStyle}
+          center={[center.lat, center.lng]}
+          zoom={12}
+          scrollWheelZoom={false}
         >
-        <TileLayer
+          <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        />
+          />
 
-        {drivers.map((driver) => {
+          {drivers.map((driver) => {
             const { latitude, longitude } = driver.driverLiveLocation;
 
             // Check if lat/lng are valid
             const isValidLatLng = !isNaN(latitude) && !isNaN(longitude);
 
             return (
-            <Marker
+              <Marker
                 key={driver.driverId}
                 position={isValidLatLng ? [latitude, longitude] : [center.lat, center.lng]} // Fallback to center if lat/lng are NaN
                 icon={defaultIcon}
                 eventHandlers={{
-                click: () => {
+                  click: () => {
                     onDriverSelect(driver);
-                },
+                  },
                 }}
-            >
+              >
                 <Popup>
-                <div>
+                  <div>
                     <h4>{driver.driverName}</h4>
                     <p>
-                    <strong>Phone:</strong> {driver.phone}
+                      <strong>Phone:</strong> {driver.phone}
                     </p>
                     <p>
-                    <strong>Latitude:</strong> {isValidLatLng ? latitude : 'N/A'}
+                      <strong>Latitude:</strong> {isValidLatLng ? latitude : 'N/A'}
                     </p>
                     <p>
-                    <strong>Longitude:</strong> {isValidLatLng ? longitude : 'N/A'}
+                      <strong>Longitude:</strong> {isValidLatLng ? longitude : 'N/A'}
                     </p>
-                </div>
+                  </div>
                 </Popup>
-            </Marker>
+              </Marker>
             );
-        })}
+          })}
         </MapContainer>
 
       </div>
