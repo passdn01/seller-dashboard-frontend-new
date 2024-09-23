@@ -5,7 +5,7 @@ import GeoMetrics from '@/components/GeoMetrics';
 import RideStatistics from '@/components/statistics';
 import SideNavbar from '@/components/SideNavbar';
 import NavStats from '@/components/navStats';
-import DriverChart from '@/components/drivers/allDrivers/DriverCharts';
+import Header from '@/components/drivers/allDrivers/Header';
 function Home() {
     const [selectedDriver, setSelectedDriver] = useState(null);
 
@@ -21,15 +21,15 @@ function Home() {
 
     return (
         <div className="flex items-start gap-x-2 bg-[#F4F4F4]">
-            <SideNavbar></SideNavbar>
-            <div className='ml-[250px]'>
+            <SideNavbar />
+            <div className='flex-1 ml-[250px]'>
+                <Header className='w-full bg-[#ffffff]' title='Home' />
                 <NavStats />
                 <GeoMetrics
                     selectedDriver={selectedDriver}
                     onDriverSelect={handleDriverSelect}
                 /> 
                 <RideStatistics />
-                <DriverChart />
             </div>
         </div>
     );

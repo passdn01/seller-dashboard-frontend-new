@@ -22,7 +22,7 @@ const NavStats = () => {
 
     const fetchTotalCompletedRides = async () => {
         try {
-            const response = await axios.post('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/total-completed-rides', { period: 'all time' });
+            const response = await axios.post('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period: 'all time' });
             const result = response.data;
 
             console.log(result); // Log the response to inspect the structure
