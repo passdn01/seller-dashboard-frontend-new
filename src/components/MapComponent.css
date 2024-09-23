@@ -1,60 +1,91 @@
 /* MapComponent.css */
 
-/* Container for the map and driver details */
+/* Main container for map and driver details */
 .map-container {
     display: flex;
     height: 100vh;
-    width: 100%;
+    width: 95%;
     margin-top: 10px;
-    overflow: hidden; /* Prevent scrollbars */
-    gap: 10px; /* Space between map and details */
-}
-
-/* Map container */
-.map {
+    gap: 15px; /* Increased space between map and details */
+    overflow: hidden;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  
+  /* Map container */
+  .map {
     flex: 3;
-    position: relative;
-    border-radius: 10px;
-    margin-left: 10px;
-    overflow: hidden; /* Ensure map does not overflow */
-}
-
-/* Driver details container */
-.driver-details {
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for map */
+    border: 1px solid #ddd; /* Subtle border */
+  }
+  
+  /* Driver details container */
+  .driver-details {
     flex: 1;
     padding: 20px;
-    background: #ffffff; /* Clean white background */
-    border-radius: 10px; /* Rounded corners for a modern look */
-    border: 1px solid #e0e0e0; /* Light border */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
-    overflow-y: auto; /* Ensure scrollability */
+    background: #ffffff;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Elevation for card-like feel */
+    overflow-y: auto;
     display: flex;
-    margin-right: 10px;
     flex-direction: column;
-    transition: all 0.3s ease; /* Smooth transition for changes */
-}
-
-/* Styling for the header */
-.driver-details h2 {
+    transition: all 0.3s ease;
+    font-family: 'Roboto', sans-serif; /* Modern, clean font */
+    /* margin-right: 20px; */
+  }
+  
+  /* Styling for the header */
+  .driver-details h2 {
     margin-top: 0;
-    color: #333;
-    font-size: 1.8em; /* Larger font size for the heading */
-    font-weight: 600; /* Slightly bolder font weight */
-    border-bottom: 2px solid #f1f1f1; /* Bottom border for separation */
-    padding-bottom: 10px; /* Padding for better spacing */
-}
+    color: #2c3e50;
+    font-size: 1.6em; /* Good size for a sub-heading */
+    font-weight: 600; /* Semi-bold weight */
+    border-bottom: 2px solid #eaeaea; /* Underline for emphasis */
+    padding-bottom: 10px;
+  }
+  
+  /* Styling for the driver detail paragraphs */
+  .driver-details p {
+    color: #34495e;
+    font-size: 1em;
+    margin: 10px 0;
+    line-height: 1.6; /* Improved readability */
+  }
+  
+  /* Bold labels for the driver details */
+  .driver-details p strong {
+    color: #2c3e50;
+    font-weight: 500; /* Slightly bolder for labels */
+  }
+  
+  /* Image styling for the driving license */
+  .driver-details img {
+    margin-top: 10px;
+    width: 120px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Small shadow for the image */
+  }
+  
+  /* Scrollbar customization */
+  .driver-details::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .driver-details::-webkit-scrollbar-thumb {
+    background-color: #bdc3c7;
+    border-radius: 4px;
+  }
+  
+  
 
-/* Styling for the paragraphs */
-.driver-details p {
-    color: #555; /* Darker gray text color */
-    font-size: 1em; /* Standard font size for text */
-    margin: 10px 0; /* Space between paragraphs */
-}
 
-/* Bold labels */
-.driver-details p strong {
-    color: #333; /* Dark color for labels */
-}
+
+
+
 
 
 /* GeoMetrics CSS */
@@ -64,7 +95,8 @@
     display: flex;
     height: 100vh;
     width: 100%;
-    margin-top: 10px;
+    padding: 10px;
+    /* margin-top: 10px; */
     overflow: hidden; /* Prevent scrollbars */
     gap: 10px; /* Space between map and sidebar */
 }
@@ -74,7 +106,7 @@
     flex: 1; /* Take up 1/4 of the width */
     padding: 20px;
     background: #ffffff; /* Clean white background */
-    border-radius: 10px; /* Rounded corners for a modern look */
+    border-radius: 4px; /* Rounded corners for a modern look */
     border: 1px solid #e0e0e0; /* Light border */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
     overflow-y: auto; /* Ensure scrollability */
@@ -96,27 +128,24 @@
 
 /* Dropdown select container */
 .select-container {
-    margin-bottom: 20px;
+    margin-top: 20px; /* Space below the period selection */
+    max-width: 400px; /* Set maximum width */
 }
 
 /* Dropdown label */
-label {
-    color: #555;
-    font-weight: bold;
-    display: block;
-    margin-bottom: 8px;
+.select-container label {
+    margin-right: 10px; /* Space between label and dropdown */
+    font-size: 1rem; /* Adjust font size as needed */
 }
 
 /* Dropdown select styles */
-select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 1em;
-    background-color: #fafafa;
-    outline: none;
-    transition: border-color 0.3s ease;
+.select-container select {
+    font-size: 1rem; /* Adjust font size as needed */
+    padding: 8px; /* Add padding for better appearance */
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    width: 400px;
+    border-radius: 4px;
 }
 
 select:focus {
@@ -147,11 +176,53 @@ select:focus {
 
 /* Map container */
 .geo-map {
-    flex: 3; /* Take up 3/4 of the width */
+    flex: 1.5; /* Take up 3/4 of the width */
     position: relative;
-    border-radius: 10px; /* Rounded corners for map */
+    border-radius: 4px; /* Rounded corners for map */
     margin-right: 10px;
     overflow: hidden;
     border: 1px solid #e0e0e0;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow */
 }
+
+
+.legend-box {
+    padding: 10px;
+    max-width: 400px;
+}
+
+.legend-box h4 {
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+.legend-range {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.color-range {
+    display: flex;
+    width: 100%;
+    height: 30px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden; /* To make sure the color boxes stay within the rounded border */
+}
+
+.color-box {
+    flex: 1; /* Make each box take equal width */
+    height: 100%;
+}
+
+.range-labels {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+
+

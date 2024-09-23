@@ -11,9 +11,18 @@ const NavStats = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        // Simulate loading for the map
+        const timer = setTimeout(() => {
+            setLoading(false); // Set loading to false after 1 second (or adjust as needed)
+        }, 1000);
+
+        return () => clearTimeout(timer); // Clear timeout on unmount
+    }, []);
+
     const fetchTotalCompletedRides = async () => {
         try {
-            const response = await axios.post('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/total-completed-rides', { period: 'all time' });
+            const response = await axios.post('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period: 'all time' });
             const result = response.data;
 
             console.log(result); // Log the response to inspect the structure
@@ -38,7 +47,7 @@ const NavStats = () => {
 
     const fetchOnlineDrivers = async () => {
         try {
-            const response = await axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/online-drivers');
+            const response = await axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/online-drivers');
             const totalOnlineDrivers = response.data.drivers.length;
             setOnlineDriversCount(totalOnlineDrivers);
         } catch (err) {
@@ -55,7 +64,7 @@ const NavStats = () => {
 
     const fetchOngoingRides = async () => {
         try {
-            const response = await axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/total-ongoing-rides');
+            const response = await axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/total-ongoing-rides');
             const totalOngoingRides = response.data.ongoingRides;
             console.log(totalOngoingRides);
             setOngoingRidesCount(totalOngoingRides);
@@ -71,28 +80,34 @@ const NavStats = () => {
         fetchOngoingRides();
     }, []);
 
-    // const fetchOngoingRides = async () => {
-    //     try {
-    //         const response = await axios.get('https://55kqzrxn-2011.inc1.devtunnels.ms/online-drivers');
-    //         if (response.data.success) {
-    //             // Assuming the response contains a count or an array of online drivers
-    //             // Adjust this according to your actual response structure
-    //             const totalOnlineDrivers = response.data.data.length; // If data is an array
-    //             setOngoingRidesCount(totalOnlineDrivers);
-    //         } else {
-    //             setError(response.data.msg);
-    //         }
-    //     } catch (err) {
-    //         setError('Error fetching online drivers');
-    //         console.error(err);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
 
-    // useEffect(() => {
-    //     fetchOngoingRides();
-    // }, []);
+    const animateValue = (value, setter) => {
+        let start = 0;
+        const duration = 3000; // 1 second
+        const incrementTime = 50; // Update every 50ms
+        const totalSteps = duration / incrementTime;
+        const increment = Math.ceil(value / totalSteps);
+
+        const interval = setInterval(() => {
+            start += increment;
+            if (start >= value) {
+                start = value;
+                clearInterval(interval);
+            }
+            setter(start);
+        }, incrementTime);
+    };
+
+    useEffect(() => {
+        if (!loading) {
+            animateValue(allCompletedRides, setAllCompletedRides);
+            animateValue(allNewDrivers, setAllNewDrivers);
+            animateValue(allDriversEarning, setAllDriversEarning);
+            animateValue(onlineDriversCount, setOnlineDriversCount);
+            animateValue(ongoingRidesCount, setOngoingRidesCount);
+        }
+    }, [loading]);
+
 
     if (loading) {
         return <p>Loading total completed rides...</p>;
@@ -109,22 +124,25 @@ const NavStats = () => {
                     <h1>Total Online Drivers</h1>
                     <h3>{onlineDriversCount}</h3>
                 </div>
-                <div className='live-container-info'>Total Ongoing Rides: {ongoingRidesCount}</div>
+                <div className='live-container-info'>
+                    <h1>Total Ongoing Rides</h1>
+                    <h3>{ongoingRidesCount}</h3>
+                </div>
             </div>
             <div className='all-ride-container'>   
                 <div className="ride-total-container">
-                    <h1 className="ride-total-title">Completed Rides</h1>
                     <h3>{allCompletedRides}</h3>
+                    <h1 className="ride-total-title">Completed Rides</h1>
                 </div>
 
                 <div className="ride-total-container">
-                    <h1 className="ride-total-title">New Drivers</h1>
                     <h3>{allNewDrivers}</h3>
+                    <h1 className="ride-total-title">New Drivers</h1>
                 </div>
 
                 <div className="ride-total-container">
-                    <h1 className="ride-total-title">Drivers Earnings</h1>
                     <h3>{allDriversEarning}</h3>
+                    <h1 className="ride-total-title">Drivers Earnings</h1>
                 </div>
             </div>
         </div>

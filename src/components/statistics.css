@@ -1,14 +1,25 @@
+/* Base font settings for the entire application */
+body {
+    font-family: 'Arial', sans-serif; /* Use a clean, sans-serif font */
+    /* font-size: 16px; /* Base font size */
+    /* line-height: 1.5; Improved readability with line height */
+    /* color: #333; Dark color for text */
+}
+
 /* Container for the entire statistics section */
 .statistics-container {
-    padding: 20px;
-    margin: 0 auto; /* Center align the container horizontally */
+    padding-top: 10px;
+    /* padding-bottom: 10px; */
+    background: #ffffff;
+    margin: 20px;
 }
 
 /* Container for period selection dropdown */
 .period-select {
-    margin-bottom: 20px; /* Space below the period selection */
-    max-width: 600px; /* Set maximum width */
-    margin: 0 auto; /* Center the container horizontally */
+    margin-top: 20px; /* Space below the period selection */
+    max-width: 400px; /* Set maximum width */
+    margin-left: 20px;
+    
 }
 
 /* Style for the period selection label */
@@ -21,6 +32,10 @@
 .period-select select {
     font-size: 1rem; /* Adjust font size as needed */
     padding: 5px; /* Add padding for better appearance */
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    width: 400px;
+    border-radius: 4px;
 }
 
 /* Parent container to hold multiple graphs side by side */
@@ -33,30 +48,34 @@
 
 /* Container for each individual graph */
 .ride-statistics-container {
+    position: relative;
     flex: 1 1 calc(50% - 20px); /* Take up half the width minus gap space */
     max-width: calc(50% - 20px); /* Ensure each container does not exceed 50% of the parent width */
     padding: 0; /* Remove padding for proper sizing */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Slightly more prominent shadow */
-    border-radius: 12px; /* More rounded corners */
-    background: #f9f9f9; /* Light background color for contrast */
+    border-radius: 4px; /* More rounded corners */
+    /* background: #f9f9f9; Light background color for contrast */
     border: 1px solid #e0e0e0; /* Light border for definition */
     box-sizing: border-box; /* Ensure padding is included in the element's width */
     display: flex;
     flex-direction: column; /* Align children elements vertically */
-    align-items: stretch; /* Stretch children horizontally to fit the container */
+    /* align-items: stretch; Stretch children horizontally to fit the container */
 }
 
 .ride-statistics-container h3 {
-    margin-left: 10px;
+    margin: 10px;
+    font-size: 1.5rem; 
+    font-weight: bolder;
+    color:#5D6BB4;
 }
 
 /* Title for each chart */
 .chart-title {
-    text-align: center;
-    margin: 20px 0; /* Adjust margins for spacing */
-    font-size: 1.5rem; /* Adjust font size as needed */
-    color: #333; /* Darker color for better readability */
-    font-weight: bold; /* Make the title bold */
+    /* text-align: center; */
+    padding: 10px;
+    /* margin: 10px 0; Adjust margins for spacing */
+    font-size: 1rem; /* Adjust font size as needed */
+    color: #555555; /* Darker color for better readability */
+    font-weight: bold;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
 }
 
@@ -67,6 +86,52 @@
     flex: 1; /* Ensure the chart container stretches to fill available space */
     /* margin-bottom: 20px; Increase space below the chart */
     background: #fff; /* White background for charts */
-    border-radius: 8px; /* Rounded corners for charts */
-    border: 1px solid #e0e0e0; /* Light border around the chart */
+    border-radius: 4px; /* Rounded corners for charts */
+    /* border: 1px solid #e0e0e0; Light border around the chart */
+}
+
+/* Enlarged state for ride statistics containers */
+.ride-statistics-container.enlarged {
+    flex: 1 1 100%; /* Take full width of the parent */
+    max-width: 100%; /* Ensure it doesn't exceed full width */
+    margin-right: 20px;
+    position: relative; /* Position relative for potential overlays */
+    z-index: 10; /* Bring to front when enlarged */
+}
+
+/* Additional styling for the enlarged chart */
+.ride-statistics-container.enlarged .chart-container {
+    height: 600px; /* Increased height for better visibility */
+    transition: height 0.3s ease; /* Smooth transition for height change */
+}
+
+/* Styling for the expand button */
+.expand-button {
+    background: none; /* No background for button */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor on hover */
+    position: absolute; 
+    top: 10px; /* Space from the top */
+    right: 10px; /* Space from the right */
+    font-size: 1.5rem; /* Size of the button */
+    color: #5D6BB4; /* Button color */
+    transition: color 0.3s; /* Smooth color transition */
+    z-index: 15; /* Ensure it's above other elements */
+}
+
+/* Change button color on hover */
+.expand-button:hover {
+    color: #333; /* Darker color on hover */
+}
+
+/* Transition for smooth height change */
+.chart-container {
+    height: 400px; /* Default height */
+    width: 100%; /* Full width */
+    transition: height 0.3s ease; /* Smooth transition */
+}
+
+/* Optional: styles for the enlarged state */
+.chart-container.expanded {
+    height: 800px; /* Height when expanded (adjust as needed) */
 }
