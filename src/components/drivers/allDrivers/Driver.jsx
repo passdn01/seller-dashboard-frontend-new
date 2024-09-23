@@ -18,7 +18,7 @@ import DriverRC from './DriverRC';
 import Performance from './Performance.jsx'
 import Subscription from './Subscription';
 import Header from './Header';
-
+import DrivingLicenseForm from './DrivingLicenseForm';
 function Driver() {
     const { id } = useParams();
     const [data, setData] = useState({});
@@ -51,10 +51,10 @@ function Driver() {
     }
 
 
-
-
     return (
+
         <div className='flex'>
+
             <SideNavbar />
             <div className='flex-1 ml-[250px]'>
                 <Header className='w-full' title='ALL DRIVERS' />
@@ -66,17 +66,22 @@ function Driver() {
                         }}><img src={backArrow} alt="" /></Button>
                         <Button variant='outline' className='shadow text-blue-500' onClick={() => { return window.location.reload(); }}>REFRESH</Button>
                     </div>
-                    <Breadcrumb className='px-4'>
-                        <BreadcrumbList>
-                            <BreadcrumbItem>
-                                <BreadcrumbLink href="/drivers/allDrivers" className='text-blue-500' >AllDrivers</BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator />
-                            <BreadcrumbItem>
-                                <BreadcrumbLink >DriverDetail</BreadcrumbLink>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
+                    <div className='flex flex-row items-center justify-between'>
+                        <Breadcrumb className='px-4'>
+                            <BreadcrumbList>
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink href="/drivers/allDrivers" className='text-blue-500' >AllDrivers</BreadcrumbLink>
+                                </BreadcrumbItem>
+                                <BreadcrumbSeparator />
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink >DriverDetail</BreadcrumbLink>
+                                </BreadcrumbItem>
+                            </BreadcrumbList>
+                        </Breadcrumb>
+                        <div className='mr-4'>
+                            Edit
+                        </div>
+                    </div>
                     <div>
                         <div>
                             <DriverCard data={data}></DriverCard>
@@ -94,13 +99,11 @@ function Driver() {
                             <Subscription data={data}></Subscription>
                         </div>
                     </div>
-
-
-
-
                 </div>
             </div>
+
         </div>
+
     );
 }
 
