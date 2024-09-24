@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea";
 
 const DrivingLicenseForm = ({ data, id }) => {
@@ -15,7 +16,7 @@ const DrivingLicenseForm = ({ data, id }) => {
         licenseNumber: driverInfo.licenseNumber,
         name: driverInfo?.name,
         dob: driverInfo?.dob,
-        address: driverInfo?.address,
+        address: driverInfo?.driverAddress,
         validTo: driverInfo?.drivingLicenseValidUpto,
         gender: driverInfo?.gender,
         licenseCategory: driverInfo?.drivingLicenseCategory,
@@ -24,10 +25,11 @@ const DrivingLicenseForm = ({ data, id }) => {
         DL: driverInfo?.drivingLicense, // image upload
         // RC Details
         vehicleNumber: driverInfo.vehicleNumber,
-        fuelType: driverInfo?.fuelType,
+        fuelType: driverInfo?.vehicleFuelType,
         makerModel: driverInfo?.vehicleMakerModel,
         vehicleType: driverInfo?.vehicleType,
-        RC: driverInfo?.registrationCertificate
+        RC: driverInfo?.registrationCertificate,
+        status: driverInfo?.status
     });
 
     const [preview, setPreview] = useState(null); // Preview for image
@@ -68,8 +70,9 @@ const DrivingLicenseForm = ({ data, id }) => {
             }
 
             const result = await response.json();
+
             console.log('Success:', result);
-            setSubmitStatus({ type: 'success', message: 'Form submitted successfully!' });
+            setSubmitStatus({ type: result.success ? 'success' : 'error', message: result.message });
         } catch (error) {
             console.error('Error:', error);
             setSubmitStatus({ type: 'error', message: 'An error occurred while submitting the form. Please try again.' });
@@ -89,7 +92,23 @@ const DrivingLicenseForm = ({ data, id }) => {
         }
     };
 
+    function convertDateFormat(dateStr) {
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+        if (regex.test(dateStr)) {
+            return dateStr;
+        } else {
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                const [day, month, year] = parts;
+                return `${year}-${month}-${day}`;
+            }
+        }
+        return null;
+    }
+
     return (
+
         <div className="max-h-[80vh] overflow-auto px-2 pr-4">
             <form onSubmit={handleSubmit}>
                 <div className="grid grid-cols-2 gap-6 py-4">
@@ -111,7 +130,7 @@ const DrivingLicenseForm = ({ data, id }) => {
                                 id="dob"
                                 name="dob"
                                 type="date"
-                                value={formData.dob}
+                                value={convertDateFormat(formData.dob)}
                                 onChange={handleInputChange}
                                 className="col-span-2"
                             />
@@ -136,7 +155,7 @@ const DrivingLicenseForm = ({ data, id }) => {
                                 id="validTo"
                                 name="validTo"
                                 type="date"
-                                value={formData.validTo}
+                                value={convertDateFormat(formData.validTo)}
                                 onChange={handleInputChange}
                                 className="col-span-2"
                             />
@@ -162,10 +181,9 @@ const DrivingLicenseForm = ({ data, id }) => {
                             <Select
                                 name="licenseCategory"
                                 onValueChange={(value) => handleSelectChange('licenseCategory', value)}
-                                defaultValue={formData.licenseCategory}
                             >
                                 <SelectTrigger className="col-span-2">
-                                    <SelectValue placeholder="Select Category" />
+                                    <SelectValue placeholder={formData?.licenseCategory} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="LMV">LMV</SelectItem>
@@ -225,10 +243,9 @@ const DrivingLicenseForm = ({ data, id }) => {
                             <Select
                                 name="fuelType"
                                 onValueChange={(value) => handleSelectChange('fuelType', value)}
-                                defaultValue={formData.fuelType}
                             >
                                 <SelectTrigger className="col-span-2">
-                                    <SelectValue placeholder="Select Type" />
+                                    <SelectValue placeholder={formData?.fuelType} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="petrol">Petrol</SelectItem>
@@ -253,14 +270,15 @@ const DrivingLicenseForm = ({ data, id }) => {
                             <Select
                                 name="vehicleType"
                                 onValueChange={(value) => handleSelectChange('vehicleType', value)}
-                                defaultValue={formData.vehicleType}
+
                             >
                                 <SelectTrigger className="col-span-2">
-                                    <SelectValue placeholder="Select Type" />
+                                    <SelectValue placeholder={formData?.vehicleType} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="LMV">LMV</SelectItem>
                                     <SelectItem value="HMV">HMV</SelectItem>
+                                    <SelectItem value="Auto">Auto</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -276,6 +294,27 @@ const DrivingLicenseForm = ({ data, id }) => {
                             />
                             {formData.RC && <p className="col-span-2 text-sm">{formData.RC}</p>} {/* Display file name */}
                         </div>
+                        <div>
+                            <h3 className="text-lg font-semibold">STATUS</h3>
+                            <Label htmlFor="status" className="text-right">Status</Label>
+                            <Select
+                                name="status"
+                                onValueChange={(value) => handleSelectChange('status', value)}
+
+                            >
+                                <SelectTrigger className="col-span-2">
+                                    <SelectValue placeholder={formData?.status} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="AVAILABLE">AVAILABLE</SelectItem>
+                                    <SelectItem value="ON_TRIP">ON_TRIP</SelectItem>
+                                    <SelectItem value="LOW_BALANCE">LOW_BALANCE</SelectItem>
+                                    <SelectItem value="OFFLINE">OFFLINE</SelectItem>
+                                    <SelectItem value="ACCEPTED">ACCEPTED</SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                        </div>
                     </div>
                 </div>
 
@@ -283,19 +322,19 @@ const DrivingLicenseForm = ({ data, id }) => {
                     <Button type="submit" disabled={isSubmitting}>
                         {isSubmitting ? 'Submitting...' : 'Submit'}
                     </Button>
-                    <Button type="reset" variant="outline">
-                        Reset
-                    </Button>
                 </DialogFooter>
             </form>
 
             {submitStatus && (
-                <Alert variant={submitStatus.type === 'success' ? 'success' : 'destructive'}>
-                    <AlertDescription>
-                        {submitStatus.message}
-                    </AlertDescription>
-                </Alert>
+                alert(`${submitStatus.message}`)
+
+                // <Alert variant={submitStatus.type === 'success' ? 'success' : 'destructive'}>
+                //     <AlertDescription>
+                //         {submitStatus.message}
+                //     </AlertDescription>
+                // </Alert>
             )}
+            {submitStatus?.type === 'success' && window.location.reload()}
         </div>
     );
 };
