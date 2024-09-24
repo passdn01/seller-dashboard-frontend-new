@@ -73,6 +73,10 @@ const DrivingLicenseForm = ({ data, id }) => {
 
             console.log('Success:', result);
             setSubmitStatus({ type: result.success ? 'success' : 'error', message: result.message });
+            if (result.success) {
+                window.location.reload();
+                alert(result.message)
+            }
         } catch (error) {
             console.error('Error:', error);
             setSubmitStatus({ type: 'error', message: 'An error occurred while submitting the form. Please try again.' });
@@ -325,7 +329,7 @@ const DrivingLicenseForm = ({ data, id }) => {
                 </DialogFooter>
             </form>
 
-            {submitStatus && (
+            {submitStatus?.type === 'error' && (
                 alert(`${submitStatus.message}`)
 
                 // <Alert variant={submitStatus.type === 'success' ? 'success' : 'destructive'}>
@@ -334,7 +338,7 @@ const DrivingLicenseForm = ({ data, id }) => {
                 //     </AlertDescription>
                 // </Alert>
             )}
-            {submitStatus?.type === 'success' && window.location.reload()}
+
         </div>
     );
 };
