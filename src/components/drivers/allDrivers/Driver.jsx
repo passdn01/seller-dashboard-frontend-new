@@ -18,6 +18,15 @@ import DriverRC from './DriverRC';
 import Performance from './Performance.jsx'
 import Subscription from './Subscription';
 import Header from './Header';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import DrivingLicenseForm from './DrivingLicenseForm';
 function Driver() {
     const { id } = useParams();
     const [data, setData] = useState({});
@@ -77,9 +86,14 @@ function Driver() {
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
-                        <div className='mr-4'>
-                            Edit
-                        </div>
+                        <Dialog>
+                            <DialogTrigger className='pr-4'>
+                                <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Edit</span>
+                            </DialogTrigger>
+                            <DialogContent className="">
+                                <DrivingLicenseForm data={data} id={id}></DrivingLicenseForm>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                     <div>
                         <div>
