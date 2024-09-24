@@ -18,6 +18,14 @@ import DriverRC from './DriverRC';
 import Performance from './Performance.jsx'
 import Subscription from './Subscription';
 import Header from './Header';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import DrivingLicenseForm from './DrivingLicenseForm';
 function Driver() {
     const { id } = useParams();
@@ -27,7 +35,7 @@ function Driver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`https://55kqzrxn-2011.inc1.devtunnels.ms/dashboard/api/${id}`)
+        axios.get(`https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -78,9 +86,14 @@ function Driver() {
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
-                        <div className='mr-4'>
-                            Edit
-                        </div>
+                        <Dialog>
+                            <DialogTrigger className='pr-4'>
+                                <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Edit</span>
+                            </DialogTrigger>
+                            <DialogContent className="">
+                                <DrivingLicenseForm data={data} id={id}></DrivingLicenseForm>
+                            </DialogContent>
+                        </Dialog>
                     </div>
                     <div>
                         <div>

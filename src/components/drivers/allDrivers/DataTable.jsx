@@ -49,9 +49,9 @@ const columns = [
         enableSorting: false,
     },
     {
-        accessorKey: "_id",
-        header: "Driver ID",
-        cell: ({ row }) => <div>{row.original._id}</div>,
+        accessorKey: "phone",
+        header: "Driver Phone",
+        cell: ({ row }) => <div>{row.getValue("phone")}</div>,
     },
     {
         accessorKey: "name",
@@ -94,9 +94,9 @@ const columns = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(driver._id)}
+                            onClick={() => navigator.clipboard.writeText(driver.phone)}
                         >
-                            Copy Driver ID
+                            Copy Driver Phone
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => navigate(`/drivers/allDrivers/${driver._id}`)}>
@@ -118,7 +118,7 @@ export default function DriverTable() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("all");
-
+    const [globalFilter, setGlobalFilter] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -152,7 +152,6 @@ export default function DriverTable() {
         }
     }, []);
 
-
     const table = useReactTable({
         data,
         columns,
@@ -169,7 +168,9 @@ export default function DriverTable() {
             columnFilters,
             columnVisibility,
             rowSelection,
+            globalFilter,
         },
+        onGlobalFilterChange: setGlobalFilter,
     });
 
     useEffect(() => {
@@ -195,11 +196,9 @@ export default function DriverTable() {
         <div className="w-[80%] mx-24">
             <div className="flex items-center py-4">
                 <Input
-                    placeholder="Filter names..."
-                    value={table.getColumn("name")?.getFilterValue() || ""}
-                    onChange={(event) =>
-                        table.getColumn("name")?.setFilterValue(event.target.value)
-                    }
+                    placeholder="Search all columns..."
+                    value={globalFilter ?? ""}
+                    onChange={(event) => setGlobalFilter(event.target.value)}
                     className="max-w-sm mr-4"
                 />
                 <Select onValueChange={setStatusFilter} value={statusFilter}>

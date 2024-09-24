@@ -29,7 +29,7 @@ function Subscription({ data }) {
 
                     <CardDescription>
                         <img src={subscriptionpay} alt="" className='w-6 h-6' /> <span className='text-[1rem]'>Total Subscription Pay</span></CardDescription>
-                    <span className='font-bold text-xl text-left'>{dates?.length || 0 * 20}</span>
+                    <span className='font-bold text-xl text-left'>{(dates?.length || 0) * 20}</span>
                 </Card>
                 <Card className='p-6 m-4 min-w-[600px'>
 

@@ -31,7 +31,7 @@ const DriverLicense = ({ data }) => {
                 <div className="mt-4 space-x-2">
                     <Button variant="outline" size="sm"><Dialog>
                         <DialogTrigger>Driving License Image</DialogTrigger>
-                        <DialogContent>
+                        <DialogContent className='max-h-[80vh] overflow-auto'>
                             <img src={driverInfo?.drivingLicense} alt="NOT AVAILABLE" />
                         </DialogContent>
                     </Dialog>

@@ -1,39 +1,38 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
+import { DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea";
 
-const DrivingLicenseForm = () => {
+const DrivingLicenseForm = ({ data, id }) => {
+    const { driverInfo } = data;
     const [formData, setFormData] = useState({
+        id: id,
         // Driving License Details
-        licenseNumber: '',
-        name: '',
-        dob: '',
-        bloodGroup: '',
-        validFrom: '',
-        validTo: '',
-        issueDate: '',
-        issuingAuthority: '',
-        lastEndorsed: '',
-        bioMetricId: '',
+        licenseNumber: driverInfo.licenseNumber,
+        name: driverInfo?.name,
+        dob: driverInfo?.dob,
+        address: driverInfo?.driverAddress,
+        validTo: driverInfo?.drivingLicenseValidUpto,
+        gender: driverInfo?.gender,
+        licenseCategory: driverInfo?.drivingLicenseCategory,
+        upiId: driverInfo?.upiID,
+        balance: driverInfo?.balance,
+        DL: driverInfo?.drivingLicense, // image upload
         // RC Details
-        rcNumber: '',
-        registeredDate: '',
-        vehicleNumber: '',
-        vehicleClass: '',
-        fuelType: '',
-        makerModel: '',
-        engineNumber: '',
-        chassisNumber: '',
-        insuranceUpto: '',
-        fitnessUpto: '',
-        pucUpto: '',
+        vehicleNumber: driverInfo.vehicleNumber,
+        fuelType: driverInfo?.vehicleFuelType,
+        makerModel: driverInfo?.vehicleMakerModel,
+        vehicleType: driverInfo?.vehicleType,
+        RC: driverInfo?.registrationCertificate,
+        status: driverInfo?.status
     });
 
+    const [preview, setPreview] = useState(null); // Preview for image
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null);
 
@@ -58,12 +57,10 @@ const DrivingLicenseForm = () => {
         setSubmitStatus(null);
 
         try {
-            const response = await fetch('https://your-api-endpoint.com/driving-license-rc', {
+            const response = await fetch(`https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/${id}/edit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    // Add any other headers your API requires, e.g., authorization
-                    // 'Authorization': `Bearer ${yourAuthToken}`,
                 },
                 body: JSON.stringify(formData),
             });
@@ -73,8 +70,13 @@ const DrivingLicenseForm = () => {
             }
 
             const result = await response.json();
+
             console.log('Success:', result);
-            setSubmitStatus({ type: 'success', message: 'Form submitted successfully!' });
+            setSubmitStatus({ type: result.success ? 'success' : 'error', message: result.message });
+            if (result.success) {
+                window.location.reload();
+                alert(result.message)
+            }
         } catch (error) {
             console.error('Error:', error);
             setSubmitStatus({ type: 'error', message: 'An error occurred while submitting the form. Please try again.' });
@@ -83,280 +85,264 @@ const DrivingLicenseForm = () => {
         }
     };
 
-    return (
-        <Dialog>
-            <DialogTrigger asChild>
-                <Button variant="outline">Edit Profile</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[900px]">
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setPreview(URL.createObjectURL(file));
+            setFormData(prevState => ({
+                ...prevState,
+                DL: file.name // Set the file name
+            }));
+        }
+    };
 
-                <form onSubmit={handleSubmit}>
-                    <DialogHeader>
-                        <DialogTitle>Driving License and RC Details</DialogTitle>
-                    </DialogHeader>
-                    <div className="grid grid-cols-2 gap-6 py-4">
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold">Driving License Details</h3>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="licenseNumber" className="text-right">License Number</Label>
-                                <Input
-                                    id="licenseNumber"
-                                    name="licenseNumber"
-                                    value={formData.licenseNumber}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="name" className="text-right">Name</Label>
-                                <Input
-                                    id="name"
-                                    name="name"
-                                    value={formData.name}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="dob" className="text-right">DOB</Label>
-                                <Input
-                                    id="dob"
-                                    name="dob"
-                                    type="date"
-                                    value={formData.dob}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="bloodGroup" className="text-right">Blood Group</Label>
-                                <Select
-                                    name="bloodGroup"
-                                    onValueChange={(value) => handleSelectChange('bloodGroup', value)}
-                                    defaultValue={formData.bloodGroup}
-                                >
-                                    <SelectTrigger className="col-span-2">
-                                        <SelectValue placeholder="Select blood group" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="A+">A+</SelectItem>
-                                        <SelectItem value="A-">A-</SelectItem>
-                                        <SelectItem value="B+">B+</SelectItem>
-                                        <SelectItem value="B-">B-</SelectItem>
-                                        <SelectItem value="AB+">AB+</SelectItem>
-                                        <SelectItem value="AB-">AB-</SelectItem>
-                                        <SelectItem value="O+">O+</SelectItem>
-                                        <SelectItem value="O-">O-</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="validFrom" className="text-right">Valid From</Label>
-                                <Input
-                                    id="validFrom"
-                                    name="validFrom"
-                                    type="date"
-                                    value={formData.validFrom}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="validTo" className="text-right">Valid To</Label>
-                                <Input
-                                    id="validTo"
-                                    name="validTo"
-                                    type="date"
-                                    value={formData.validTo}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="issueDate" className="text-right">Issue Date</Label>
-                                <Input
-                                    id="issueDate"
-                                    name="issueDate"
-                                    type="date"
-                                    value={formData.issueDate}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="issuingAuthority" className="text-right">Issuing Authority</Label>
-                                <Input
-                                    id="issuingAuthority"
-                                    name="issuingAuthority"
-                                    value={formData.issuingAuthority}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="lastEndorsed" className="text-right">Last Endorsed</Label>
-                                <Input
-                                    id="lastEndorsed"
-                                    name="lastEndorsed"
-                                    type="date"
-                                    value={formData.lastEndorsed}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="bioMetricId" className="text-right">Bio-Metric ID</Label>
-                                <Input
-                                    id="bioMetricId"
-                                    name="bioMetricId"
-                                    value={formData.bioMetricId}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
+    function convertDateFormat(dateStr) {
+        const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+        if (regex.test(dateStr)) {
+            return dateStr;
+        } else {
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                const [day, month, year] = parts;
+                return `${year}-${month}-${day}`;
+            }
+        }
+        return null;
+    }
+
+    return (
+
+        <div className="max-h-[80vh] overflow-auto px-2 pr-4">
+            <form onSubmit={handleSubmit}>
+                <div className="grid grid-cols-2 gap-6 py-4">
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">Driving License Details</h3>
+                        <div className="">
+                            <Label htmlFor="licenseNumber" className="">License Number</Label> <br />
+                            <Input
+                                id="licenseNumber"
+                                name="licenseNumber"
+                                value={formData.licenseNumber}
+                                onChange={handleInputChange}
+                                className="col-span-2"
+                            />
                         </div>
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold">RC Details</h3>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="rcNumber" className="text-right">RC Number</Label>
-                                <Input
-                                    id="rcNumber"
-                                    name="rcNumber"
-                                    value={formData.rcNumber}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="registeredDate" className="text-right">Registered Date</Label>
-                                <Input
-                                    id="registeredDate"
-                                    name="registeredDate"
-                                    type="date"
-                                    value={formData.registeredDate}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="vehicleNumber" className="text-right">Vehicle Number</Label>
-                                <Input
-                                    id="vehicleNumber"
-                                    name="vehicleNumber"
-                                    value={formData.vehicleNumber}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="vehicleClass" className="text-right">Vehicle Class</Label>
-                                <Input
-                                    id="vehicleClass"
-                                    name="vehicleClass"
-                                    value={formData.vehicleClass}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="fuelType" className="text-right">Fuel Type</Label>
-                                <Select
-                                    name="fuelType"
-                                    onValueChange={(value) => handleSelectChange('fuelType', value)}
-                                    defaultValue={formData.fuelType}
-                                >
-                                    <SelectTrigger className="col-span-2">
-                                        <SelectValue placeholder="Select fuel type" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Petrol">Petrol</SelectItem>
-                                        <SelectItem value="Diesel">Diesel</SelectItem>
-                                        <SelectItem value="Electric">Electric</SelectItem>
-                                        <SelectItem value="Hybrid">Hybrid</SelectItem>
-                                        <SelectItem value="CNG">CNG</SelectItem>
-                                        <SelectItem value="LPG">LPG</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="makerModel" className="text-right">Maker Model</Label>
-                                <Input
-                                    id="makerModel"
-                                    name="makerModel"
-                                    value={formData.makerModel}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="engineNumber" className="text-right">Engine Number</Label>
-                                <Input
-                                    id="engineNumber"
-                                    name="engineNumber"
-                                    value={formData.engineNumber}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="chassisNumber" className="text-right">Chassis Number</Label>
-                                <Input
-                                    id="chassisNumber"
-                                    name="chassisNumber"
-                                    value={formData.chassisNumber}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="insuranceUpto" className="text-right">Insurance Upto</Label>
-                                <Input
-                                    id="insuranceUpto"
-                                    name="insuranceUpto"
-                                    type="date"
-                                    value={formData.insuranceUpto}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="fitnessUpto" className="text-right">Fitness Upto</Label>
-                                <Input
-                                    id="fitnessUpto"
-                                    name="fitnessUpto"
-                                    type="date"
-                                    value={formData.fitnessUpto}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
-                            <div className="grid grid-cols-3 items-center gap-4">
-                                <Label htmlFor="pucUpto" className="text-right">PUC Upto</Label>
-                                <Input
-                                    id="pucUpto"
-                                    name="pucUpto"
-                                    type="date"
-                                    value={formData.pucUpto}
-                                    onChange={handleInputChange}
-                                    className="col-span-2"
-                                />
-                            </div>
+                        <div className="">
+                            <Label htmlFor="dob" className="text-right">DOB</Label>
+                            <Input
+                                id="dob"
+                                name="dob"
+                                type="date"
+                                value={convertDateFormat(formData.dob)}
+                                onChange={handleInputChange}
+                                className="col-span-2"
+                            />
+                        </div>
+                        <div className="">
+                            <Label htmlFor="name" className="text-right">Name</Label>
+                            <Input
+                                id="name"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                className="col-span-2"
+                            />
+                        </div>
+                        <div>
+                            <Label className="text-right">Address</Label>
+                            <Textarea id="address" name="address" value={formData.address} onChange={handleInputChange} className="col-span-2" />
+                        </div>
+                        <div className="">
+                            <Label htmlFor="validTo" className="text-right">Valid To</Label>
+                            <Input
+                                id="validTo"
+                                name="validTo"
+                                type="date"
+                                value={convertDateFormat(formData.validTo)}
+                                onChange={handleInputChange}
+                                className="col-span-2"
+                            />
+                        </div>
+                        <div className="">
+                            <Label htmlFor="gender" className="text-right">Gender</Label>
+                            <Select
+                                name="gender"
+                                onValueChange={(value) => handleSelectChange('gender', value)}
+                                defaultValue={formData.gender}
+                            >
+                                <SelectTrigger className="col-span-2">
+                                    <SelectValue placeholder="Select Gender" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Male">Male</SelectItem>
+                                    <SelectItem value="Female">Female</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="">
+                            <Label htmlFor="licenseCategory" className="text-right">License Category</Label>
+                            <Select
+                                name="licenseCategory"
+                                onValueChange={(value) => handleSelectChange('licenseCategory', value)}
+                            >
+                                <SelectTrigger className="col-span-2">
+                                    <SelectValue placeholder={formData?.licenseCategory} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="LMV">LMV</SelectItem>
+                                    <SelectItem value="LMV TT">LMV TT</SelectItem>
+                                    <SelectItem value="HGMV">HGMV</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="">
+                            <Label htmlFor="upiId" className="text-right">UPI ID</Label>
+                            <Input
+                                id="upiId"
+                                name="upiId"
+                                value={formData.upiId}
+                                onChange={handleInputChange}
+                                className="col-span-2"
+                            />
+                        </div>
+                        <div className="">
+                            <Label htmlFor="balance" className="text-right">Balance</Label>
+                            <Input
+                                id="balance"
+                                name="balance"
+                                value={formData.balance}
+                                onChange={handleInputChange}
+                                className="col-span-2"
+                            />
+                        </div>
+                        <div className="">
+                            <Label htmlFor="DL" className="text-right">Driving License (DL)</Label>
+                            <Input
+                                id="DL"
+                                name="DL"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="col-span-2"
+                            />
+                            {formData.DL && <p className="col-span-2 text-sm">{formData.DL}</p>} {/* Display file name */}
                         </div>
                     </div>
-                    <DialogFooter>
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? 'Submitting...' : 'Save changes'}
-                        </Button>
-                    </DialogFooter>
-                    {submitStatus && (
-                        <Alert className={`mt-4 ${submitStatus.type === 'success' ? 'bg-green-100' : 'bg-red-100'}`}>
-                            <AlertDescription>{submitStatus.message}</AlertDescription>
-                        </Alert>
-                    )}
-                </form>
-            </DialogContent>
-        </Dialog>
+
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-semibold">RC Details</h3>
+                        <div className="">
+                            <Label htmlFor="vehicleNumber" className="text-right">Vehicle Number</Label>
+                            <Input
+                                id="vehicleNumber"
+                                name="vehicleNumber"
+                                value={formData.vehicleNumber}
+                                onChange={handleInputChange}
+                                className="col-span-2"
+                            />
+                        </div>
+                        <div className="">
+                            <Label htmlFor="fuelType" className="text-right">Fuel Type</Label>
+                            <Select
+                                name="fuelType"
+                                onValueChange={(value) => handleSelectChange('fuelType', value)}
+                            >
+                                <SelectTrigger className="col-span-2">
+                                    <SelectValue placeholder={formData?.fuelType} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="petrol">Petrol</SelectItem>
+                                    <SelectItem value="diesel">Diesel</SelectItem>
+                                    <SelectItem value="CNG">CNG</SelectItem>
+                                    <SelectItem value="electrical">Electrical</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="">
+                            <Label htmlFor="makerModel" className="text-right">Maker Model</Label>
+                            <Input
+                                id="makerModel"
+                                name="makerModel"
+                                value={formData.makerModel}
+                                onChange={handleInputChange}
+                                className="col-span-2"
+                            />
+                        </div>
+                        <div className="">
+                            <Label htmlFor="vehicleType" className="text-right">Vehicle Type</Label>
+                            <Select
+                                name="vehicleType"
+                                onValueChange={(value) => handleSelectChange('vehicleType', value)}
+
+                            >
+                                <SelectTrigger className="col-span-2">
+                                    <SelectValue placeholder={formData?.vehicleType} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="LMV">LMV</SelectItem>
+                                    <SelectItem value="HMV">HMV</SelectItem>
+                                    <SelectItem value="Auto">Auto</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="">
+                            <Label htmlFor="RC" className="text-right">RC (Registration Certificate)</Label>
+                            <Input
+                                id="RC"
+                                name="RC"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageChange}
+                                className="col-span-2"
+                            />
+                            {formData.RC && <p className="col-span-2 text-sm">{formData.RC}</p>} {/* Display file name */}
+                        </div>
+                        <div>
+                            <h3 className="text-lg font-semibold">STATUS</h3>
+                            <Label htmlFor="status" className="text-right">Status</Label>
+                            <Select
+                                name="status"
+                                onValueChange={(value) => handleSelectChange('status', value)}
+
+                            >
+                                <SelectTrigger className="col-span-2">
+                                    <SelectValue placeholder={formData?.status} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="AVAILABLE">AVAILABLE</SelectItem>
+                                    <SelectItem value="ON_TRIP">ON_TRIP</SelectItem>
+                                    <SelectItem value="LOW_BALANCE">LOW_BALANCE</SelectItem>
+                                    <SelectItem value="OFFLINE">OFFLINE</SelectItem>
+                                    <SelectItem value="ACCEPTED">ACCEPTED</SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                        </div>
+                    </div>
+                </div>
+
+                <DialogFooter className="space-x-2">
+                    <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? 'Submitting...' : 'Submit'}
+                    </Button>
+                </DialogFooter>
+            </form>
+
+            {submitStatus?.type === 'error' && (
+                alert(`${submitStatus.message}`)
+
+                // <Alert variant={submitStatus.type === 'success' ? 'success' : 'destructive'}>
+                //     <AlertDescription>
+                //         {submitStatus.message}
+                //     </AlertDescription>
+                // </Alert>
+            )}
+
+        </div>
     );
 };
 
 export default DrivingLicenseForm;
+
+
