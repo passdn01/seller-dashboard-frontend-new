@@ -14,7 +14,7 @@ const DriverChart = () => {
     useEffect(() => {
         const fetchRides = async () => {
             try {
-                const response = await axios.post('https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/rides-by-driver', { driverId });
+                const response = await axios.post('https://bhk8mp0s-2003.inc1.devtunnels.ms/dashboard/api/rides-by-driver', { driverId });
                 const { data } = response.data;
 
                 setWeeks(data);

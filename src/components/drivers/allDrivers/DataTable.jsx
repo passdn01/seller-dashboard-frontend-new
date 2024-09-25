@@ -124,7 +124,9 @@ export default function DriverTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/allDrivers');
+                const response = await axios.get('https://bhk8mp0s-2003.inc1.devtunnels.ms/dashboard/api/allDrivers', {
+                    withCredentials: true
+                });
                 if (response.data.success) {
                     setData(response.data.data);
                     sessionStorage.setItem('myData', JSON.stringify(response.data.data));

@@ -28,6 +28,7 @@ import QuizDashboardIcon from '../assets/NavIcons/QuizDashboard.svg';
 import TechCostIcon from '../assets/NavIcons/TechCost.svg';
 import WebsiteIcon from '../assets/NavIcons/Website.svg';
 import IssueSolverIcon from '../assets/NavIcons/IssueSolver.svg';
+import { useNavigate } from 'react-router-dom';
 
 import { Link } from 'react-router-dom'
 
@@ -36,7 +37,7 @@ function SideNavbar() {
         {
             id: "1",
             title: "Home",
-            link: "/",
+            link: "/home",
             submenu: false,
             icon: HomeIcon,
         },
@@ -243,14 +244,41 @@ function SideNavbar() {
             submenu: false,
             icon: LogsIcon,
         },
-        {
-            id: "15",
-            title: "Log out",
-            link: "/home",
-            submenu: false,
-            icon: LogoutIcon,
-        },
+        // {
+        //     id: "15",
+        //     title: "Log out",
+        //     link: "/home",
+        //     submenu: false,
+        //     icon: LogoutIcon,
+        // },
     ];
+
+    const navigate = useNavigate();
+    const handleLogout = async () => {
+        try {
+            console.log("logout called.")
+            const response = await fetch('https://bhk8mp0s-2003.inc1.devtunnels.ms/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+
+            const data = await response.json();
+            if (data.success) {
+
+                document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
+
+
+                console.log(data.message);
+                window.location.href = '/';
+            } else {
+
+                console.error(data.message);
+            }
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
+
 
     return (
         <div className='fixed border-r min-w-[250px] z-50 min-h-screen bg-white h-full overflow-hidden'>
@@ -292,8 +320,18 @@ function SideNavbar() {
                                     </CommandItem>
                                 </Link>
                             )}
+
                         </div>
+
                     ))}
+                    <Link onClick={handleLogout}>
+                        <CommandItem className='flex items-center p-2 text-sm hover:bg-blue-100 rounded-md w-full cursor-pointer bg-white'>
+                            <img src={LogoutIcon} alt="" className="h-5 w-5 mr-3" />
+                            <span>Logout</span>
+                        </CommandItem>
+                    </Link>
+
+
                 </CommandList>
             </Command>
         </div>
