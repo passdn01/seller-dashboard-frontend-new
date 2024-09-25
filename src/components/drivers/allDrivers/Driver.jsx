@@ -35,7 +35,7 @@ function Driver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`https://bhk8mp0s-2011.inc1.devtunnels.ms/dashboard/api/${id}`)
+        axios.get(`https://bhk8mp0s-2003.inc1.devtunnels.ms/dashboard/api/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
