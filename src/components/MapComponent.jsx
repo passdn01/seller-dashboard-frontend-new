@@ -32,7 +32,7 @@ const MapComponent = ({ selectedDriver, onDriverSelect }) => {
   // Fetch online drivers
   useEffect(() => {
     axios
-      .get('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
+      .get('https://f6vfh6rc-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
       .then((response) => {
         const drivers = response.data.drivers.map((driver) => ({
           ...driver,
