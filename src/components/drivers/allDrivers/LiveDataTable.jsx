@@ -101,7 +101,7 @@ export default function LiveDriverTable() {
     const [categoryFilter, setCategoryFilter] = useState("all");
 
     useEffect(() => {
-        axios.get('https://bhk8mp0s-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
+        axios.get('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
             .then(response => {
                 console.log(response.data);
                 setData(response.data.drivers);
