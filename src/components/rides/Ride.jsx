@@ -30,7 +30,7 @@ import SideNavbar from '../SideNavbar';
 import Header from '../drivers/allDrivers/Header';
 
 function Ride() {
-    const { id } = useParams('ride');
+    const { id } = useParams();
     console.log(id);
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
