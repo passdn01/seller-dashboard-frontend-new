@@ -1,4 +1,3 @@
-import React from 'react'
 import Header from './Header'
 import SideNavbar from '../../../components/SideNavbar.jsx'
 import DataTable from './DataTable.jsx'

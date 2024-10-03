@@ -14,23 +14,23 @@ const DrivingLicenseForm = ({ data, id }) => {
     const [formData, setFormData] = useState({
         id: id,
         // Driving License Details
-        licenseNumber: driverInfo.licenseNumber,
-        name: driverInfo?.name,
-        dob: driverInfo?.dob,
-        address: driverInfo?.driverAddress,
-        validTo: driverInfo?.drivingLicenseValidUpto,
-        gender: driverInfo?.gender,
-        licenseCategory: driverInfo?.drivingLicenseCategory,
-        upiId: driverInfo?.upiID,
-        balance: driverInfo?.balance,
-        DL: driverInfo?.drivingLicense, // image upload
+        licenseNumber: driverInfo?.licenseNumber || '',  // Will not break if licenseNumber doesn't exist
+        name: driverInfo?.name || '',
+        dob: driverInfo?.dob || '',
+        address: driverInfo?.driverAddress || '',
+        validTo: driverInfo?.drivingLicenseValidUpto || '',
+        gender: driverInfo?.gender || '',
+        licenseCategory: driverInfo?.drivingLicenseCategory || '',
+        upiId: driverInfo?.upiID || '',
+        balance: driverInfo?.balance || 0,  // Default to 0 if balance is missing
+        // DL: driverInfo?.drivingLicense || '', // image upload
         // RC Details
-        vehicleNumber: driverInfo.vehicleNumber,
-        fuelType: driverInfo?.vehicleFuelType,
-        makerModel: driverInfo?.vehicleMakerModel,
-        vehicleType: driverInfo?.vehicleType,
-        RC: driverInfo?.registrationCertificate,
-        status: driverInfo?.status
+        vehicleNumber: driverInfo?.vehicleNumber || '',
+        fuelType: driverInfo?.vehicleFuelType || '',
+        makerModel: driverInfo?.vehicleMakerModel || '',
+        vehicleType: driverInfo?.vehicleType || '',
+        // RC: driverInfo?.registrationCertificate || '',
+        status: driverInfo?.status || '',
     });
 
     // const [preview, setPreview] = useState(null); // Preview for image
@@ -348,7 +348,7 @@ const DrivingLicenseForm = ({ data, id }) => {
 DrivingLicenseForm.propTypes = {
     data: PropTypes.shape({
         driverInfo: PropTypes.shape({
-            licenseNumber: PropTypes.string.isRequired,
+            licenseNumber: PropTypes.string,
             name: PropTypes.string,
             dob: PropTypes.string,
             driverAddress: PropTypes.string,
@@ -357,16 +357,16 @@ DrivingLicenseForm.propTypes = {
             drivingLicenseCategory: PropTypes.string,
             upiID: PropTypes.string,
             balance: PropTypes.number,
-            drivingLicense: PropTypes.string, // For image file names or paths
-            vehicleNumber: PropTypes.string.isRequired,
+            // drivingLicense: PropTypes.string, // For image file names or paths
+            vehicleNumber: PropTypes.string,
             vehicleFuelType: PropTypes.oneOf(['Petrol', 'Diesel', 'CNG']),
             vehicleMakerModel: PropTypes.string,
             vehicleType: PropTypes.oneOf(['Private', 'Commercial']),
-            registrationCertificate: PropTypes.string, // For image file names or paths
+            // registrationCertificate: PropTypes.string, // For image file names or paths
             status: PropTypes.string,
-        }).isRequired
-    }).isRequired,
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+        })
+    }),
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 };
 
 
