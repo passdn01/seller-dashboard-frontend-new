@@ -86,6 +86,7 @@ const columns = [
         enableHiding: false,
         cell: ({ row }) => {
             const ride = row.original;
+            console.log("ride",ride);
             const navigate = useNavigate();
 
             return (

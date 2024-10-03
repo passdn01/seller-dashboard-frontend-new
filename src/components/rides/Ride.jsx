@@ -30,7 +30,7 @@ import SideNavbar from '../SideNavbar';
 import Header from '../drivers/allDrivers/Header';
 
 function Ride() {
-    const { id } = useParams();
+    const { id } = useParams('ride');
     console.log(id);
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(true);
@@ -73,7 +73,7 @@ function Ride() {
                     <div className='p-4 my-4 justify-between flex'>
                         <Button variant='outline' className='shadow' onClick={() => {
 
-                            navigate('/allRides', { state: { fromBackButton: true } });
+                            navigate('/rides/allRides', { state: { fromBackButton: true } });
                         }}><img src={backArrow} alt="" /></Button>
                         <Button variant='outline' className='shadow text-blue-500' onClick={() => { return window.location.reload(); }}>REFRESH</Button>
                     </div>

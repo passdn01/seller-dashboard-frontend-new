@@ -126,7 +126,7 @@ const GeoMetrics = () => {
     };
 
     const fetchDriverLocations = () => {
-        axios.get('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
+        axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
             .then(response => {
                 const drivers = response.data.drivers.map(driver => {
                     const latitude = parseFloat(driver.driverLiveLocation.latitude);

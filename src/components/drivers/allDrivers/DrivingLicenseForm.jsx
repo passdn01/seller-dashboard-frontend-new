@@ -281,9 +281,10 @@ const DrivingLicenseForm = ({ data, id }) => {
                                     <SelectValue placeholder={formData?.vehicleType} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="LMV">LMV</SelectItem>
-                                    <SelectItem value="HMV">HMV</SelectItem>
-                                    <SelectItem value="Auto">Auto</SelectItem>
+                                    <SelectItem value="AUTO">AUTO</SelectItem>
+                                    <SelectItem value="HATCHBACK">HATCHBACK</SelectItem>
+                                    <SelectItem value="SEDAN">SEDAN</SelectItem>
+                                    <SelectItem value="SUV">SUV</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
