@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 import {
     flexRender,
@@ -9,16 +10,19 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
-import { Button } from "../../ui/button";
+import { Button } from "../ui/button";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
-import { Input } from "../../ui/input";
+} from "../ui/dropdown-menu";
+import { Input } from "../ui/input";
 import {
     Table,
     TableBody,
@@ -26,8 +30,14 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "../../ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+} from "../ui/table";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../ui/select";
 
 // Columns configuration
 const columns = [
@@ -39,12 +49,22 @@ const columns = [
         enableSorting: false,
     },
     {
-        accessorKey: "driverId",
-        header: "Driver ID",
-        cell: ({ row }) => <div>{row.original.driverId}</div>,
+        accessorKey: "_id",
+        header: "Ride Id",
+        cell: ({ row }) => <div>{row.getValue("_id")}</div>,
     },
     {
-        accessorKey: "driverName",
+        accessorKey: "createdAt",
+        header: "Date and Time",
+        cell: ({ row }) => <div>{row.getValue("createdAt")}</div>,
+    },
+    {
+        accessorKey: "fare",
+        header: "Fare",
+        cell: ({ row }) => <div>{row.getValue("fare")}</div>,
+    },
+    {
+        accessorKey: "name",
         header: ({ column }) => (
             <Button
                 variant="ghost"
@@ -54,68 +74,98 @@ const columns = [
                 <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
-        cell: ({ row }) => <div>{row.getValue("driverName")}</div>,
+        cell: ({ row }) => <div>{row.getValue("name")}</div>,
     },
     {
-        accessorKey: "phone",
-        header: "Phone",
-        cell: ({ row }) => <div>{row.getValue("phone")}</div>,
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => <div>{row.getValue("status")}</div>,
     },
     {
-        accessorKey: "category",
-        header: "Category",
-        cell: ({ row }) => <div>{row.getValue("category")}</div>,
-    },
-    {
-        accessorKey: "driverLiveLocation.latitude",
-        header: "Latitude",
-        cell: ({ row }) => <div>{row.original.driverLiveLocation.latitude}</div>,
-    },
-    {
-        accessorKey: "driverLiveLocation.longitude",
-        header: "Longitude",
-        cell: ({ row }) => <div>{row.original.driverLiveLocation.longitude}</div>,
-    },
-    {
-        accessorKey: "drivingLicense",
-        header: "Driving License",
-        cell: ({ row }) => (
-            <a
-                href={row.getValue("drivingLicense")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500"
-            >
-                Driving License
-            </a>
-        ),
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => {
+            const ride = row.original;
+            console.log("ride",ride);
+            const navigate = useNavigate();
+
+            return (
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        {/* <DropdownMenuItem
+                            onClick={() => navigator.clipboard.writeText(.phone)}
+                        >
+                            Copy Driver Phone
+                        </DropdownMenuItem> */}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => navigate(`/rides/allRides/${ride._id}`)}>
+                            View Ride Details
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            );
+        },
     },
 ];
 
-export default function LiveDriverTable() {
+export default function RideTable() {
     const [sorting, setSorting] = useState([]);
-    const [columnFilters, setColumnFilters] = useState([]);
+    const [rideColumnFilters, setRideColumnFilters] = useState([]);
     const [columnVisibility, setColumnVisibility] = useState({});
     const [rowSelection, setRowSelection] = useState({});
     const [data, setData] = useState([]);
-    const [categoryFilter, setCategoryFilter] = useState("all");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [globalFilter, setGlobalFilter] = useState("");
 
     useEffect(() => {
-        axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
-            .then(response => {
-                console.log(response.data);
-                setData(response.data.drivers);
-            })
-            .catch(error => {
-                console.error('Error fetching driver locations:', error);
-            });
+        const fetchData = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allRides', {
+                    // withCredentials: true
+                });
+                console.log(response.data.data);
+                if (response.data.success) {
+                    setData(response.data.data);
+                    sessionStorage.setItem('myRideData', JSON.stringify(response.data.data));
+                    sessionStorage.setItem('lastFetchTime', Date.now().toString());
+                } else {
+                    throw new Error(response.data.message || 'Failed to fetch data');
+                }
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        const storedData = sessionStorage.getItem('myRideData');
+        const lastFetchTime = sessionStorage.getItem('lastFetchTime');
+        const currentTime = Date.now();
+        const timeSinceLastFetch = currentTime - (lastFetchTime ? parseInt(lastFetchTime) : 0);
+
+        if (storedData && timeSinceLastFetch < 60000) { // 60000 ms = 1 minute
+            setData(JSON.parse(storedData));
+            setLoading(false);
+        } else {
+            fetchData();
+        }
     }, []);
 
     const table = useReactTable({
         data,
         columns,
         onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
+        onrideColumnFiltersChange: setRideColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -124,42 +174,51 @@ export default function LiveDriverTable() {
         onRowSelectionChange: setRowSelection,
         state: {
             sorting,
-            columnFilters,
+            rideColumnFilters,
             columnVisibility,
             rowSelection,
+            globalFilter,
         },
+        onGlobalFilterChange: setGlobalFilter,
     });
 
     useEffect(() => {
-        if (categoryFilter && categoryFilter !== "all") {
-            table.getColumn("category")?.setFilterValue(categoryFilter);
+        if (statusFilter && statusFilter !== "all") {
+            table.getColumn("status")?.setFilterValue(statusFilter);
         } else {
-            table.getColumn("category")?.setFilterValue("");
+            table.getColumn("status")?.setFilterValue("");
         }
-    }, [categoryFilter, table]);
+    }, [statusFilter, table]);
 
-    const categoryOptions = [...new Set(data.map(item => item.category))];
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
+    // Get unique status values for the filter
+    const statusOptions = [...new Set(data.map(item => item.status))];
 
     return (
-        <div className="w-[95%] mx-5 mt-2">
+        <div className="w-[80%] mx-24">
             <div className="flex items-center py-4">
                 <Input
-                    placeholder="Filter names..."
-                    value={table.getColumn("driverName")?.getFilterValue() || ""}
-                    onChange={(event) =>
-                        table.getColumn("driverName")?.setFilterValue(event.target.value)
-                    }
+                    placeholder="Search all columns..."
+                    value={globalFilter ?? ""}
+                    onChange={(event) => setGlobalFilter(event.target.value)}
                     className="max-w-sm mr-4"
                 />
-                <Select onValueChange={setCategoryFilter} value={categoryFilter}>
+                <Select onValueChange={setStatusFilter} value={statusFilter}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">Category</SelectItem>
-                        {categoryOptions.map((category) => (
-                            <SelectItem key={category} value={category}>
-                                {category}
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        {statusOptions.map((status) => (
+                            <SelectItem key={status} value={status}>
+                                {status}
                             </SelectItem>
                         ))}
                     </SelectContent>
@@ -187,7 +246,7 @@ export default function LiveDriverTable() {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <div className="rounded-md border bg-white"> {/* Add bg-white class to make table background white */}
+            <div className="rounded-md border">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

@@ -64,6 +64,12 @@ function SideNavbar() {
         },
         {
             id: "3",
+            title: "Rides",
+            link: '/rides/AllRides',
+            icon: DriverIcon,
+        },
+        {
+            id: "4",
             title: "Agent",
             link: '',
             submenu: true,
@@ -84,28 +90,28 @@ function SideNavbar() {
             ]
         },
         {
-            id: "4",
+            id: "5",
             title: "Offer",
             link: "/home",
             submenu: false,
             icon: OfferIcon,
         },
         {
-            id: "5",
+            id: "6",
             title: "Tech Cost",
             link: "/home",
             submenu: false,
             icon: TechCostIcon,
         },
         {
-            id: "6",
+            id: "7",
             title: "Fare Price",
             link: "/home",
             submenu: false,
             icon: FarePriceIcon,
         },
         {
-            id: "7",
+            id: "8",
             title: "Website",
             link: '',
             submenu: true,
@@ -126,7 +132,7 @@ function SideNavbar() {
             ]
         },
         {
-            id: "8",
+            id: "9",
             title: "Finance Metrics",
             link: '',
             submenu: true,
@@ -147,7 +153,7 @@ function SideNavbar() {
             ]
         },
         {
-            id: "9",
+            id: "10",
             title: "Issue Solver",
             link: '',
             submenu: true,
@@ -168,7 +174,7 @@ function SideNavbar() {
             ]
         },
         {
-            id: "10",
+            id: "11",
             title: "Air Share",
             link: '',
             submenu: true,
@@ -189,7 +195,7 @@ function SideNavbar() {
             ]
         },
         {
-            id: "11",
+            id: "12",
             title: "Quiz Share",
             link: '',
             submenu: true,
@@ -210,7 +216,7 @@ function SideNavbar() {
             ]
         },
         {
-            id: "12",
+            id: "13",
             title: "Financial Services",
             link: '',
             submenu: true,
@@ -231,14 +237,14 @@ function SideNavbar() {
             ]
         },
         {
-            id: "13",
+            id: "14",
             title: "I AM Admin",
             link: "/home",
             submenu: false,
             icon: IAMAdminIcon,
         },
         {
-            id: "14",
+            id: "15",
             title: "Logs",
             link: "/home",
             submenu: false,

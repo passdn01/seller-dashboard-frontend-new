@@ -27,6 +27,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import DrivingLicenseForm from './DrivingLicenseForm';
+import UploadDocuments from './UploadDocuments';
 function Driver() {
     const { id } = useParams();
     const [data, setData] = useState({});
@@ -35,7 +36,7 @@ function Driver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get(`https://f6vfh6rc-2003.inc1.devtunnels.ms/dashboard/api/${id}`)
+        axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -90,8 +91,9 @@ function Driver() {
                             <DialogTrigger className='pr-4'>
                                 <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Edit</span>
                             </DialogTrigger>
-                            <DialogContent className="">
+                            <DialogContent className="mt-[10px] mb-[10px]">
                                 <DrivingLicenseForm data={data} id={id}></DrivingLicenseForm>
+                                <UploadDocuments id={id}></UploadDocuments>
                             </DialogContent>
                         </Dialog>
                     </div>

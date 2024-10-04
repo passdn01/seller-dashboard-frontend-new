@@ -1,38 +1,39 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useToast } from "@/hooks/use-toast"
+// import { Alert, AlertDescription } from "@/components/ui/alert";
+// import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea";
+import PropTypes from 'prop-types';
 
 const DrivingLicenseForm = ({ data, id }) => {
     const { driverInfo } = data;
     const [formData, setFormData] = useState({
         id: id,
         // Driving License Details
-        licenseNumber: driverInfo.licenseNumber,
-        name: driverInfo?.name,
-        dob: driverInfo?.dob,
-        address: driverInfo?.driverAddress,
-        validTo: driverInfo?.drivingLicenseValidUpto,
-        gender: driverInfo?.gender,
-        licenseCategory: driverInfo?.drivingLicenseCategory,
-        upiId: driverInfo?.upiID,
-        balance: driverInfo?.balance,
-        DL: driverInfo?.drivingLicense, // image upload
+        licenseNumber: driverInfo?.licenseNumber || '',  // Will not break if licenseNumber doesn't exist
+        name: driverInfo?.name || '',
+        dob: driverInfo?.dob || '',
+        address: driverInfo?.driverAddress || '',
+        validTo: driverInfo?.drivingLicenseValidUpto || '',
+        gender: driverInfo?.gender || '',
+        licenseCategory: driverInfo?.drivingLicenseCategory || '',
+        upiId: driverInfo?.upiID || '',
+        balance: driverInfo?.balance || 0,  // Default to 0 if balance is missing
+        // DL: driverInfo?.drivingLicense || '', // image upload
         // RC Details
-        vehicleNumber: driverInfo.vehicleNumber,
-        fuelType: driverInfo?.vehicleFuelType,
-        makerModel: driverInfo?.vehicleMakerModel,
-        vehicleType: driverInfo?.vehicleType,
-        RC: driverInfo?.registrationCertificate,
-        status: driverInfo?.status
+        vehicleNumber: driverInfo?.vehicleNumber || '',
+        fuelType: driverInfo?.vehicleFuelType || '',
+        makerModel: driverInfo?.vehicleMakerModel || '',
+        vehicleType: driverInfo?.vehicleType || '',
+        // RC: driverInfo?.registrationCertificate || '',
+        status: driverInfo?.status || '',
     });
 
-    const [preview, setPreview] = useState(null); // Preview for image
+    // const [preview, setPreview] = useState(null); // Preview for image
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState(null);
 
@@ -85,16 +86,16 @@ const DrivingLicenseForm = ({ data, id }) => {
         }
     };
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            setPreview(URL.createObjectURL(file));
-            setFormData(prevState => ({
-                ...prevState,
-                DL: file.name // Set the file name
-            }));
-        }
-    };
+    // const handleImageChange = (e) => {
+    //     const file = e.target.files[0];
+    //     if (file) {
+    //         setPreview(URL.createObjectURL(file));
+    //         setFormData(prevState => ({
+    //             ...prevState,
+    //             DL: file.name // Set the file name
+    //         }));
+    //     }
+    // };
 
     function convertDateFormat(dateStr) {
         const regex = /^\d{4}-\d{2}-\d{2}$/;
@@ -216,7 +217,7 @@ const DrivingLicenseForm = ({ data, id }) => {
                                 className="col-span-2"
                             />
                         </div>
-                        <div className="">
+                        {/* <div className="">
                             <Label htmlFor="DL" className="text-right">Driving License (DL)</Label>
                             <Input
                                 id="DL"
@@ -226,8 +227,8 @@ const DrivingLicenseForm = ({ data, id }) => {
                                 onChange={handleImageChange}
                                 className="col-span-2"
                             />
-                            {formData.DL && <p className="col-span-2 text-sm">{formData.DL}</p>} {/* Display file name */}
-                        </div>
+                            {formData.DL && <p className="col-span-2 text-sm">{formData.DL}</p>}
+                        </div> */}
                     </div>
 
                     <div className="space-y-4">
@@ -280,13 +281,14 @@ const DrivingLicenseForm = ({ data, id }) => {
                                     <SelectValue placeholder={formData?.vehicleType} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="LMV">LMV</SelectItem>
-                                    <SelectItem value="HMV">HMV</SelectItem>
-                                    <SelectItem value="Auto">Auto</SelectItem>
+                                    <SelectItem value="AUTO">AUTO</SelectItem>
+                                    <SelectItem value="HATCHBACK">HATCHBACK</SelectItem>
+                                    <SelectItem value="SEDAN">SEDAN</SelectItem>
+                                    <SelectItem value="SUV">SUV</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="">
+                        {/* <div className="">
                             <Label htmlFor="RC" className="text-right">RC (Registration Certificate)</Label>
                             <Input
                                 id="RC"
@@ -296,8 +298,8 @@ const DrivingLicenseForm = ({ data, id }) => {
                                 onChange={handleImageChange}
                                 className="col-span-2"
                             />
-                            {formData.RC && <p className="col-span-2 text-sm">{formData.RC}</p>} {/* Display file name */}
-                        </div>
+                            {formData.RC && <p className="col-span-2 text-sm">{formData.RC}</p>}
+                        </div> */}
                         <div>
                             <h3 className="text-lg font-semibold">STATUS</h3>
                             <Label htmlFor="status" className="text-right">Status</Label>
@@ -342,6 +344,32 @@ const DrivingLicenseForm = ({ data, id }) => {
         </div>
     );
 };
+
+// PropTypes validation
+DrivingLicenseForm.propTypes = {
+    data: PropTypes.shape({
+        driverInfo: PropTypes.shape({
+            licenseNumber: PropTypes.string,
+            name: PropTypes.string,
+            dob: PropTypes.string,
+            driverAddress: PropTypes.string,
+            drivingLicenseValidUpto: PropTypes.string,
+            gender: PropTypes.oneOf(['Male', 'Female', 'Other']),
+            drivingLicenseCategory: PropTypes.string,
+            upiID: PropTypes.string,
+            balance: PropTypes.number,
+            // drivingLicense: PropTypes.string, // For image file names or paths
+            vehicleNumber: PropTypes.string,
+            vehicleFuelType: PropTypes.oneOf(['Petrol', 'Diesel', 'CNG']),
+            vehicleMakerModel: PropTypes.string,
+            vehicleType: PropTypes.oneOf(['Private', 'Commercial']),
+            // registrationCertificate: PropTypes.string, // For image file names or paths
+            status: PropTypes.string,
+        })
+    }),
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+};
+
 
 export default DrivingLicenseForm;
 
