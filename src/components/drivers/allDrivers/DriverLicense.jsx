@@ -28,13 +28,22 @@ const DriverLicense = ({ data }) => {
                     <p><strong>UPI ID:</strong> <br />{driverInfo?.upiID}</p>
                     <p><strong>Balance:</strong> <br />₹{driverInfo?.balance}</p>
                 </div>
-                <div className="mt-4 space-x-2">
-                    <Button variant="outline" size="sm"><Dialog>
-                        <DialogTrigger>Driving License Image</DialogTrigger>
-                        <DialogContent className='max-h-[80vh] overflow-auto'>
-                            <img src={driverInfo?.drivingLicense} alt="NOT AVAILABLE" />
-                        </DialogContent>
-                    </Dialog>
+                <div className="mt-4 space-x-2 flex">
+                    <Button variant="outline" size="sm">
+                        <Dialog>
+                            <DialogTrigger>Driving License Image</DialogTrigger>
+                            <DialogContent className='max-h-[80vh] overflow-auto'>
+                                <img src={driverInfo?.drivingLicense} alt="NOT AVAILABLE" />
+                            </DialogContent>
+                        </Dialog>
+                    </Button>
+                    <Button variant="outline" size="sm">
+                        <Dialog>
+                            <DialogTrigger>Driving License Back Image</DialogTrigger>
+                            <DialogContent className='max-h-[80vh] overflow-auto'>
+                                <img src={driverInfo?.drivingLicenseBack} alt="NOT AVAILABLE" />
+                            </DialogContent>
+                        </Dialog>
                     </Button>
                 </div>
             </CardContent>

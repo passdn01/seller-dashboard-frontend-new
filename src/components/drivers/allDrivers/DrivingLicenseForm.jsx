@@ -20,7 +20,7 @@ const DrivingLicenseForm = ({ data, id }) => {
         address: driverInfo?.driverAddress || '',
         validTo: driverInfo?.drivingLicenseValidUpto || '',
         gender: driverInfo?.gender || '',
-        licenseCategory: driverInfo?.drivingLicenseCategory || '',
+        drivingLicenseCategory: driverInfo?.drivingdrivingLicenseCategory || '',
         upiId: driverInfo?.upiID || '',
         balance: driverInfo?.balance || 0,  // Default to 0 if balance is missing
         // DL: driverInfo?.drivingLicense || '', // image upload
@@ -182,13 +182,13 @@ const DrivingLicenseForm = ({ data, id }) => {
                             </Select>
                         </div>
                         <div className="">
-                            <Label htmlFor="licenseCategory" className="text-right">License Category</Label>
+                            <Label htmlFor="drivingLicenseCategory" className="text-right">License Category</Label>
                             <Select
-                                name="licenseCategory"
-                                onValueChange={(value) => handleSelectChange('licenseCategory', value)}
+                                name="drivingLicenseCategory"
+                                onValueChange={(value) => handleSelectChange('drivingLicenseCategory', value)}
                             >
                                 <SelectTrigger className="col-span-2">
-                                    <SelectValue placeholder={formData?.licenseCategory} />
+                                    <SelectValue placeholder={formData?.drivingLicenseCategory} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="LMV">LMV</SelectItem>
@@ -355,7 +355,7 @@ DrivingLicenseForm.propTypes = {
             driverAddress: PropTypes.string,
             drivingLicenseValidUpto: PropTypes.string,
             gender: PropTypes.oneOf(['Male', 'Female', 'Other']),
-            drivingLicenseCategory: PropTypes.string,
+            drivingdrivingLicenseCategory: PropTypes.string,
             upiID: PropTypes.string,
             balance: PropTypes.number,
             // drivingLicense: PropTypes.string, // For image file names or paths
