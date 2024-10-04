@@ -125,7 +125,7 @@ export default function DriverTable() {
             setLoading(true);
             try {
                 const response = await axios.post('https://f6vfh6rc-2003.inc1.devtunnels.ms/dashboard/api/allDrivers', {
-                    withCredentials: true
+                    // withCredentials: true
                 });
                 if (response.data.success) {
                     setData(response.data.data);
