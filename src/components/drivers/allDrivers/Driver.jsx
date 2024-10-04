@@ -30,7 +30,9 @@ import DrivingLicenseForm from './DrivingLicenseForm';
 import UploadDocuments from './UploadDocuments';
 function Driver() {
     const { id } = useParams();
+    console.log("driver param",id)
     const [data, setData] = useState({});
+    const [completeStatus, setCompleteStatus] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
@@ -40,6 +42,7 @@ function Driver() {
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
+                    setCompleteStatus(response.data.data.isCompleteRegistration);
                 } else {
                     throw new Error(response.data.message || 'Failed to fetch data');
                 }
@@ -50,6 +53,20 @@ function Driver() {
                 setLoading(false);
             });
     }, [id]);
+
+    const handleStatusUpdate = async () => {
+        try {
+            await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/${id}/completeEdit`, {
+                completeStatus: !completeStatus // Toggle the status
+            });
+
+            // Optionally, update local state
+            setCompleteStatus(!completeStatus);
+        } catch (error) {
+            console.error("Error updating status:", error);
+            setError('Error updating status');
+        }
+    };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -73,7 +90,10 @@ function Driver() {
 
                             navigate('/drivers/allDrivers', { state: { fromBackButton: true } });
                         }}><img src={backArrow} alt="" /></Button>
-                        <Button variant='outline' className='shadow text-blue-500' onClick={() => { return window.location.reload(); }}>REFRESH</Button>
+                        <div className='justify-end gap-5 flex'>
+                            <Button variant='outline' className='shadow text-blue-500' onClick={() => { return window.location.reload(); }}>REFRESH</Button>
+                            <Button onClick={handleStatusUpdate}> {completeStatus ? "Mark as Incomplete" : "Mark as Complete"}</Button>
+                        </div>
                     </div>
                     <div className='flex flex-row items-center justify-between'>
                         <Breadcrumb className='px-4'>

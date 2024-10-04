@@ -6,6 +6,7 @@ import endPoint from '../../assets/endPointImg.png'
 
 const RideCard = ({ data }) => {
     const { ride, driverInfo } = data;
+    console.log("data ride", data);
 
     const [startAddress, setStartAddress] = useState('Fetching location...');
     const [destinationAddress, setDestinationAddress] = useState('Fetching location...');

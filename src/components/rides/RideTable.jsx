@@ -130,7 +130,7 @@ export default function RideTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allRides', {
+                const response = await axios.get('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allRides', {
                     // withCredentials: true
                 });
                 console.log(response.data.data);
