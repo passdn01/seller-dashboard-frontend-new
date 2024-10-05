@@ -7,7 +7,7 @@ import {
     BreadcrumbItem,
     BreadcrumbLink,
     BreadcrumbList,
-    BreadcrumbPage,
+    // BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
@@ -35,6 +35,8 @@ function Driver() {
     const [completeStatus, setCompleteStatus] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // State for delete dialog
+    const [driverToDelete, setDriverToDelete] = useState(null); // State for driver ID to delete
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -65,6 +67,24 @@ function Driver() {
         } catch (error) {
             console.error("Error updating status:", error);
             setError('Error updating status');
+        }
+    };
+
+    const handleDeleteDriver = async () => {
+        try {
+            const response = await axios.delete(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            if (response.data.success) {
+                alert('Driver deleted successfully');
+                navigate('/drivers/allDrivers'); // Redirect after deletion
+            } else {
+                alert('Failed to delete driver');
+            }
+        } catch (error) {
+            console.error("Error deleting driver:", error);
+            setError('Error deleting driver');
+        } finally {
+            setIsDeleteDialogOpen(false);
+            setDriverToDelete(null); // Reset the driver to delete
         }
     };
 
@@ -107,6 +127,7 @@ function Driver() {
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
+                        <div className='justify-end'>
                         <Dialog>
                             <DialogTrigger className='pr-4'>
                                 <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Edit</span>
@@ -116,6 +137,28 @@ function Driver() {
                                 <UploadDocuments id={id}></UploadDocuments>
                             </DialogContent>
                         </Dialog>
+                        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                            <DialogTrigger className='pr-4'>
+                                <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Delete</span>
+                            </DialogTrigger>
+                            <DialogContent className="bg-white h-[200px]">
+                                <DialogHeader>
+                                    <DialogTitle>Confirm Deletion</DialogTitle>
+                                    <DialogDescription>
+                                        Are you sure you want to delete this driver? This action cannot be undone.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="flex justify-end gap-2 mt-4">
+                                    <Button variant="secondary" onClick={() => setIsDeleteDialogOpen(false)}>
+                                        Cancel
+                                    </Button>
+                                    <Button variant="destructive" onClick={handleDeleteDriver}>
+                                        Confirm
+                                    </Button>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                        </div>
                     </div>
                     <div>
                         <div>

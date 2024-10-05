@@ -14,7 +14,7 @@ const DriverRC = ({ data }) => {
     return (
         <Card className="w-full">
             <CardHeader className='border-b border-gray-300 flex items-center flex-row gap-x-2'>
-                <img src={driverRC} alt="" className='w-6 h-6' />Driving License detail</CardHeader>
+                <img src={driverRC} alt="" className='w-6 h-6' />Vehicle detail</CardHeader>
             <CardContent>
                 <div className="space-y-2 text-sm pt-4">
                     <p><strong>Vehicle Number:</strong> {driverInfo?.vehicleNumber}</p>

@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import {
     flexRender,
     getCoreRowModel,
@@ -39,76 +46,6 @@ import {
     SelectValue,
 } from "../../ui/select";
 
-// Columns configuration
-const columns = [
-    {
-        id: "sno",
-        header: "S.No.",
-        cell: ({ row }) => <div>{row.index + 1}</div>,
-        enableHiding: false,
-        enableSorting: false,
-    },
-    {
-        accessorKey: "phone",
-        header: "Driver Phone",
-        cell: ({ row }) => <div>{row.getValue("phone")}</div>,
-    },
-    {
-        accessorKey: "name",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-                Name
-                <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-        ),
-        cell: ({ row }) => <div>{row.getValue("name")}</div>,
-    },
-    {
-        accessorKey: "vehicleNumber",
-        header: "RC Number",
-        cell: ({ row }) => <div>{row.getValue("vehicleNumber")}</div>,
-    },
-    {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => <div>{row.getValue("status")}</div>,
-    },
-    {
-        id: "actions",
-        enableHiding: false,
-        cell: ({ row }) => {
-            const driver = row.original;
-            const navigate = useNavigate();
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(driver.phone)}
-                        >
-                            Copy Driver Phone
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => navigate(`/drivers/allDrivers/${driver._id}`)}>
-                            View Driver Details
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
-        },
-    },
-];
-
 export default function DriverTable() {
     const [sorting, setSorting] = useState([]);
     const [columnFilters, setColumnFilters] = useState([]);
@@ -119,6 +56,137 @@ export default function DriverTable() {
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("all");
     const [globalFilter, setGlobalFilter] = useState("");
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [driverToDelete, setDriverToDelete] = useState(null);
+    const navigate = useNavigate();
+
+     // Function to open the dialog with the selected driver ID
+     const openDeleteDialog = (driverId) => {
+        setDriverToDelete(driverId);
+        setIsDialogOpen(true);
+    };
+
+    const handleDelete = async () => {
+        if (!driverToDelete) return;
+
+        try {
+            const response = await axios.delete(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            if (response.data.success) {
+                // Refetch data after deletion
+                const newResponse = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allDrivers');
+                if (newResponse.data.success) {
+                    const updatedData = newResponse.data.data;
+                    setData(updatedData);
+                    sessionStorage.setItem('myData', JSON.stringify(updatedData));
+                    sessionStorage.setItem('lastFetchTime', Date.now().toString());
+
+                    alert('Driver deleted successfully');
+                }
+            } else {
+                alert('Failed to delete driver');
+            }
+        } catch (error) {
+            console.error("Error deleting driver:", error);
+        } finally {
+            setIsDialogOpen(false); // Close dialog
+            setDriverToDelete(null); // Reset driver to delete
+        }
+    };
+    
+
+// Columns configuration
+    const columns = [
+        {
+            id: "sno",
+            header: "S.No.",
+            cell: ({ row }) => <div>{row.index + 1}</div>,
+            enableHiding: false,
+            enableSorting: false,
+        },
+        {
+            accessorKey: "phone",
+            header: "Driver Phone",
+            cell: ({ row }) => <div>{row.getValue("phone")}</div>,
+        },
+        {
+            accessorKey: "name",
+            header: ({ column }) => (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Name
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            ),
+            cell: ({ row }) => <div>{row.getValue("name")}</div>,
+        },
+        {
+            accessorKey: "vehicleNumber",
+            header: "RC Number",
+            cell: ({ row }) => <div>{row.getValue("vehicleNumber")}</div>,
+        },
+        {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ row }) => <div>{row.getValue("status")}</div>,
+        },
+        {
+            id: "actions",
+            enableHiding: false,
+            cell: ({ row }) => {
+                const driver = row.original;
+
+                return (
+                    <>
+                        {/* Dropdown Menu */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                    <span className="sr-only">Open menu</span>
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => navigator.clipboard.writeText(driver.phone)}>
+                                    Copy Driver Phone
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => navigate(`/drivers/allDrivers/${driver._id}`)}>
+                                    View Driver Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => openDeleteDialog(driver._id)}>
+                                    Delete Driver
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
+                        {/* Confirmation Dialog */}
+                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                            <DialogContent className="bg-white h-[200px]">
+                                <DialogHeader>
+                                    <DialogTitle>Confirm Deletion</DialogTitle>
+                                    <DialogDescription>
+                                        Are you sure you want to delete this driver? This action cannot be undone.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="flex justify-end gap-2 mt-4">
+                                    <Button variant="secondary" onClick={() => setIsDialogOpen(false)}>
+                                        Cancel
+                                    </Button>
+                                    <Button variant="destructive" onClick={handleDelete}>
+                                        Confirm
+                                    </Button>
+                                </div>
+                            </DialogContent>
+                        </Dialog>
+                    </>
+                );
+            },
+        },
+    ];
+
 
     useEffect(() => {
         const fetchData = async () => {

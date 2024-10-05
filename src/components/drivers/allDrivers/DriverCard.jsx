@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import referBy from '../../../assets/referBy.svg'
+import { Dialog, DialogContent, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 const DriverCard = ({ data }) => {
     const { driverInfo } = data;
 
@@ -13,11 +14,22 @@ const DriverCard = ({ data }) => {
                 <div>
                     <CardHeader className=' '>
                         <div className='flex gap-x-4'>
-                            <Avatar>
-                                <AvatarImage src={driverInfo.profileUrl} alt={driverInfo?.name} />
-                                <AvatarFallback>{driverInfo?.name?.charAt(0) || 'NAN'}</AvatarFallback>
-                            </Avatar>
-
+                            <Dialog>
+                                {/* Trigger the dialog when AvatarImage is clicked */}
+                                <DialogTrigger>
+                                    <Avatar>
+                                        <AvatarImage src={driverInfo.profileUrl} alt={driverInfo?.name} />
+                                        <AvatarFallback>{driverInfo?.name?.charAt(0) || 'NAN'}</AvatarFallback>
+                                    </Avatar>
+                                </DialogTrigger>
+                                
+                                {/* Content of the dialog */}
+                                <DialogContent className='max-h-[80vh] overflow-auto'>
+                                        <DialogDescription>
+                                            <img src={driverInfo?.profileUrl} alt="Profile" />
+                                        </DialogDescription>
+                                </DialogContent>
+                            </Dialog>
                             <div>
                                 <CardTitle>{driverInfo?.name || ''}</CardTitle>
                                 <CardDescription>
