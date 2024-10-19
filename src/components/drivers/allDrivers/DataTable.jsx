@@ -45,6 +45,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../../ui/select";
+import { Oval } from 'react-loader-spinner';
 
 export default function DriverTable() {
     const [sorting, setSorting] = useState([]);
@@ -251,16 +252,27 @@ export default function DriverTable() {
         }
     }, [statusFilter, table]);
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
-
     if (error) {
         return <div>Error: {error}</div>;
     }
 
     // Get unique status values for the filter
     const statusOptions = [...new Set(data.map(item => item.status))];
+
+    if (loading) {
+        return <div className="flex items-center justify-center min-h-screen">
+        <Oval
+            height={60}
+            width={60}
+            color="#4fa94d"
+            visible={true}
+            ariaLabel='oval-loading'
+            secondaryColor="#4fa94d"
+            strokeWidth={2}
+            strokeWidthSecondary={2}
+        />
+    </div>;
+    }
 
     return (
         <div className="w-[80%] mx-24">

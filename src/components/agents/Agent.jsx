@@ -19,18 +19,20 @@ import backArrow from '../../assets/backArrow.svg'
 // import Header from './Header';
 import {
     Dialog,
+    DialogContent,
     // DialogContent,
     // DialogDescription,
     // DialogHeader,
     // DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import RideCard from './RideCard';
 import SideNavbar from '../SideNavbar';
 import Header from '../drivers/allDrivers/Header';
 import { Oval } from 'react-loader-spinner';
+import AgentCard from './AgentCard';
+import AgentEdit from './AgentEdit';
 
-function Ride() {
+function Agent() {
     const { id } = useParams();
     console.log(id);
     const [data, setData] = useState({});
@@ -39,7 +41,7 @@ function Ride() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/ride/${id}`)
+        axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/agent/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -80,12 +82,12 @@ function Ride() {
 
             <SideNavbar />
             <div className='flex-1 ml-[250px]'>
-                <Header className='w-full' title='RIDE DETAILS' />
+                <Header className='w-full' title='AGENT DETAILS' />
                 <div className='overflow-auto mx-8'>
                     <div className='p-4 my-4 justify-between flex'>
                         <Button variant='outline' className='shadow' onClick={() => {
 
-                            navigate('/rides/allRides', { state: { fromBackButton: true } });
+                            navigate('/agents/allAgents', { state: { fromBackButton: true } });
                         }}><img src={backArrow} alt="" /></Button>
                         <Button variant='outline' className='shadow text-blue-500' onClick={() => { return window.location.reload(); }}>REFRESH</Button>
                     </div>
@@ -93,11 +95,11 @@ function Ride() {
                         <Breadcrumb className='px-4'>
                             <BreadcrumbList>
                                 <BreadcrumbItem>
-                                <BreadcrumbLink href="/rides/allRides" className='text-blue-500' >AllRides</BreadcrumbLink>
+                                <BreadcrumbLink href="/agents/allAgents" className='text-blue-500' >AllAgents</BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink >RideDetail</BreadcrumbLink>
+                                    <BreadcrumbLink >AgentDetail</BreadcrumbLink>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
@@ -105,14 +107,14 @@ function Ride() {
                             <DialogTrigger className='pr-4'>
                                 <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Edit</span>
                             </DialogTrigger>
-                            {/* <DialogContent className="">
-                                <DrivingLicenseForm data={data} id={id}></DrivingLicenseForm>
-                            </DialogContent> */}
+                            <DialogContent className="mt-[10px] mb-[10px]">
+                                <AgentEdit data={data} id={id}></AgentEdit>
+                            </DialogContent>
                         </Dialog>
                     </div>
                     <div>
                         <div>
-                            <RideCard data={data}></RideCard>
+                            <AgentCard data={data}></AgentCard>
                         </div>
                         {/* <div className="flex flex-col md:flex-row gap-4 p-4">
                             <DriverLicense data={data} />
@@ -135,4 +137,4 @@ function Ride() {
     );
 }
 
-export default Ride;
+export default Agent;

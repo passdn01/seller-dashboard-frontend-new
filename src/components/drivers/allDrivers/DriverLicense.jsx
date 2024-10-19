@@ -24,7 +24,7 @@ const DriverLicense = ({ data }) => {
                     <p><strong>address:</strong><br /> {driverInfo?.driverAddress}</p>
                     <p><strong>Valid up to:</strong> <br />{driverInfo?.drivingLicenseValidUpto}</p>
                     <p><strong>Gender:</strong> <br />{driverInfo?.gender}</p>
-                    <p><strong>Category:</strong> <br />{driverInfo?.drivingLicenseCategory}</p>
+                    <p><strong>Licence Category:</strong> <br />{driverInfo?.drivingLicenseCategory}</p>
                     <p><strong>UPI ID:</strong> <br />{driverInfo?.upiID}</p>
                     <p><strong>Balance:</strong> <br />₹{driverInfo?.balance}</p>
                 </div>

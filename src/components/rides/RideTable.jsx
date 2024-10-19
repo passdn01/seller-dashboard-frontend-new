@@ -38,6 +38,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../ui/select";
+import { Oval } from 'react-loader-spinner';
 
 // Columns configuration
 const columns = [
@@ -191,7 +192,18 @@ export default function RideTable() {
     }, [statusFilter, table]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className="flex items-center justify-center min-h-screen">
+        <Oval
+            height={60}
+            width={60}
+            color="#4fa94d"
+            visible={true}
+            ariaLabel='oval-loading'
+            secondaryColor="#4fa94d"
+            strokeWidth={2}
+            strokeWidthSecondary={2}
+        />
+    </div>;
     }
 
     if (error) {

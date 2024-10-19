@@ -23,6 +23,7 @@ const DriverRC = ({ data }) => {
                     <p><strong>Valid up to:</strong> {driverInfo?.rcValidUpto}</p>
                     <p><strong>RC Valid Up To:</strong> {driverInfo?.rcValidUpto}</p>
                     <p><strong>Vehicle Type:</strong> {driverInfo?.vehicleType}</p>
+                    <p><strong>Category:</strong> {driverInfo?.category}</p>
                 </div>
                 <div className="mt-4 space-x-2">
                     <Button variant="outline" size="sm"><Dialog>

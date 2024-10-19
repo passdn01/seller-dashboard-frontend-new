@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/dialog"
 import DrivingLicenseForm from './DrivingLicenseForm';
 import UploadDocuments from './UploadDocuments';
+import { Oval } from 'react-loader-spinner';
 function Driver() {
     const { id } = useParams();
     console.log("driver param",id)
@@ -40,7 +41,7 @@ function Driver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/${id}`)
+        axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -58,7 +59,7 @@ function Driver() {
 
     const handleStatusUpdate = async () => {
         try {
-            await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/${id}/completeEdit`, {
+            await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
             });
 
@@ -89,7 +90,18 @@ function Driver() {
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className="flex items-center justify-center min-h-screen">
+        <Oval
+            height={60}
+            width={60}
+            color="#4fa94d"
+            visible={true}
+            ariaLabel='oval-loading'
+            secondaryColor="#4fa94d"
+            strokeWidth={2}
+            strokeWidthSecondary={2}
+        />
+    </div>;
     }
 
     if (error) {

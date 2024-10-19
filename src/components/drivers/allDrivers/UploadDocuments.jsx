@@ -39,7 +39,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', profileUrl);
 
         try {
-            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/${id}/profile-image`, formData, {
+            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/profile-image`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -64,7 +64,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicense);
 
         try {
-            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/${id}/edit-dl`, formData, {
+            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -89,7 +89,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicenseBack);
 
         try {
-            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/${id}/edit-dl-back`, formData, {
+            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl-back`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -114,7 +114,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', registrationCertificate);
 
         try {
-            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/${id}/edit-rc`, formData, {
+            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-rc`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

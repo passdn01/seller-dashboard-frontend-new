@@ -29,6 +29,7 @@ const DrivingLicenseForm = ({ data, id }) => {
         fuelType: driverInfo?.vehicleFuelType || '',
         makerModel: driverInfo?.vehicleMakerModel || '',
         vehicleType: driverInfo?.vehicleType || '',
+        category: driverInfo?.category || '',
         // RC: driverInfo?.registrationCertificate || '',
         status: driverInfo?.status || '',
     });
@@ -58,7 +59,7 @@ const DrivingLicenseForm = ({ data, id }) => {
         setSubmitStatus(null);
 
         try {
-            const response = await fetch(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/${id}/edit`, {
+            const response = await fetch(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -288,6 +289,24 @@ const DrivingLicenseForm = ({ data, id }) => {
                                 </SelectContent>
                             </Select>
                         </div>
+                        <div className="">
+                            <Label htmlFor="category" className="text-right">Category</Label>
+                            <Select
+                                name="category"
+                                onValueChange={(value) => handleSelectChange('category', value)}
+
+                            >
+                                <SelectTrigger className="col-span-2">
+                                    <SelectValue placeholder={formData?.category} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="AUTO">AUTO</SelectItem>
+                                    <SelectItem value="HATCHBACK">HATCHBACK</SelectItem>
+                                    <SelectItem value="SEDAN">SEDAN</SelectItem>
+                                    <SelectItem value="SUV">SUV</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                         {/* <div className="">
                             <Label htmlFor="RC" className="text-right">RC (Registration Certificate)</Label>
                             <Input
@@ -362,7 +381,8 @@ DrivingLicenseForm.propTypes = {
             vehicleNumber: PropTypes.string,
             vehicleFuelType: PropTypes.oneOf(['Petrol', 'Diesel', 'CNG']),
             vehicleMakerModel: PropTypes.string,
-            vehicleType: PropTypes.oneOf(['Private', 'Commercial']),
+            vehicleType: PropTypes.oneOf(['HATCHBACK', 'SEDAN', 'SUV', 'AUTO']),
+            category: PropTypes.oneOf(['HATCHBACK', 'SEDAN', 'SUV', 'AUTO']),
             // registrationCertificate: PropTypes.string, // For image file names or paths
             status: PropTypes.string,
         })
