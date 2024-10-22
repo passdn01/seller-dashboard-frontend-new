@@ -60,6 +60,61 @@ export default function DriverTable() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [driverToDelete, setDriverToDelete] = useState(null);
     const navigate = useNavigate();
+    const [filteredData, setFilteredData] = useState([]);
+    const [missingFilters, setMissingFilters] = useState({
+        dlMissing: false,
+        dlBackMissing: false,
+        rcMissing: false,
+        profileMissing: false,
+        none: false,  // Initially not selected
+    });
+    
+    // Function to filter data based on "missing" options
+    const applyMissingFilters = () => {
+        const { dlMissing, dlBackMissing, rcMissing, profileMissing, none } = missingFilters;
+    
+        const filtered = data.filter((driver) => {
+            const isDlMissing = dlMissing && !driver.drivingLicense;
+            const isDlBackMissing = dlBackMissing && !driver.drivingLicenseBack;
+            const isRcMissing = rcMissing && !driver.registrationCertificate;
+            const isProfileMissing = profileMissing && !driver.profileUrl;
+    
+            // Handle "none" filter: only include drivers with all documents present
+            if (none) {
+                return driver.drivingLicense && 
+                       driver.drivingLicenseBack && 
+                       driver.registrationCertificate && 
+                       driver.profileUrl; // All documents must be present
+            }
+    
+            // If no filters are active, include all drivers
+            if (!dlMissing && !dlBackMissing && !rcMissing && !profileMissing) {
+                return true; // No filters applied, include all
+            }
+    
+            // Return true if any of the selected missing filters match
+            return (dlMissing && isDlMissing) || 
+                   (dlBackMissing && isDlBackMissing) ||
+                   (rcMissing && isRcMissing) ||
+                   (profileMissing && isProfileMissing);
+        });
+    
+        setFilteredData(filtered);
+    };    
+
+    // Handler for checkbox change
+    const handleCheckboxChange = (filterKey) => {
+        setMissingFilters(prev => ({
+            ...prev,
+            [filterKey]: !prev[filterKey]
+        }));
+    };
+
+    // Whenever the missing filter state changes, apply filters
+    useEffect(() => {
+        applyMissingFilters();
+    }, [missingFilters, data]);
+
 
      // Function to open the dialog with the selected driver ID
      const openDeleteDialog = (driverId) => {
@@ -105,6 +160,17 @@ export default function DriverTable() {
             enableSorting: false,
         },
         {
+            accessorKey: "createdAt",
+            header: "Joining",
+            cell: ({ row }) => {
+                const date = new Date(row.getValue("createdAt")); // Convert to Date object
+                const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
+                const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
+        
+                return <div>{formattedDate}</div>; // Render the formatted date
+            },
+        },        
+        {
             accessorKey: "phone",
             header: "Driver Phone",
             cell: ({ row }) => <div>{row.getValue("phone")}</div>,
@@ -131,6 +197,20 @@ export default function DriverTable() {
             accessorKey: "status",
             header: "Status",
             cell: ({ row }) => <div>{row.getValue("status")}</div>,
+        },
+        {
+            id: "missingDocs",
+            header: "Missing",
+            cell: ({ row }) => {
+                const driver = row.original;
+                const missingDocs = [];
+                if (!driver.drivingLicense) missingDocs.push("DL");
+                if (!driver.drivingLicenseBack) missingDocs.push("DLB");
+                if (!driver.registrationCertificate) missingDocs.push("RC");
+                if (!driver.profileUrl) missingDocs.push("PF");
+    
+                return <div>{missingDocs.length > 0 ? missingDocs.join(", ") : "None"}</div>;
+            },
         },
         {
             id: "actions",
@@ -284,7 +364,7 @@ export default function DriverTable() {
                     className="max-w-sm mr-4"
                 />
                 <Select onValueChange={setStatusFilter} value={statusFilter}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-[180px] mr-4">
                         <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -296,6 +376,45 @@ export default function DriverTable() {
                         ))}
                     </SelectContent>
                 </Select>
+
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="outline">Select Missing Documents</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuCheckboxItem
+                            checked={missingFilters.dlMissing}
+                            onCheckedChange={() => handleCheckboxChange("dlMissing")}
+                        >
+                            DL Missing
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                            checked={missingFilters.dlBackMissing}
+                            onCheckedChange={() => handleCheckboxChange("dlBackMissing")}
+                        >
+                            DL Back Missing
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                            checked={missingFilters.rcMissing}
+                            onCheckedChange={() => handleCheckboxChange("rcMissing")}
+                        >
+                            RC Missing
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                            checked={missingFilters.profileMissing}
+                            onCheckedChange={() => handleCheckboxChange("profileMissing")}
+                        >
+                            Profile Missing
+                        </DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
+                            checked={missingFilters.none}
+                            onCheckedChange={() => handleCheckboxChange("none")}
+                        >
+                            None Missing
+                        </DropdownMenuCheckboxItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto">
@@ -320,46 +439,58 @@ export default function DriverTable() {
                 </DropdownMenu>
             </div>
             <div className="rounded-md border">
-                <Table>
-                    <TableHeader>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                    </TableHead>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </TableHeader>
-                    <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
+            <Table>
+                <TableHeader>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <TableRow key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <TableHead key={header.id}>
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
+                                </TableHead>
+                            ))}
+                        </TableRow>
+                    ))}
+                </TableHeader>
+                <TableBody>
+                    {filteredData.length ? (
+                        table.getRowModel().rows?.length ? (
+                            table.getRowModel().rows
+                                .filter((row) => filteredData.includes(row.original)) // Filter rows based on filteredData
+                                .map((row) => (
+                                    <TableRow
+                                        key={row.id}
+                                        data-state={row.getIsSelected() && "selected"}
+                                    >
+                                        {row.getVisibleCells().map((cell) => (
+                                            <TableCell key={cell.id}>
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        ))}
+                                    </TableRow>
+                                ))
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
                                     No results.
                                 </TableCell>
                             </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                        )
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className="h-24 text-center">
+                                No results.
+                            </TableCell>
+                        </TableRow>
+                    )}
+
+                
+                </TableBody>
+            </Table>
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">

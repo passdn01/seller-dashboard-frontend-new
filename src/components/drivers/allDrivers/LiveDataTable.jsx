@@ -100,22 +100,22 @@ export default function LiveDriverTable() {
     const [rowSelection, setRowSelection] = useState({});
     const [data, setData] = useState([]);
     const [categoryFilter, setCategoryFilter] = useState("all");
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);  // Track loading state
 
     useEffect(() => {
-        setLoading(true);
+        setLoading(true);  // Start loading
         axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
             .then(response => {
                 console.log(response.data);
-                setData(response.data.drivers);
+                setData(response.data.drivers);  // Set data once fetched
             })
             .catch(error => {
                 console.error('Error fetching driver locations:', error);
             })
             .finally(() => {
-                setLoading(false);
+                setLoading(false);  // Stop loading after data is fetched
             });
-    }, []);    
+    }, []);
 
     const table = useReactTable({
         data,
@@ -146,19 +146,21 @@ export default function LiveDriverTable() {
 
     const categoryOptions = [...new Set(data.map(item => item.category))];
 
-    if (loading) {
-        return <div className="flex items-center justify-center min-h-screen">
-        <Oval
-            height={60}
-            width={60}
-            color="#4fa94d"
-            visible={true}
-            ariaLabel='oval-loading'
-            secondaryColor="#4fa94d"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-        />
-    </div>;
+    if (loading) {  // If loading, show spinner
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <Oval
+                    height={60}
+                    width={60}
+                    color="#4fa94d"
+                    visible={true}
+                    ariaLabel='oval-loading'
+                    secondaryColor="#4fa94d"
+                    strokeWidth={2}
+                    strokeWidthSecondary={2}
+                />
+            </div>
+        );
     }
 
     return (
@@ -208,7 +210,7 @@ export default function LiveDriverTable() {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
-            <div className="rounded-md border bg-white"> {/* Add bg-white class to make table background white */}
+            <div className="rounded-md border bg-white">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
