@@ -75,12 +75,12 @@ function SideNavbar() {
             submenu: true,
             icon: AgentIcon,
             subMenuList: [
-                {
-                    id: '1',
-                    title: 'Live Agents',
-                    link: '/agents/live',
-                    icon: '',
-                },
+                // {
+                //     id: '1',
+                //     title: 'Live Agents',
+                //     link: '/agents/live',
+                //     icon: '',
+                // },
                 {
                     id: '2',
                     title: 'All Agents',

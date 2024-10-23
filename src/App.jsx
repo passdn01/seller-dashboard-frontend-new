@@ -7,6 +7,8 @@ import Login from './components/Login.jsx'
 import { Navigate } from 'react-router-dom';
 import AllRides from './components/rides/AllRides.jsx'
 import Ride from './components/rides/Ride.jsx'
+import AllAgents from './components/agents/AllAgents.jsx'
+import Agent from './components/agents/Agent.jsx'
 function App() {
   const ProtectedRoute = ({ element }) => {
     const token = document.cookie.includes('token');
@@ -22,8 +24,12 @@ function App() {
           <Route path='/drivers/allDrivers' element={<ProtectedRoute element={<AllDrivers />} />} />
           <Route path='/drivers/liveDrivers' element={<ProtectedRoute element={<LiveDrivers />} />} />
           <Route path='/drivers/allDrivers/:id' element={<ProtectedRoute element={<Driver />} />} />
+
           <Route path='/rides/allRides' element={<ProtectedRoute element={<AllRides />} />} />
           <Route path='/rides/allRides/:id' element={<ProtectedRoute element={<Ride />} />} />
+
+          <Route path='/agents/allAgents' element={<ProtectedRoute element={<AllAgents />} />} />
+          <Route path='/agents/allAgents/:id' element={<ProtectedRoute element={<Agent />} />} />
 
         </Routes>
       </BrowserRouter>

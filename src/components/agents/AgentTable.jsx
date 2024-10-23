@@ -39,6 +39,9 @@ import {
     SelectValue,
 } from "../ui/select";
 import { Oval } from 'react-loader-spinner';
+import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
+import AgentEdit from './AgentEdit';
+import AddAgent from './AddAgent';
 
 // Columns configuration
 const columns = [
@@ -51,18 +54,13 @@ const columns = [
     },
     {
         accessorKey: "_id",
-        header: "Ride Id",
+        header: "Agent Id",
         cell: ({ row }) => <div>{row.getValue("_id")}</div>,
     },
     {
         accessorKey: "createdAt",
         header: "Date and Time",
         cell: ({ row }) => <div>{row.getValue("createdAt")}</div>,
-    },
-    {
-        accessorKey: "fare",
-        header: "Fare",
-        cell: ({ row }) => <div>{row.getValue("fare")}</div>,
     },
     {
         accessorKey: "name",
@@ -78,16 +76,21 @@ const columns = [
         cell: ({ row }) => <div>{row.getValue("name")}</div>,
     },
     {
-        accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => <div>{row.getValue("status")}</div>,
+        accessorKey: "contact",
+        header: "Contact",
+        cell: ({ row }) => <div>{row.getValue("contact")}</div>,
+    },
+    {
+        accessorKey: "referralCode",
+        header: "Referral Code",
+        cell: ({ row }) => <div>{row.getValue("referralCode")}</div>,
     },
     {
         id: "actions",
         enableHiding: false,
         cell: ({ row }) => {
-            const ride = row.original;
-            console.log("ride",ride);
+            const agent = row.original;
+            console.log("agent",agent);
             const navigate = useNavigate();
 
             return (
@@ -106,8 +109,8 @@ const columns = [
                             Copy Driver Phone
                         </DropdownMenuItem> */}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => navigate(`/rides/allRides/${ride._id}`)}>
-                            View Ride Details
+                        <DropdownMenuItem onClick={() => navigate(`/agents/allAgents/${agent._id}`)}>
+                            View Agent Details
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -116,9 +119,9 @@ const columns = [
     },
 ];
 
-export default function RideTable() {
+export default function AgentTable() {
     const [sorting, setSorting] = useState([]);
-    const [rideColumnFilters, setRideColumnFilters] = useState([]);
+    const [agentColumnFilters, setAgentColumnFilters] = useState([]);
     const [columnVisibility, setColumnVisibility] = useState({});
     const [rowSelection, setRowSelection] = useState({});
     const [data, setData] = useState([]);
@@ -131,13 +134,13 @@ export default function RideTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://f6vfh6rc-2003.inc1.devtunnels.ms/dashboard/api/allRides', {
+                const response = await axios.get('https://f6vfh6rc-2003.inc1.devtunnels.ms/dashboard/api/allAgents', {
                     // withCredentials: true
                 });
                 console.log(response.data.data);
                 if (response.data.success) {
                     setData(response.data.data);
-                    sessionStorage.setItem('myRideData', JSON.stringify(response.data.data));
+                    sessionStorage.setItem('myAgentData', JSON.stringify(response.data.data));
                     sessionStorage.setItem('lastFetchTime', Date.now().toString());
                 } else {
                     throw new Error(response.data.message || 'Failed to fetch data');
@@ -149,7 +152,7 @@ export default function RideTable() {
             }
         };
 
-        const storedData = sessionStorage.getItem('myRideData');
+        const storedData = sessionStorage.getItem('myAgentData');
         const lastFetchTime = sessionStorage.getItem('lastFetchTime');
         const currentTime = Date.now();
         const timeSinceLastFetch = currentTime - (lastFetchTime ? parseInt(lastFetchTime) : 0);
@@ -166,7 +169,7 @@ export default function RideTable() {
         data,
         columns,
         onSortingChange: setSorting,
-        onrideColumnFiltersChange: setRideColumnFilters,
+        onagentColumnFiltersChange: setAgentColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -175,7 +178,7 @@ export default function RideTable() {
         onRowSelectionChange: setRowSelection,
         state: {
             sorting,
-            rideColumnFilters,
+            agentColumnFilters,
             columnVisibility,
             rowSelection,
             globalFilter,
@@ -257,6 +260,14 @@ export default function RideTable() {
                             ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
+                <Dialog>
+                    <DialogTrigger>
+                        <Button className="text-white text-md border-2 ml-2 p-1 pr-4 pl-4 rounded-md float-right">Add</Button>
+                    </DialogTrigger>
+                    <DialogContent className="mt-2 mb-2 max-w-lg w-full mx-auto p-2 bg-white rounded-lg shadow-lg">
+                        <AddAgent />
+                    </DialogContent>
+                </Dialog>
             </div>
             <div className="rounded-md border">
                 <Table>

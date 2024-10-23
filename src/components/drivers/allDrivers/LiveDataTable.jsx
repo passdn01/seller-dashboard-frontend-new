@@ -28,6 +28,7 @@ import {
     TableRow,
 } from "../../ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+import { Oval } from 'react-loader-spinner';
 
 // Columns configuration
 const columns = [
@@ -99,8 +100,10 @@ export default function LiveDriverTable() {
     const [rowSelection, setRowSelection] = useState({});
     const [data, setData] = useState([]);
     const [categoryFilter, setCategoryFilter] = useState("all");
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        setLoading(true);
         axios.post('https://f6vfh6rc-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
             .then(response => {
                 console.log(response.data);
@@ -108,8 +111,11 @@ export default function LiveDriverTable() {
             })
             .catch(error => {
                 console.error('Error fetching driver locations:', error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
-    }, []);
+    }, []);    
 
     const table = useReactTable({
         data,
@@ -139,6 +145,21 @@ export default function LiveDriverTable() {
     }, [categoryFilter, table]);
 
     const categoryOptions = [...new Set(data.map(item => item.category))];
+
+    if (loading) {
+        return <div className="flex items-center justify-center min-h-screen">
+        <Oval
+            height={60}
+            width={60}
+            color="#4fa94d"
+            visible={true}
+            ariaLabel='oval-loading'
+            secondaryColor="#4fa94d"
+            strokeWidth={2}
+            strokeWidthSecondary={2}
+        />
+    </div>;
+    }
 
     return (
         <div className="w-[95%] mx-5 mt-2">

@@ -14,7 +14,7 @@ const DriverRC = ({ data }) => {
     return (
         <Card className="w-full">
             <CardHeader className='border-b border-gray-300 flex items-center flex-row gap-x-2'>
-                <img src={driverRC} alt="" className='w-6 h-6' />Driving License detail</CardHeader>
+                <img src={driverRC} alt="" className='w-6 h-6' />Vehicle detail</CardHeader>
             <CardContent>
                 <div className="space-y-2 text-sm pt-4">
                     <p><strong>Vehicle Number:</strong> {driverInfo?.vehicleNumber}</p>
@@ -23,6 +23,7 @@ const DriverRC = ({ data }) => {
                     <p><strong>Valid up to:</strong> {driverInfo?.rcValidUpto}</p>
                     <p><strong>RC Valid Up To:</strong> {driverInfo?.rcValidUpto}</p>
                     <p><strong>Vehicle Type:</strong> {driverInfo?.vehicleType}</p>
+                    <p><strong>Category:</strong> {driverInfo?.category}</p>
                 </div>
                 <div className="mt-4 space-x-2">
                     <Button variant="outline" size="sm"><Dialog>
