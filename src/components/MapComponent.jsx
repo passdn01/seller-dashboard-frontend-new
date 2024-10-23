@@ -12,7 +12,7 @@ const defaultIcon = new L.Icon({
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  shadowSize: [41, 41],
 });
 
 const mapContainerStyle = {
@@ -27,10 +27,11 @@ const center = {
 
 const MapComponent = ({ selectedDriver, onDriverSelect }) => {
   const [drivers, setDrivers] = useState([]);
-  //   const [driverAddress, setDriverAddress] = useState('');
+  const [loading, setLoading] = useState(true); // Add loading state
 
   // Fetch online drivers
   useEffect(() => {
+    setLoading(true); // Set loading to true when fetching starts
     axios
       .post('https://f6vfh6rc-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
       .then((response) => {
@@ -42,63 +43,67 @@ const MapComponent = ({ selectedDriver, onDriverSelect }) => {
           },
         }));
         setDrivers(drivers);
+        setLoading(false); // Set loading to false after data is fetched
       })
       .catch((error) => {
         console.error('Error fetching driver locations:', error);
+        setLoading(false); // Set loading to false even if there's an error
       });
   }, []);
-
 
   return (
     <div className="map-container">
       <div className="map">
-        <MapContainer
-          style={mapContainerStyle}
-          center={[center.lat, center.lng]}
-          zoom={12}
-          scrollWheelZoom={false}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          />
+        {loading ? ( // Show loading message when drivers are being fetched
+          <div className="loading">Loading map and driver data...</div>
+        ) : (
+          <MapContainer
+            style={mapContainerStyle}
+            center={[center.lat, center.lng]}
+            zoom={12}
+            scrollWheelZoom={false}
+          >
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+            />
 
-          {drivers.map((driver) => {
-            const { latitude, longitude } = driver.driverLiveLocation;
+            {drivers.map((driver) => {
+              const { latitude, longitude } = driver.driverLiveLocation;
 
-            // Check if lat/lng are valid
-            const isValidLatLng = !isNaN(latitude) && !isNaN(longitude);
+              // Check if lat/lng are valid
+              const isValidLatLng = !isNaN(latitude) && !isNaN(longitude);
 
-            return (
-              <Marker
-                key={driver.driverId}
-                position={isValidLatLng ? [latitude, longitude] : [center.lat, center.lng]} // Fallback to center if lat/lng are NaN
-                icon={defaultIcon}
-                eventHandlers={{
-                  click: () => {
-                    onDriverSelect(driver);
-                  },
-                }}
-              >
-                <Popup>
-                  <div>
-                    <h4>{driver.driverName}</h4>
-                    <p>
-                      <strong>Phone:</strong> {driver.phone}
-                    </p>
-                    <p>
-                      <strong>Latitude:</strong> {isValidLatLng ? latitude : 'N/A'}
-                    </p>
-                    <p>
-                      <strong>Longitude:</strong> {isValidLatLng ? longitude : 'N/A'}
-                    </p>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
-        </MapContainer>
-
+              return (
+                <Marker
+                  key={driver.driverId}
+                  position={isValidLatLng ? [latitude, longitude] : [center.lat, center.lng]} // Fallback to center if lat/lng are NaN
+                  icon={defaultIcon}
+                  eventHandlers={{
+                    click: () => {
+                      onDriverSelect(driver);
+                    },
+                  }}
+                >
+                  <Popup>
+                    <div>
+                      <h4>{driver.driverName}</h4>
+                      <p>
+                        <strong>Phone:</strong> {driver.phone}
+                      </p>
+                      <p>
+                        <strong>Latitude:</strong> {isValidLatLng ? latitude : 'N/A'}
+                      </p>
+                      <p>
+                        <strong>Longitude:</strong> {isValidLatLng ? longitude : 'N/A'}
+                      </p>
+                    </div>
+                  </Popup>
+                </Marker>
+              );
+            })}
+          </MapContainer>
+        )}
       </div>
 
       <div className="driver-details">
@@ -116,9 +121,6 @@ const MapComponent = ({ selectedDriver, onDriverSelect }) => {
             </p>
             <p>
               <strong>Longitude:</strong> {selectedDriver.driverLiveLocation.longitude}
-            </p>
-            <p>
-              {/* <strong>Address:</strong> {driverAddress} */}
             </p>
             {selectedDriver.drivingLicense && (
               <div>
