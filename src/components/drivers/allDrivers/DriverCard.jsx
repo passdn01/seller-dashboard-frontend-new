@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import referBy from '../../../assets/referBy.svg'
 import { Dialog, DialogContent, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 const DriverCard = ({ data }) => {
+    console.log(data);
     const { driverInfo } = data;
 
     return (
@@ -31,15 +32,28 @@ const DriverCard = ({ data }) => {
                                 </DialogContent>
                             </Dialog>
                             <div>
-                                <CardTitle>{driverInfo?.name || ''}</CardTitle>
-                                <CardDescription>
-                                    {driverInfo?.phone || ''} <br />    Joined: {new Date(driverInfo.createdAt).toLocaleDateString('en-US', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric'
-                                    })}
-                                </CardDescription>
+                            <div className="flex items-center gap-2">
+                                <CardTitle>
+                                    {driverInfo?.name || ''}
+                                </CardTitle>
+                                {/* Green or Red Dot based on `isCompleteRegistration` */}
+                                <span
+                                    className={`w-3 h-3 rounded-full ${
+                                        driverInfo?.isCompleteRegistration ? 'bg-green-400' : 'bg-red-400'
+                                    }`}
+                                    title={driverInfo?.isCompleteRegistration ? "Registration Complete" : "Registration Incomplete"}
+                                ></span>
                             </div>
+                            <CardDescription>
+                                {driverInfo?.phone || ''} <br />
+                                Joined: {driverInfo?.createdAt ? new Date(driverInfo.createdAt).toLocaleDateString('en-US', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                }) : ''}
+                            </CardDescription>
+                        </div>
+
                         </div>
                     </CardHeader>
                 </div>
