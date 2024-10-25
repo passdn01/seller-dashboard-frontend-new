@@ -53,12 +53,14 @@ export default function DriverTable() {
     const [columnVisibility, setColumnVisibility] = useState({});
     const [rowSelection, setRowSelection] = useState({});
     const [data, setData] = useState([]);
+    const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("all");
     const [globalFilter, setGlobalFilter] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [driverToDelete, setDriverToDelete] = useState(null);
+    // const [driverToUpdate, setDriverToUpdate] = useState(null);
     const navigate = useNavigate();
     const [filteredData, setFilteredData] = useState([]);
     const [missingFilters, setMissingFilters] = useState({
@@ -148,6 +150,38 @@ export default function DriverTable() {
             setDriverToDelete(null); // Reset driver to delete
         }
     };
+
+    const handleStatusUpdate = async (driverId, currentStatus) => {
+        try {
+            await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
+                completeStatus: !currentStatus // Toggle the status
+            });
+
+            const updatedData = data.map(driver => driver._id === driverId ? { ...driver, isCompleteRegistration: !currentStatus } : driver);
+            setData(updatedData);
+
+            alert(`Driver marked as ${!currentStatus ? 'complete' : 'incomplete'}`);
+        } catch (error) {
+            console.error("Error updating status:", error);
+            setError('Error updating status');
+        }
+    };
+
+
+    const updateIncompleteDrivers = async () => {
+        setMessage('Updating, please wait...');
+        try {
+            const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/updateIncompleteDrivers');
+            
+            setMessage(`${response.data.message}`);
+            alert(`${response.data.message}`);
+        } catch (error) {
+            console.error("Error updating drivers:", error);
+            const errorMessage = error.response ? error.response.data.message : 'An error occurred';
+            setMessage(errorMessage);
+            alert(errorMessage);
+        }
+    };    
     
 
 // Columns configuration
@@ -178,16 +212,29 @@ export default function DriverTable() {
         {
             accessorKey: "name",
             header: ({ column }) => (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Name
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Name
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
             ),
-            cell: ({ row }) => <div>{row.getValue("name")}</div>,
-        },
+            cell: ({ row }) => (
+                <div className="flex items-center gap-2">
+                    <span>{row.getValue("name")}</span>
+                    {/* Display the status dot based on isCompleteRegistration */}
+                    <span
+                        className={`w-3 h-3 rounded-full ${
+                            row.original.isCompleteRegistration ? 'bg-green-400' : 'bg-red-400'
+                        }`}
+                        title={row.original.isCompleteRegistration ? "Registration Complete" : "Registration Incomplete"}
+                    ></span>
+                </div>
+            ),
+        },        
         {
             accessorKey: "vehicleNumber",
             header: "RC Number",
@@ -237,8 +284,13 @@ export default function DriverTable() {
                                 <DropdownMenuItem onClick={() => navigate(`/drivers/allDrivers/${driver._id}`)}>
                                     View Driver Details
                                 </DropdownMenuItem>
+                                <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => openDeleteDialog(driver._id)}>
                                     Delete Driver
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => handleStatusUpdate(driver._id, driver.isCompleteRegistration)}>
+                                    Mark as {driver.isCompleteRegistration ? 'Incomplete' : 'Complete'}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -361,10 +413,10 @@ export default function DriverTable() {
                     placeholder="Search all columns..."
                     value={globalFilter ?? ""}
                     onChange={(event) => setGlobalFilter(event.target.value)}
-                    className="max-w-sm mr-4"
+                    className="max-w-sm mr-2"
                 />
                 <Select onValueChange={setStatusFilter} value={statusFilter}>
-                    <SelectTrigger className="w-[180px] mr-4">
+                    <SelectTrigger className="w-[180px] mr-2">
                         <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -417,7 +469,7 @@ export default function DriverTable() {
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
+                        <Button variant="outline" className="ml-auto mr-2">
                             Columns <ChevronDown className="ml-2 h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
@@ -437,6 +489,9 @@ export default function DriverTable() {
                             ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
+                <Button onClick={updateIncompleteDrivers}>
+                    Upd. Inc
+                </Button>
             </div>
             <div className="rounded-md border">
             <Table>
