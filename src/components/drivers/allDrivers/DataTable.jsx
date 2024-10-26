@@ -153,7 +153,7 @@ export default function DriverTable() {
 
     const handleStatusUpdate = async (driverId, currentStatus) => {
         try {
-            await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
+            await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
                 completeStatus: !currentStatus // Toggle the status
             });
 
@@ -171,7 +171,7 @@ export default function DriverTable() {
     const updateIncompleteDrivers = async () => {
         setMessage('Updating, please wait...');
         try {
-            const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/updateIncompleteDrivers');
+            const response = await axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/updateIncompleteDrivers');
             
             setMessage(`${response.data.message}`);
             alert(`${response.data.message}`);
