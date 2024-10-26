@@ -41,7 +41,7 @@ function Driver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}`)
+        axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -59,7 +59,7 @@ function Driver() {
 
     const handleStatusUpdate = async () => {
         try {
-            await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/completeEdit`, {
+            await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
             });
 
@@ -73,7 +73,7 @@ function Driver() {
 
     const handleDeleteDriver = async () => {
         try {
-            const response = await axios.delete(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
             if (response.data.success) {
                 alert('Driver deleted successfully');
                 navigate('/drivers/allDrivers'); // Redirect after deletion

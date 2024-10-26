@@ -134,7 +134,7 @@ export default function AgentTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allAgents', {
+                const response = await axios.get('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/allAgents', {
                     // withCredentials: true
                 });
                 console.log(response.data.data);

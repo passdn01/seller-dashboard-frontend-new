@@ -126,10 +126,10 @@ export default function DriverTable() {
         if (!driverToDelete) return;
 
         try {
-            const response = await axios.delete(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
             if (response.data.success) {
                 // Refetch data after deletion
-                const newResponse = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allDrivers');
+                const newResponse = await axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/allDrivers');
                 if (newResponse.data.success) {
                     const updatedData = newResponse.data.data;
                     setData(updatedData);
@@ -273,7 +273,7 @@ export default function DriverTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allDrivers', {
+                const response = await axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/allDrivers', {
                     // withCredentials: true
                 });
                 if (response.data.success) {
