@@ -9,6 +9,7 @@ import AllRides from './components/rides/AllRides.jsx'
 import Ride from './components/rides/Ride.jsx'
 import AllAgents from './components/agents/AllAgents.jsx'
 import Agent from './components/agents/Agent.jsx'
+import Issues from './components/issues/Issues.jsx'
 function App() {
   const ProtectedRoute = ({ element }) => {
     const token = document.cookie.includes('token');
@@ -30,6 +31,8 @@ function App() {
 
           <Route path='/agents/allAgents' element={<ProtectedRoute element={<AllAgents />} />} />
           <Route path='/agents/allAgents/:id' element={<ProtectedRoute element={<Agent />} />} />
+
+          <Route path='/issues' element={<ProtectedRoute element={<Issues />} />} />
 
         </Routes>
       </BrowserRouter>
