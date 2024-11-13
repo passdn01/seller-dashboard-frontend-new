@@ -27,7 +27,7 @@ import {
     TableHeader,
     TableRow,
 } from "../../ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Oval } from 'react-loader-spinner';
 
 // Columns configuration
@@ -42,7 +42,7 @@ const columns = [
     {
         accessorKey: "driverId",
         header: "Driver ID",
-        cell: ({ row }) => <div>{row.original.driverId}</div>,
+        cell: ({ row }) => <div>{row.original.driverId || "N/A"}</div>,
     },
     {
         accessorKey: "driverName",
@@ -55,43 +55,49 @@ const columns = [
                 <ArrowUpDown className="ml-2 h-4 w-4" />
             </Button>
         ),
-        cell: ({ row }) => <div>{row.getValue("driverName")}</div>,
+        cell: ({ row }) => <div>{row.getValue("driverName") || "N/A"}</div>,
     },
     {
         accessorKey: "phone",
         header: "Phone",
-        cell: ({ row }) => <div>{row.getValue("phone")}</div>,
+        cell: ({ row }) => <div>{row.getValue("phone") || "N/A"}</div>,
     },
     {
         accessorKey: "category",
         header: "Category",
-        cell: ({ row }) => <div>{row.getValue("category")}</div>,
+        cell: ({ row }) => <div>{row.getValue("category") || "N/A"}</div>,
     },
     {
         accessorKey: "driverLiveLocation.latitude",
         header: "Latitude",
-        cell: ({ row }) => <div>{row.original.driverLiveLocation.latitude}</div>,
+        cell: ({ row }) => <div>{row.original.driverLiveLocation?.latitude || "N/A"}</div>,
     },
     {
         accessorKey: "driverLiveLocation.longitude",
         header: "Longitude",
-        cell: ({ row }) => <div>{row.original.driverLiveLocation.longitude}</div>,
+        cell: ({ row }) => <div>{row.original.driverLiveLocation?.longitude || "N/A"}</div>,
     },
     {
         accessorKey: "drivingLicense",
         header: "Driving License",
-        cell: ({ row }) => (
-            <a
-                href={row.getValue("drivingLicense")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500"
-            >
-                Driving License
-            </a>
-        ),
+        cell: ({ row }) => {
+            const licenseUrl = row.getValue("drivingLicense");
+            return licenseUrl ? (
+                <a
+                    href={licenseUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500"
+                >
+                    Driving License
+                </a>
+            ) : (
+                "N/A"
+            );
+        },
     },
 ];
+
 
 export default function LiveDriverTable() {
     const [sorting, setSorting] = useState([]);
@@ -99,23 +105,35 @@ export default function LiveDriverTable() {
     const [columnVisibility, setColumnVisibility] = useState({});
     const [rowSelection, setRowSelection] = useState({});
     const [data, setData] = useState([]);
-    const [categoryFilter, setCategoryFilter] = useState("all");
+    // const [categoryFilter, setCategoryFilter] = useState("all");
     const [loading, setLoading] = useState(true);  // Track loading state
 
     useEffect(() => {
-        setLoading(true);  // Start loading
+        setLoading(true); // Start loading
         axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
             .then(response => {
                 console.log(response.data);
-                setData(response.data.drivers);  // Set data once fetched
+                console.log(response.data.drivers);
+    
+                // Flatten nested arrays
+                const allDrivers = response.data.drivers.flat();
+    
+                // Filter out null or invalid entries
+                const validData = allDrivers.filter(driver => 
+                    driver && driver.driverId && driver.driverName && driver.driverLiveLocation
+                );
+    
+                console.log(validData);
+                setData(validData); // Set only valid data
             })
             .catch(error => {
                 console.error('Error fetching driver locations:', error);
             })
             .finally(() => {
-                setLoading(false);  // Stop loading after data is fetched
+                setLoading(false); // Stop loading after data is fetched
             });
     }, []);
+    
 
     const table = useReactTable({
         data,
@@ -136,15 +154,15 @@ export default function LiveDriverTable() {
         },
     });
 
-    useEffect(() => {
-        if (categoryFilter && categoryFilter !== "all") {
-            table.getColumn("category")?.setFilterValue(categoryFilter);
-        } else {
-            table.getColumn("category")?.setFilterValue("");
-        }
-    }, [categoryFilter, table]);
+    // useEffect(() => {
+    //     if (categoryFilter && categoryFilter !== "all") {
+    //         table.getColumn("category")?.setFilterValue(categoryFilter);
+    //     } else {
+    //         table.getColumn("category")?.setFilterValue("");
+    //     }
+    // }, [categoryFilter, table]);
 
-    const categoryOptions = [...new Set(data.map(item => item.category))];
+    // const categoryOptions = [...new Set(data.map(item => item.category))];
 
     if (loading) {  // If loading, show spinner
         return (
@@ -174,7 +192,7 @@ export default function LiveDriverTable() {
                     }
                     className="max-w-sm mr-4"
                 />
-                <Select onValueChange={setCategoryFilter} value={categoryFilter}>
+                {/* <Select onValueChange={setCategoryFilter} value={categoryFilter}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
@@ -186,7 +204,7 @@ export default function LiveDriverTable() {
                             </SelectItem>
                         ))}
                     </SelectContent>
-                </Select>
+                </Select> */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto">
