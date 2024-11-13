@@ -62,11 +62,11 @@ const columns = [
         header: "Phone",
         cell: ({ row }) => <div>{row.getValue("phone") || "N/A"}</div>,
     },
-    {
-        accessorKey: "category",
-        header: "Category",
-        cell: ({ row }) => <div>{row.getValue("category") || "N/A"}</div>,
-    },
+    // {
+    //     accessorKey: "category",
+    //     header: "Category",
+    //     cell: ({ row }) => <div>{row.getValue("category") || "N/A"}</div>,
+    // },
     {
         accessorKey: "driverLiveLocation.latitude",
         header: "Latitude",
