@@ -9,16 +9,16 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
-import { Button } from "../../ui/button";
+import { Button } from "../ui/button";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
-import { Input } from "../../ui/input";
+} from "../ui/dropdown-menu";
+import { Input } from "../ui/input";
 import {
     Table,
     TableBody,
@@ -26,9 +26,17 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "../../ui/table";
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
+} from "../ui/table";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "../ui/select";
 import { Oval } from 'react-loader-spinner';
+import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
+import EditIssue from './EditIssue';
 
 // Columns configuration
 const columns = [
@@ -40,106 +48,118 @@ const columns = [
         enableSorting: false,
     },
     {
-        accessorKey: "driverId",
-        header: "Driver ID",
-        cell: ({ row }) => <div>{row.original.driverId || "N/A"}</div>,
+        accessorKey: "_id",
+        header: "Issue ID",
+        cell: ({ row }) => <div>{row.getValue("_id")}</div>,
     },
     {
-        accessorKey: "driverName",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-                Name
-                <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-        ),
-        cell: ({ row }) => <div>{row.getValue("driverName") || "N/A"}</div>,
+        accessorKey: "complainName",
+        header: "Complainant Name",
+        cell: ({ row }) => <div>{row.original.complainant_info.person.name}</div>,
     },
     {
-        accessorKey: "phone",
-        header: "Phone",
-        cell: ({ row }) => <div>{row.getValue("phone") || "N/A"}</div>,
-    },
-    // {
-    //     accessorKey: "category",
-    //     header: "Category",
-    //     cell: ({ row }) => <div>{row.getValue("category") || "N/A"}</div>,
-    // },
-    {
-        accessorKey: "driverLiveLocation.latitude",
-        header: "Latitude",
-        cell: ({ row }) => <div>{row.original.driverLiveLocation?.latitude || "N/A"}</div>,
+        accessorKey: "complainNumber",
+        header: "Complainant Number",
+        cell: ({ row }) => <div>{row.original.complainant_info.contact.phone}</div>,
     },
     {
-        accessorKey: "driverLiveLocation.longitude",
-        header: "Longitude",
-        cell: ({ row }) => <div>{row.original.driverLiveLocation?.longitude || "N/A"}</div>,
+        accessorKey: "complainantStatus",
+        header: "Complainant Status",
+        cell: ({ row }) => <div>{row.original.issue_actions.complainant_actions.slice(-1)[0]?.complainant_action}</div>,
     },
     {
-        accessorKey: "drivingLicense",
-        header: "Driving License",
+        accessorKey: "respondentName",
+        header: "Respondent Name",
+        cell: ({ row }) => <div>{row.original.respondent_actions.slice(-1)[0]?.updated_by.person.name}</div>,
+    },
+    {
+        accessorKey: "respondentStatus",
+        header: "Respondent Status",
+        cell: ({ row }) => <div>{row.original.respondent_actions.slice(-1)[0]?.respondent_action}</div>,
+    },
+    {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => <div>{row.getValue("status")}</div>,
+    },
+    {
+        id: "actions",
+        header: "Actions",
+        enableHiding: false,
         cell: ({ row }) => {
-            const licenseUrl = row.getValue("drivingLicense");
-            return licenseUrl ? (
-                <a
-                    href={licenseUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500"
-                >
-                    Driving License
-                </a>
-            ) : (
-                "N/A"
+            const issue = row.original;
+            // console.log(row.original.respondent_actions.slice(-1)[0]?.respondent_action0);
+    
+            return (
+                <>
+                    <Dialog>
+                        <DialogTrigger>
+                            <button>
+                                Edit
+                            </button>
+                        </DialogTrigger>
+                        <DialogContent className="mt-2 mb-2 max-w-lg w-full mx-auto p-2 bg-white rounded-lg shadow-lg">
+                            <EditIssue Id={issue._id} />
+                        </DialogContent>
+                    </Dialog>
+                </>
             );
         },
     },
 ];
 
-
-export default function LiveDriverTable() {
+export default function IssueTable() {
     const [sorting, setSorting] = useState([]);
-    const [columnFilters, setColumnFilters] = useState([]);
+    const [issueColumnFilters, setIssueColumnFilters] = useState([]);
     const [columnVisibility, setColumnVisibility] = useState({});
     const [rowSelection, setRowSelection] = useState({});
     const [data, setData] = useState([]);
-    // const [categoryFilter, setCategoryFilter] = useState("all");
-    const [loading, setLoading] = useState(true);  // Track loading state
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [statusFilter, setStatusFilter] = useState("all");
+    const [globalFilter, setGlobalFilter] = useState("");
+    // const [isDialogOpen, setDialogOpen] = useState(false);
 
+    // const handleDialogClose = () => {
+    //     setDialogOpen(false);
+    //     fetchData(); // Fetch data when the dialog is closed
+    // };
+    
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get('https://seller.passdn.com/all_issues');
+            console.log(response.data)
+            setData(response.data);
+            sessionStorage.setItem('myIssueData', JSON.stringify(response.data));
+            sessionStorage.setItem('lastFetchTime', Date.now().toString());
+            console.log("running")
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
     useEffect(() => {
-        setLoading(true); // Start loading
-        axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
-            .then(response => {
-                console.log(response.data);
-                console.log(response.data.drivers);
+        const storedData = sessionStorage.getItem('myIssueData');
+        const lastFetchTime = sessionStorage.getItem('lastFetchTime');
+        const currentTime = Date.now();
+        const timeSinceLastFetch = currentTime - (lastFetchTime ? parseInt(lastFetchTime) : 0);
     
-                // Flatten nested arrays
-                const allDrivers = response.data.drivers.flat();
-    
-                // Filter out null or invalid entries
-                const validData = allDrivers.filter(driver => 
-                    driver && driver.driverId && driver.driverName && driver.driverLiveLocation
-                );
-    
-                console.log(validData);
-                setData(validData); // Set only valid data
-            })
-            .catch(error => {
-                console.error('Error fetching driver locations:', error);
-            })
-            .finally(() => {
-                setLoading(false); // Stop loading after data is fetched
-            });
-    }, []);
-    
+        if (storedData && timeSinceLastFetch < 60000) {
+            setData(JSON.parse(storedData));
+            setLoading(false);
+        } else {
+            fetchData();
+        }
+    }, []);    
 
     const table = useReactTable({
         data,
         columns,
         onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
+        onissueColumnFiltersChange: setIssueColumnFilters,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -148,63 +168,66 @@ export default function LiveDriverTable() {
         onRowSelectionChange: setRowSelection,
         state: {
             sorting,
-            columnFilters,
+            issueColumnFilters,
             columnVisibility,
             rowSelection,
+            globalFilter,
         },
+        onGlobalFilterChange: setGlobalFilter,
     });
 
-    // useEffect(() => {
-    //     if (categoryFilter && categoryFilter !== "all") {
-    //         table.getColumn("category")?.setFilterValue(categoryFilter);
-    //     } else {
-    //         table.getColumn("category")?.setFilterValue("");
-    //     }
-    // }, [categoryFilter, table]);
+    useEffect(() => {
+        if (statusFilter && statusFilter !== "all") {
+            table.getColumn("status")?.setFilterValue(statusFilter);
+        } else {
+            table.getColumn("status")?.setFilterValue("");
+        }
+    }, [statusFilter, table]);
 
-    // const categoryOptions = [...new Set(data.map(item => item.category))];
-
-    if (loading) {  // If loading, show spinner
-        return (
-            <div className="flex items-center justify-center min-h-screen">
-                <Oval
-                    height={60}
-                    width={60}
-                    color="#4fa94d"
-                    visible={true}
-                    ariaLabel='oval-loading'
-                    secondaryColor="#4fa94d"
-                    strokeWidth={2}
-                    strokeWidthSecondary={2}
-                />
-            </div>
-        );
+    if (loading) {
+        return <div className="flex items-center justify-center min-h-screen">
+        <Oval
+            height={60}
+            width={60}
+            color="#4fa94d"
+            visible={true}
+            ariaLabel='oval-loading'
+            secondaryColor="#4fa94d"
+            strokeWidth={2}
+            strokeWidthSecondary={2}
+        />
+    </div>;
     }
 
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
+    // Get unique status values for the filter
+    const statusOptions = [...new Set(data.map(item => item.status))];
+
     return (
-        <div className="w-[95%] mx-5 mt-2">
+        <div className="w-full max-w-6xl overflow-x-hidden mx-auto px-6">
             <div className="flex items-center py-4">
                 <Input
-                    placeholder="Filter names..."
-                    value={table.getColumn("driverName")?.getFilterValue() || ""}
-                    onChange={(event) =>
-                        table.getColumn("driverName")?.setFilterValue(event.target.value)
-                    }
+                    placeholder="Search all columns..."
+                    value={globalFilter ?? ""}
+                    onChange={(event) => setGlobalFilter(event.target.value)}
                     className="max-w-sm mr-4"
                 />
-                {/* <Select onValueChange={setCategoryFilter} value={categoryFilter}>
+                <Select onValueChange={setStatusFilter} value={statusFilter}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Filter by status" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="all">Category</SelectItem>
-                        {categoryOptions.map((category) => (
-                            <SelectItem key={category} value={category}>
-                                {category}
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        {statusOptions.map((status) => (
+                            <SelectItem key={status} value={status}>
+                                {status}
                             </SelectItem>
                         ))}
                     </SelectContent>
-                </Select> */}
+                </Select>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto">
@@ -227,8 +250,16 @@ export default function LiveDriverTable() {
                             ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
+                {/* <Dialog open={isDialogOpen} onOpenChange={setDialogOpen}>
+                    <DialogTrigger>
+                        <Button className="text-white text-md border-2 ml-2 p-1 pr-4 pl-4 rounded-md float-right">Add</Button>
+                    </DialogTrigger>
+                    <DialogContent className="mt-2 mb-2 max-w-lg w-full mx-auto p-2 bg-white rounded-lg shadow-lg">
+                        <AddIssue onClose={handleDialogClose} />
+                    </DialogContent>
+                </Dialog> */}
             </div>
-            <div className="rounded-md border bg-white">
+            <div className="rounded-md border">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

@@ -91,8 +91,8 @@ function SideNavbar() {
         },
         {
             id: "5",
-            title: "Offer",
-            link: "/home",
+            title: "Issues",
+            link: "/issues",
             submenu: false,
             icon: OfferIcon,
         },

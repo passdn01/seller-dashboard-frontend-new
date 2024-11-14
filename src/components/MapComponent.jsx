@@ -35,19 +35,25 @@ const MapComponent = ({ selectedDriver, onDriverSelect }) => {
     axios
       .post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/online-drivers')
       .then((response) => {
-        const drivers = response.data.drivers.map((driver) => ({
-          ...driver,
-          driverLiveLocation: {
-            latitude: parseFloat(driver.driverLiveLocation.latitude),
-            longitude: parseFloat(driver.driverLiveLocation.longitude),
-          },
-        }));
-        setDrivers(drivers);
-        setLoading(false); // Set loading to false after data is fetched
+        // Flatten nested arrays and ensure valid entries
+        const allDrivers = response.data.drivers.flat(); // Flatten nested arrays
+        const validDrivers = allDrivers
+          .filter(driver => driver && driver.driverLiveLocation) // Ensure valid data
+          .map(driver => ({
+            ...driver,
+            driverLiveLocation: {
+              latitude: parseFloat(driver.driverLiveLocation.latitude),
+              longitude: parseFloat(driver.driverLiveLocation.longitude),
+            },
+          }));
+
+        setDrivers(validDrivers);
       })
       .catch((error) => {
         console.error('Error fetching driver locations:', error);
-        setLoading(false); // Set loading to false even if there's an error
+      })
+      .finally(() => {
+        setLoading(false); // Set loading to false after data is fetched or on error
       });
   }, []);
 

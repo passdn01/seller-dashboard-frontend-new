@@ -195,7 +195,17 @@ export default function DriverTable() {
         },
         {
             accessorKey: "createdAt",
-            header: "Joining",
+            header: ({ column }) => (
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Joining
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
+            ),
             cell: ({ row }) => {
                 const date = new Date(row.getValue("createdAt")); // Convert to Date object
                 const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
@@ -259,6 +269,17 @@ export default function DriverTable() {
                 return <div>{missingDocs.length > 0 ? missingDocs.join(", ") : "None"}</div>;
             },
         },
+        {
+            accessorKey: "updatedAt",
+            header: "Updated",
+            cell: ({ row }) => {
+                const date = new Date(row.getValue("updatedAt")); // Convert to Date object
+                const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
+                const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
+        
+                return <div>{formattedDate}</div>; // Render the formatted date
+            },
+        }, 
         {
             id: "actions",
             enableHiding: false,
@@ -407,7 +428,7 @@ export default function DriverTable() {
     }
 
     return (
-        <div className="w-[80%] mx-24">
+        <div className="w-[85%] mx-20">
             <div className="flex items-center py-4">
                 <Input
                     placeholder="Search all columns..."
@@ -551,7 +572,7 @@ export default function DriverTable() {
                 <div className="flex-1 text-sm text-muted-foreground">
                     Total {table.getFilteredRowModel().rows.length} row(s) available.
                 </div>
-                <div className="space-x-2">
+                <div className="flex items-center space-x-2">
                     <Button
                         variant="outline"
                         size="sm"
@@ -560,6 +581,19 @@ export default function DriverTable() {
                     >
                         Previous
                     </Button>
+                    <input
+                        type="number"
+                        min="1"
+                        max={table.getFilteredRowModel().rows.length}
+                        placeholder="Go to row..."
+                        className="w-60 border rounded px-2 py-2 text-sm"
+                        onChange={(e) => {
+                            const rowNumber = Number(e.target.value);
+                            if (rowNumber > 0 && rowNumber <= table.getFilteredRowModel().rows.length) {
+                                table.setPageIndex(Math.floor((rowNumber - 1) / table.getState().pagination.pageSize));
+                            }
+                        }}
+                    />
                     <Button
                         variant="outline"
                         size="sm"
@@ -570,6 +604,7 @@ export default function DriverTable() {
                     </Button>
                 </div>
             </div>
+
         </div>
     );
 }

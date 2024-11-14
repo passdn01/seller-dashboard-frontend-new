@@ -128,18 +128,21 @@ const GeoMetrics = () => {
     const fetchDriverLocations = () => {
         axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/online-drivers')
             .then(response => {
-                const drivers = response.data.drivers.map(driver => {
-                    const latitude = parseFloat(driver.driverLiveLocation.latitude);
-                    const longitude = parseFloat(driver.driverLiveLocation.longitude);
-                    return {
-                        ...driver,
-                        driverLiveLocation: {
-                            latitude: isNaN(latitude) ? 0 : latitude, // Fallback to 0 if invalid
-                            longitude: isNaN(longitude) ? 0 : longitude
-                        }
-                    };
-                });
-                setDrivers(drivers);
+                const allDrivers = response.data.drivers.flat(); // Flatten nested arrays if any
+                const validDrivers = allDrivers
+                    .filter(driver => driver && driver.driverLiveLocation) // Ensure driver and location exist
+                    .map(driver => {
+                        const latitude = parseFloat(driver.driverLiveLocation.latitude);
+                        const longitude = parseFloat(driver.driverLiveLocation.longitude);
+                        return {
+                            ...driver,
+                            driverLiveLocation: {
+                                latitude: isNaN(latitude) ? 0 : latitude, // Fallback to 0 if invalid
+                                longitude: isNaN(longitude) ? 0 : longitude
+                            }
+                        };
+                    });
+                setDrivers(validDrivers);
                 setAnalysis('This map shows the locations of all active drivers. Click on a marker for more information.');
             })
             .catch(error => {
@@ -147,6 +150,7 @@ const GeoMetrics = () => {
                 setAnalysis('Error fetching driver locations.');
             });
     };
+    
 
     // Fetch data based on viewMode
     useEffect(() => {
