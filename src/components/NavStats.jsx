@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './NavStats.css';
+import { io } from 'socket.io-client';
 
 const NavStats = () => {
     const [allCompletedRides, setAllCompletedRides] = useState(0);
@@ -10,6 +11,7 @@ const NavStats = () => {
     const [ongoingRidesCount, setOngoingRidesCount] = useState(0);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [socket, setSocket] = useState(null);
 
     useEffect(() => {
         // Simulate loading for the map
@@ -45,21 +47,33 @@ const NavStats = () => {
         fetchTotalCompletedRides();
     }, []);
 
-    const fetchOnlineDrivers = async () => {
-        try {
-            const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers');
-            const totalOnlineDrivers = response.data.drivers.length;
-            setOnlineDriversCount(totalOnlineDrivers);
-        } catch (err) {
-            console.error(err);
-            setError('Failed to fetch online drivers');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     useEffect(() => {
-        fetchOnlineDrivers();
+        const newSocket = io('http://localhost:2003');
+        setSocket(newSocket);
+
+        // Request online drivers once connected
+        newSocket.on('connect', () => {
+        console.log('Connected to WebSocket server');
+        newSocket.emit('getOnlineDrivers');
+        });
+
+        newSocket.on('onlineDrivers', (response) => {
+        if (response && response.drivers) {
+            const totalOnlineDrivers = response.drivers.length;
+            setOnlineDriversCount(totalOnlineDrivers);
+        }
+        });
+
+        newSocket.on('error', (err) => {
+        console.error(err);
+        setError('Failed to fetch online drivers');
+        });
+
+        return () => {
+        newSocket.close();
+        };
+
     }, []);
 
     const fetchOngoingRides = async () => {

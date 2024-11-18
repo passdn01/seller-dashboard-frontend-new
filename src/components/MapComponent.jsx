@@ -5,6 +5,7 @@ import axios from 'axios';
 import L from 'leaflet';
 import './MapComponent.css';
 import 'leaflet/dist/leaflet.css'; // Import Leaflet CSS
+import { io } from 'socket.io-client';
 
 // Default icon for markers
 const defaultIcon = new L.Icon({
@@ -28,34 +29,44 @@ const center = {
 const MapComponent = ({ selectedDriver, onDriverSelect }) => {
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true); // Add loading state
+  const [socket, setSocket] = useState(null); // State to hold socket connection
 
-  // Fetch online drivers
+  // Effect to initialize WebSocket connection
   useEffect(() => {
-    setLoading(true); // Set loading to true when fetching starts
-    axios
-      .post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
-      .then((response) => {
-        // Flatten nested arrays and ensure valid entries
-        const allDrivers = response.data.drivers.flat(); // Flatten nested arrays
-        const validDrivers = allDrivers
-          .filter(driver => driver && driver.driverLiveLocation) // Ensure valid data
-          .map(driver => ({
-            ...driver,
-            driverLiveLocation: {
-              latitude: parseFloat(driver.driverLiveLocation.latitude),
-              longitude: parseFloat(driver.driverLiveLocation.longitude),
-            },
-          }));
+    // Establish WebSocket connection
+    const newSocket = io('http://localhost:2003'); // Change this to your server URL
+    setSocket(newSocket);
 
-        setDrivers(validDrivers);
-      })
-      .catch((error) => {
-        console.error('Error fetching driver locations:', error);
-      })
-      .finally(() => {
-        setLoading(false); // Set loading to false after data is fetched or on error
-      });
-  }, []);
+    // Request online drivers once connected
+    newSocket.on('connect', () => {
+      console.log('Connected to WebSocket server');
+      newSocket.emit('getOnlineDrivers'); // Emit the 'getOnlineDrivers' event to fetch data
+    });
+
+    // Listen for the onlineDrivers event and update data
+    newSocket.on('onlineDrivers', (response) => {
+      console.log(response);
+      const allDrivers = response.drivers.flat(); // Flatten nested arrays
+      const validDrivers = allDrivers
+        .filter(driver => driver && driver.driverLiveLocation) // Ensure valid data
+        .map(driver => ({
+          ...driver,
+          driverLiveLocation: {
+            latitude: parseFloat(driver.driverLiveLocation.latitude),
+            longitude: parseFloat(driver.driverLiveLocation.longitude),
+          },
+        }));
+
+      setDrivers(validDrivers); // Set valid drivers data
+      setLoading(false); // Stop loading after data is fetched
+    });
+
+    // Cleanup function to disconnect from WebSocket when the component is unmounted
+    return () => {
+      newSocket.close();
+    };
+
+  }, []); // Empty array means the effect runs only once when the component is mounted
 
   return (
     <div className="map-container">

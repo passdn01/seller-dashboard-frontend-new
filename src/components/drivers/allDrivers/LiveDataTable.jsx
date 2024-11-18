@@ -29,6 +29,7 @@ import {
 } from "../../ui/table";
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Oval } from 'react-loader-spinner';
+import io from 'socket.io-client';
 
 // Columns configuration
 const columns = [
@@ -107,32 +108,35 @@ export default function LiveDriverTable() {
     const [data, setData] = useState([]);
     // const [categoryFilter, setCategoryFilter] = useState("all");
     const [loading, setLoading] = useState(true);  // Track loading state
+    const [socket, setSocket] = useState(null); // Socket instance
 
+    // Effect to initialize WebSocket connection
     useEffect(() => {
-        setLoading(true); // Start loading
-        axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
-            .then(response => {
-                console.log(response.data);
-                console.log(response.data.drivers);
-    
-                // Flatten nested arrays
-                const allDrivers = response.data.drivers.flat();
-    
-                // Filter out null or invalid entries
-                const validData = allDrivers.filter(driver => 
-                    driver && driver.driverId && driver.driverName && driver.driverLiveLocation
-                );
-    
-                console.log(validData);
-                setData(validData); // Set only valid data
-            })
-            .catch(error => {
-                console.error('Error fetching driver locations:', error);
-            })
-            .finally(() => {
-                setLoading(false); // Stop loading after data is fetched
-            });
-    }, []);
+        // Establish WebSocket connection
+        const newSocket = io('http://localhost:2003'); // Change the URL to match your server
+        setSocket(newSocket);
+
+        // Request online drivers once connected
+        newSocket.on('connect', () => {
+            console.log('Connected to WebSocket server');
+            newSocket.emit('getOnlineDrivers'); // Emit the 'getOnlineDrivers' event to fetch data
+        });
+
+        // Listen for the onlineDrivers event and update data
+        newSocket.on('onlineDrivers', (response) => {
+            console.log(response);
+            const allDrivers = response.drivers.flat(); // Flatten nested arrays
+            const validData = allDrivers.filter(driver => 
+                driver && driver.driverId && driver.driverName && driver.driverLiveLocation
+            );
+            setData(validData); // Set only valid data
+            setLoading(false); // Stop loading after data is fetched
+        });
+
+        // Cleanup function to disconnect from WebSocket when the component is unmounted
+        return () => newSocket.close();
+
+    }, []); // Empty array means this effect runs only once when the component is mounted
     
 
     const table = useReactTable({
@@ -153,16 +157,6 @@ export default function LiveDriverTable() {
             rowSelection,
         },
     });
-
-    // useEffect(() => {
-    //     if (categoryFilter && categoryFilter !== "all") {
-    //         table.getColumn("category")?.setFilterValue(categoryFilter);
-    //     } else {
-    //         table.getColumn("category")?.setFilterValue("");
-    //     }
-    // }, [categoryFilter, table]);
-
-    // const categoryOptions = [...new Set(data.map(item => item.category))];
 
     if (loading) {  // If loading, show spinner
         return (
@@ -192,19 +186,6 @@ export default function LiveDriverTable() {
                     }
                     className="max-w-sm mr-4"
                 />
-                {/* <Select onValueChange={setCategoryFilter} value={categoryFilter}>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Filter by status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">Category</SelectItem>
-                        {categoryOptions.map((category) => (
-                            <SelectItem key={category} value={category}>
-                                {category}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select> */}
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto">

@@ -6,6 +6,7 @@ import 'leaflet.heat/dist/leaflet-heat.js';
 import axios from 'axios';
 import './MapComponent.css';
 import PropTypes from 'prop-types';
+import { io } from 'socket.io-client';
 
 // Custom HeatmapLayer Component
 const HeatmapLayer = ({ data }) => {
@@ -81,6 +82,7 @@ const GeoMetrics = () => {
     const [analysis, setAnalysis] = useState(''); // State to control analysis text
     const [rideType, setRideType] = useState('completed'); // State to control ride type selection
     const [mapLoading, setMapLoading] = useState(true); // Loading state for the map
+    const [socket, setSocket] = useState(null);
 
     useEffect(() => {
         // Simulate loading for the map
@@ -125,58 +127,66 @@ const GeoMetrics = () => {
             });
     };
 
-    const fetchDriverLocations = () => {
-        axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/online-drivers')
-            .then(response => {
-                const allDrivers = response.data.drivers.flat(); // Flatten nested arrays if any
-                const validDrivers = allDrivers
-                    .filter(driver => driver && driver.driverLiveLocation) // Ensure driver and location exist
-                    .map(driver => {
-                        const latitude = parseFloat(driver.driverLiveLocation.latitude);
-                        const longitude = parseFloat(driver.driverLiveLocation.longitude);
-                        return {
-                            ...driver,
-                            driverLiveLocation: {
-                                latitude: isNaN(latitude) ? 0 : latitude, // Fallback to 0 if invalid
-                                longitude: isNaN(longitude) ? 0 : longitude
-                            }
-                        };
-                    });
-                setDrivers(validDrivers);
-                setAnalysis('This map shows the locations of all active drivers. Click on a marker for more information.');
-            })
-            .catch(error => {
-                console.error('Error fetching driver locations:', error);
-                setAnalysis('Error fetching driver locations.');
-            });
-    };
-    
 
-    // Fetch data based on viewMode
     useEffect(() => {
-        if (viewMode === 'heatmap') {
-            if (rideType === 'completed') {
-                fetchRideDistribution();
-            } else {
-                fetchCancelledRideDistribution();
-            }
-        } else if (viewMode === 'drivers') {
-            fetchDriverLocations();
+      // Establish WebSocket connection
+      const newSocket = io('http://localhost:2003'); // Replace with your WebSocket server URL
+      setSocket(newSocket);
+  
+      // Fetch driver locations if in 'drivers' view mode
+      if (viewMode === 'drivers') {
+        newSocket.emit('getOnlineDrivers'); // Request online drivers
+      }
+  
+      // Listen for driver data
+      newSocket.on('onlineDrivers', (response) => {
+        if (response && response.drivers) {
+          const allDrivers = response.drivers.flat(); // Flatten nested arrays if any
+          const validDrivers = allDrivers
+            .filter(driver => driver && driver.driverLiveLocation) // Ensure driver and location exist
+            .map(driver => {
+              const latitude = parseFloat(driver.driverLiveLocation.latitude);
+              const longitude = parseFloat(driver.driverLiveLocation.longitude);
+              return {
+                ...driver,
+                driverLiveLocation: {
+                  latitude: isNaN(latitude) ? 0 : latitude, // Fallback to 0 if invalid
+                  longitude: isNaN(longitude) ? 0 : longitude
+                }
+              };
+            });
+          setDrivers(validDrivers);
+          setAnalysis('This map shows the locations of all active drivers. Click on a marker for more information.');
         }
-    }, [viewMode, rideType]);
-
+      });
+  
+      newSocket.on('error', (error) => {
+        console.error('Error fetching driver locations:', error);
+        setAnalysis('Error fetching driver locations.');
+      });
+  
+      // Cleanup WebSocket connection on unmount
+      return () => newSocket.close();
+    }, [viewMode]);
+  
     // Refresh data every 2 seconds
     useEffect(() => {
-        const interval = setInterval(() => {
-            if (viewMode === 'heatmap') {
-                fetchRideDistribution();
-            } else if (viewMode === 'drivers') {
-                fetchDriverLocations();
-            }
-        }, 2000);
-
-        return () => clearInterval(interval); // Clear interval on unmount
-    }, [viewMode]);
+      const interval = setInterval(() => {
+        if (viewMode === 'heatmap') {
+          if (rideType === 'completed') {
+            fetchRideDistribution(); // You might need to implement WebSocket-based heatmap fetching as well
+          } else {
+            fetchCancelledRideDistribution();
+          }
+        } else if (viewMode === 'drivers') {
+          if (socket) {
+            socket.emit('getOnlineDrivers'); // Request updated driver locations
+          }
+        }
+      }, 2000);
+  
+      return () => clearInterval(interval); // Clear interval on unmount
+    }, [viewMode, rideType, socket]);
 
     return (
         <div className="geo-container">
