@@ -189,7 +189,12 @@ export default function DriverTable() {
         {
             id: "sno",
             header: "S.No.",
-            cell: ({ row }) => <div>{row.index + 1}</div>,
+            cell: ({ table, row }) => {
+                // Calculate the index based on the filtered and sorted rows
+                const visibleRows = table.getRowModel().rows;
+                const rowIndex = visibleRows.findIndex(visibleRow => visibleRow.id === row.id);
+                return <div>{rowIndex + 1}</div>;
+            },
             enableHiding: false,
             enableSorting: false,
         },
@@ -271,7 +276,15 @@ export default function DriverTable() {
         },
         {
             accessorKey: "updatedAt",
-            header: "Updated",
+            header: ({ column }) => (
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Updated
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            ),
             cell: ({ row }) => {
                 const date = new Date(row.getValue("updatedAt")); // Convert to Date object
                 const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting

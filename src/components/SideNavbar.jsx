@@ -98,158 +98,158 @@ function SideNavbar() {
         },
         {
             id: "6",
-            title: "Tech Cost",
-            link: "/home",
+            title: "Blogs",
+            link: "/blogs",
             submenu: false,
             icon: TechCostIcon,
         },
-        {
-            id: "7",
-            title: "Fare Price",
-            link: "/home",
-            submenu: false,
-            icon: FarePriceIcon,
-        },
-        {
-            id: "8",
-            title: "Website",
-            link: '',
-            submenu: true,
-            icon: WebsiteIcon,
-            subMenuList: [
-                {
-                    id: '1',
-                    title: 'Website Overview',
-                    link: '/website/overview',
-                    icon: '',
-                },
-                {
-                    id: '2',
-                    title: 'Website Settings',
-                    link: '/website/settings',
-                    icon: '',
-                }
-            ]
-        },
-        {
-            id: "9",
-            title: "Finance Metrics",
-            link: '',
-            submenu: true,
-            icon: FinancialMetricsIcon,
-            subMenuList: [
-                {
-                    id: '1',
-                    title: 'Metrics Overview',
-                    link: '/finance/overview',
-                    icon: '',
-                },
-                {
-                    id: '2',
-                    title: 'Reports',
-                    link: '/finance/reports',
-                    icon: '',
-                }
-            ]
-        },
-        {
-            id: "10",
-            title: "Issue Solver",
-            link: '',
-            submenu: true,
-            icon: IssueSolverIcon,
-            subMenuList: [
-                {
-                    id: '1',
-                    title: 'Open Issues',
-                    link: '/issues/open',
-                    icon: '',
-                },
-                {
-                    id: '2',
-                    title: 'Resolved Issues',
-                    link: '/issues/resolved',
-                    icon: '',
-                }
-            ]
-        },
-        {
-            id: "11",
-            title: "Air Share",
-            link: '',
-            submenu: true,
-            icon: DriverIcon,
-            subMenuList: [
-                {
-                    id: '1',
-                    title: 'Air Share Overview',
-                    link: '/airshare/overview',
-                    icon: '',
-                },
-                {
-                    id: '2',
-                    title: 'Air Share Settings',
-                    link: '/airshare/settings',
-                    icon: '',
-                }
-            ]
-        },
-        {
-            id: "12",
-            title: "Quiz Share",
-            link: '',
-            submenu: true,
-            icon: QuizDashboardIcon,
-            subMenuList: [
-                {
-                    id: '1',
-                    title: 'Active Quizzes',
-                    link: '/quizzes/active',
-                    icon: '',
-                },
-                {
-                    id: '2',
-                    title: 'Quiz Reports',
-                    link: '/quizzes/reports',
-                    icon: '',
-                }
-            ]
-        },
-        {
-            id: "13",
-            title: "Financial Services",
-            link: '',
-            submenu: true,
-            icon: FinancialServicesIcon,
-            subMenuList: [
-                {
-                    id: '1',
-                    title: 'Service Overview',
-                    link: '/finance/services/overview',
-                    icon: '',
-                },
-                {
-                    id: '2',
-                    title: 'Service Settings',
-                    link: '/finance/services/settings',
-                    icon: '',
-                }
-            ]
-        },
-        {
-            id: "14",
-            title: "I AM Admin",
-            link: "/home",
-            submenu: false,
-            icon: IAMAdminIcon,
-        },
-        {
-            id: "15",
-            title: "Logs",
-            link: "/home",
-            submenu: false,
-            icon: LogsIcon,
-        },
+        // {
+        //     id: "7",
+        //     title: "Fare Price",
+        //     link: "/home",
+        //     submenu: false,
+        //     icon: FarePriceIcon,
+        // },
+        // {
+        //     id: "8",
+        //     title: "Website",
+        //     link: '',
+        //     submenu: true,
+        //     icon: WebsiteIcon,
+        //     subMenuList: [
+        //         {
+        //             id: '1',
+        //             title: 'Website Overview',
+        //             link: '/website/overview',
+        //             icon: '',
+        //         },
+        //         {
+        //             id: '2',
+        //             title: 'Website Settings',
+        //             link: '/website/settings',
+        //             icon: '',
+        //         }
+        //     ]
+        // },
+        // {
+        //     id: "9",
+        //     title: "Finance Metrics",
+        //     link: '',
+        //     submenu: true,
+        //     icon: FinancialMetricsIcon,
+        //     subMenuList: [
+        //         {
+        //             id: '1',
+        //             title: 'Metrics Overview',
+        //             link: '/finance/overview',
+        //             icon: '',
+        //         },
+        //         {
+        //             id: '2',
+        //             title: 'Reports',
+        //             link: '/finance/reports',
+        //             icon: '',
+        //         }
+        //     ]
+        // },
+        // {
+        //     id: "10",
+        //     title: "Issue Solver",
+        //     link: '',
+        //     submenu: true,
+        //     icon: IssueSolverIcon,
+        //     subMenuList: [
+        //         {
+        //             id: '1',
+        //             title: 'Open Issues',
+        //             link: '/issues/open',
+        //             icon: '',
+        //         },
+        //         {
+        //             id: '2',
+        //             title: 'Resolved Issues',
+        //             link: '/issues/resolved',
+        //             icon: '',
+        //         }
+        //     ]
+        // },
+        // {
+        //     id: "11",
+        //     title: "Air Share",
+        //     link: '',
+        //     submenu: true,
+        //     icon: DriverIcon,
+        //     subMenuList: [
+        //         {
+        //             id: '1',
+        //             title: 'Air Share Overview',
+        //             link: '/airshare/overview',
+        //             icon: '',
+        //         },
+        //         {
+        //             id: '2',
+        //             title: 'Air Share Settings',
+        //             link: '/airshare/settings',
+        //             icon: '',
+        //         }
+        //     ]
+        // },
+        // {
+        //     id: "12",
+        //     title: "Quiz Share",
+        //     link: '',
+        //     submenu: true,
+        //     icon: QuizDashboardIcon,
+        //     subMenuList: [
+        //         {
+        //             id: '1',
+        //             title: 'Active Quizzes',
+        //             link: '/quizzes/active',
+        //             icon: '',
+        //         },
+        //         {
+        //             id: '2',
+        //             title: 'Quiz Reports',
+        //             link: '/quizzes/reports',
+        //             icon: '',
+        //         }
+        //     ]
+        // },
+        // {
+        //     id: "13",
+        //     title: "Financial Services",
+        //     link: '',
+        //     submenu: true,
+        //     icon: FinancialServicesIcon,
+        //     subMenuList: [
+        //         {
+        //             id: '1',
+        //             title: 'Service Overview',
+        //             link: '/finance/services/overview',
+        //             icon: '',
+        //         },
+        //         {
+        //             id: '2',
+        //             title: 'Service Settings',
+        //             link: '/finance/services/settings',
+        //             icon: '',
+        //         }
+        //     ]
+        // },
+        // {
+        //     id: "14",
+        //     title: "I AM Admin",
+        //     link: "/home",
+        //     submenu: false,
+        //     icon: IAMAdminIcon,
+        // },
+        // {
+        //     id: "15",
+        //     title: "Logs",
+        //     link: "/home",
+        //     submenu: false,
+        //     icon: LogsIcon,
+        // },
         // {
         //     id: "15",
         //     title: "Log out",
@@ -331,7 +331,7 @@ function SideNavbar() {
 
                     ))}
                     <Link onClick={handleLogout}>
-                        <CommandItem className='flex items-center p-2 text-sm hover:bg-blue-100 rounded-md w-full cursor-pointer bg-white'>
+                        <CommandItem className='bottom-0 absolute items-center p-2 text-sm hover:bg-blue-100 rounded-md w-full cursor-pointer bg-white'>
                             <img src={LogoutIcon} alt="" className="h-5 w-5 mr-3" />
                             <span>Logout</span>
                         </CommandItem>

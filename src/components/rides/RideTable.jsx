@@ -45,7 +45,12 @@ const columns = [
     {
         id: "sno",
         header: "S.No.",
-        cell: ({ row }) => <div>{row.index + 1}</div>,
+        cell: ({ table, row }) => {
+            // Calculate the index based on the filtered and sorted rows
+            const visibleRows = table.getRowModel().rows;
+            const rowIndex = visibleRows.findIndex(visibleRow => visibleRow.id === row.id);
+            return <div>{rowIndex + 1}</div>;
+        },
         enableHiding: false,
         enableSorting: false,
     },
@@ -56,8 +61,24 @@ const columns = [
     },
     {
         accessorKey: "createdAt",
-        header: "Date and Time",
-        cell: ({ row }) => <div>{row.getValue("createdAt")}</div>,
+        header: ({ column }) => (
+            <div className="flex items-center gap-2">
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Joining
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
+        ),
+        cell: ({ row }) => {
+            const date = new Date(row.getValue("createdAt")); // Convert to Date object
+            const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
+            const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
+    
+            return <div>{formattedDate}</div>; // Render the formatted date
+        },
     },
     {
         accessorKey: "fare",
@@ -81,6 +102,27 @@ const columns = [
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => <div>{row.getValue("status")}</div>,
+    },
+    {
+        accessorKey: "updatedAt",
+        header: ({ column }) => (
+            <div className="flex items-center gap-2">
+                <Button
+                    variant="ghost"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Updated
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
+        ),
+        cell: ({ row }) => {
+            const date = new Date(row.getValue("updatedAt")); // Convert to Date object
+            const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
+            const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
+    
+            return <div>{formattedDate}</div>; // Render the formatted date
+        },
     },
     {
         id: "actions",
@@ -304,7 +346,7 @@ export default function RideTable() {
                 <div className="flex-1 text-sm text-muted-foreground">
                     Total {table.getFilteredRowModel().rows.length} row(s) available.
                 </div>
-                <div className="space-x-2">
+                <div className="flex items-center space-x-2">
                     <Button
                         variant="outline"
                         size="sm"
@@ -313,6 +355,19 @@ export default function RideTable() {
                     >
                         Previous
                     </Button>
+                    <input
+                        type="number"
+                        min="1"
+                        max={table.getFilteredRowModel().rows.length}
+                        placeholder="Go to row..."
+                        className="w-60 border rounded px-2 py-2 text-sm"
+                        onChange={(e) => {
+                            const rowNumber = Number(e.target.value);
+                            if (rowNumber > 0 && rowNumber <= table.getFilteredRowModel().rows.length) {
+                                table.setPageIndex(Math.floor((rowNumber - 1) / table.getState().pagination.pageSize));
+                            }
+                        }}
+                    />
                     <Button
                         variant="outline"
                         size="sm"
