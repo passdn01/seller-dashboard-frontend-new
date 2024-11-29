@@ -94,7 +94,7 @@ const GeoMetrics = () => {
     }, []);
 
     const fetchRideDistribution = () => {
-        axios.get('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/ride-distribution')
+        axios.get('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/ride-distribution')
             .then(response => {
                 const data = response.data.map(cluster => [
                     cluster.center.lat,
@@ -111,7 +111,7 @@ const GeoMetrics = () => {
     };
 
     const fetchCancelledRideDistribution = () => {
-        axios.get('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/cancelled-ride-distribution')
+        axios.get('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/cancelled-ride-distribution')
             .then(response => {
                 const data = response.data.map(cluster => [
                     cluster.center.lat,

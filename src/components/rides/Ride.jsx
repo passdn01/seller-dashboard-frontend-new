@@ -39,7 +39,7 @@ function Ride() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/ride/${id}`)
+        axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/ride/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
