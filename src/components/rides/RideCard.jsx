@@ -33,22 +33,45 @@ const RideCard = ({ data }) => {
     }, [ride]);
 
     return (
-        <div className="flex flex-col gap-y-6 p-4 my-6 mx-4 bg-white shadow-lg rounded-lg border max-w-full">
-            <CardHeader className="pb-4">
-                <CardTitle className="text-xl font-semibold text-gray-800">Ride Details</CardTitle>
-                <CardDescription className="text-lg text-gray-600">
-                    Joined: {new Date(ride.createdAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                    })}
-                </CardDescription>
+        <div className="flex flex-col gap-y-2 p-4 my-6 mx-4 bg-white shadow-lg rounded-lg border max-w-full">
+            <CardHeader className="flex flex-row justify-between pb-4">
+                <div>
+                    <CardTitle className="text-xl font-semibold text-gray-800">Ride Details</CardTitle>
+                    <CardDescription className="text-lg text-gray-600">
+                        Joined: {new Date(ride.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        })}
+                    </CardDescription>
+                </div>
+                <div className='text-2xl'>{ride.status}</div>
             </CardHeader>
 
             {/* Location Details */}
             <div className="flex flex-col md:flex-row gap-4 mt-4">
                 <div className="flex-grow-1 md:w-1/2">
-                    blank
+                    <Card className="flex-1 p-6 bg-gray-50 border shadow-sm rounded-sm mt-4 mb-2">
+                        <span className="text-lg font-semibold text-gray-800">User Info</span>
+                        <div className="text-md text-gray-700 mt-2 space-y-1">
+                            <p>User Name: {ride.userInfo.name}</p>
+                            <p>User Phone: {ride.userInfo.phone}</p>
+                        </div>
+                    </Card>
+                    <Card className="flex-1 p-6 bg-gray-50 border shadow-sm rounded-sm">
+                        <span className="text-lg font-semibold text-gray-800">Driver Info</span>
+                        {driverInfo ? (
+                            <div className="text-md text-gray-700 mt-2 space-y-1">
+                                <p>Driver Name: {driverInfo.name}</p>
+                                <p>Phone: {driverInfo.phone}</p>
+                                <p>Vehicle Number: {driverInfo.vehicleNumber}</p>
+                                <p>Category: {driverInfo.category}</p>
+                                <p>License Number: {driverInfo.licenseNumber}</p>
+                            </div>
+                        ) : (
+                            <p className="text-red-500 mt-2">Driver info unavailable</p>
+                        )}
+                    </Card>
                 </div>
                 <div className="flex-grow-1 md:w-1/2">
                     <div className="flex p-4 mb-2 gap-4">
@@ -95,29 +118,6 @@ const RideCard = ({ data }) => {
                         </Card>
                     </div>
                 </div>
-            </div>
-
-            <div className="flex flex-col md:flex-row gap-4">
-                <Card className="flex-1 p-4 bg-gray-50 border shadow-sm rounded-lg">
-                    <span className="text-lg font-semibold text-gray-800">Driver Info</span>
-                    {driverInfo ? (
-                        <div className="text-md text-gray-700 mt-2 space-y-1">
-                            <p>Driver Name: {driverInfo.name}</p>
-                            <p>Vehicle Number: {driverInfo.vehicleNumber}</p>
-                            <p>Vehicle Type: {driverInfo.vehicleType}</p>
-                        </div>
-                    ) : (
-                        <p className="text-red-500 mt-2">Driver info unavailable</p>
-                    )}
-                </Card>
-
-                <Card className="flex-1 p-4 bg-gray-50 border shadow-sm rounded-lg">
-                    <span className="text-lg font-semibold text-gray-800">User Info</span>
-                    <div className="text-md text-gray-700 mt-2 space-y-1">
-                        <p>User Name: {ride.userInfo.name}</p>
-                        <p>User Phone: {ride.userInfo.phone}</p>
-                    </div>
-                </Card>
             </div>
         </div>
     );
