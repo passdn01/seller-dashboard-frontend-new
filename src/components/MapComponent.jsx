@@ -34,7 +34,7 @@ const MapComponent = ({ selectedDriver, onDriverSelect }) => {
   // Effect to initialize WebSocket connection
   useEffect(() => {
     // Establish WebSocket connection
-    const newSocket = io('http://localhost:2003'); // Change this to your server URL
+    const newSocket = io('https://55kqzrxn-2003.inc1.devtunnels.ms'); // Change this to your server URL
     setSocket(newSocket);
 
     // Request online drivers once connected

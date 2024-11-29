@@ -113,7 +113,7 @@ export default function LiveDriverTable() {
     // Effect to initialize WebSocket connection
     useEffect(() => {
         // Establish WebSocket connection
-        const newSocket = io('http://localhost:2003'); // Change the URL to match your server
+        const newSocket = io('https://55kqzrxn-2003.inc1.devtunnels.ms'); // Change the URL to match your server
         setSocket(newSocket);
 
         // Request online drivers once connected

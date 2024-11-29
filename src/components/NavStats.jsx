@@ -49,7 +49,7 @@ const NavStats = () => {
 
 
     useEffect(() => {
-        const newSocket = io('http://localhost:2003');
+        const newSocket = io('https://55kqzrxn-2003.inc1.devtunnels.ms');
         setSocket(newSocket);
 
         // Request online drivers once connected

@@ -130,7 +130,7 @@ const GeoMetrics = () => {
 
     useEffect(() => {
       // Establish WebSocket connection
-      const newSocket = io('http://localhost:2003'); // Replace with your WebSocket server URL
+      const newSocket = io('https://55kqzrxn-2003.inc1.devtunnels.ms'); // Replace with your WebSocket server URL
       setSocket(newSocket);
   
       // Fetch driver locations if in 'drivers' view mode

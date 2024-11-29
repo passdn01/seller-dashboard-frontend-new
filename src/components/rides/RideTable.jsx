@@ -45,12 +45,7 @@ const columns = [
     {
         id: "sno",
         header: "S.No.",
-        cell: ({ table, row }) => {
-            // Calculate the index based on the filtered and sorted rows
-            const visibleRows = table.getRowModel().rows;
-            const rowIndex = visibleRows.findIndex(visibleRow => visibleRow.id === row.id);
-            return <div>{rowIndex + 1}</div>;
-        },
+        cell: ({ row }) => <div>{row.index + 1}</div>,
         enableHiding: false,
         enableSorting: false,
     },
