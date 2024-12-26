@@ -33,6 +33,13 @@ const DriverRC = ({ data }) => {
                         </DialogContent>
                     </Dialog>
                     </Button>
+                    <Button variant="outline" size="sm"><Dialog>
+                        <DialogTrigger>RC Back Image</DialogTrigger>
+                        <DialogContent className='max-h-[80vh] overflow-auto'>
+                            <img src={driverInfo?.registrationCertificateBack} alt="NOT AVAILABLE" />
+                        </DialogContent>
+                    </Dialog>
+                    </Button>
                 </div>
             </CardContent>
         </Card >

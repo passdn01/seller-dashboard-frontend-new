@@ -128,10 +128,10 @@ export default function DriverTable() {
         if (!driverToDelete) return;
 
         try {
-            const response = await axios.delete(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
             if (response.data.success) {
                 // Refetch data after deletion
-                const newResponse = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allDrivers');
+                const newResponse = await axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/allDrivers');
                 if (newResponse.data.success) {
                     const updatedData = newResponse.data.data;
                     setData(updatedData);
@@ -153,7 +153,7 @@ export default function DriverTable() {
 
     const handleStatusUpdate = async (driverId, currentStatus) => {
         try {
-            await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
+            await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
                 completeStatus: !currentStatus // Toggle the status
             });
 
@@ -168,10 +168,27 @@ export default function DriverTable() {
     };
 
 
+    const handleStatusRejectUpdate = async (driverId, currentStatus) => {
+        try {
+            currentStatus=currentStatus=="REJECTED"?'OFFLINE':'REJECTED'
+            await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
+                status: currentStatus // Toggle the status
+            });
+
+            const updatedData = data.map(driver => driver._id === driverId ? { ...driver,status: currentStatus } : driver);
+            setData(updatedData);
+
+            alert(`Driver marked as ${currentStatus=="REJECTED" ? 'REJECTED' : 'OFFLINE'}`);
+        
+        } catch (error) {
+            console.error("Error updating status:", error);
+            setError('Error updating status');
+        }
+    };
     const updateIncompleteDrivers = async () => {
         setMessage('Updating, please wait...');
         try {
-            const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/updateIncompleteDrivers');
+            const response = await axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/updateIncompleteDrivers');
             
             setMessage(`${response.data.message}`);
             alert(`${response.data.message}`);
@@ -189,12 +206,7 @@ export default function DriverTable() {
         {
             id: "sno",
             header: "S.No.",
-            cell: ({ table, row }) => {
-                // Calculate the index based on the filtered and sorted rows
-                const visibleRows = table.getRowModel().rows;
-                const rowIndex = visibleRows.findIndex(visibleRow => visibleRow.id === row.id);
-                return <div>{rowIndex + 1}</div>;
-            },
+            cell: ({ row }) => <div>{row.index + 1}</div>,
             enableHiding: false,
             enableSorting: false,
         },
@@ -243,7 +255,7 @@ export default function DriverTable() {
                     {/* Display the status dot based on isCompleteRegistration */}
                     <span
                         className={`w-3 h-3 rounded-full ${
-                            row.original.isCompleteRegistration ? 'bg-green-400' : 'bg-red-400'
+row.original.status =="REJECTED"?'bg-yellow-500':row.original.isCompleteRegistration ? 'bg-green-400' : 'bg-red-400'
                         }`}
                         title={row.original.isCompleteRegistration ? "Registration Complete" : "Registration Incomplete"}
                     ></span>
@@ -326,6 +338,10 @@ export default function DriverTable() {
                                 <DropdownMenuItem onClick={() => handleStatusUpdate(driver._id, driver.isCompleteRegistration)}>
                                     Mark as {driver.isCompleteRegistration ? 'Incomplete' : 'Complete'}
                                 </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => handleStatusRejectUpdate(driver._id, driver.status)}>
+                                    Mark as {driver.status=="REJECTED" ? 'OFFLINE' : 'REJECTED'}
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
 
@@ -359,7 +375,7 @@ export default function DriverTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allDrivers', {
+                const response = await axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/allDrivers', {
                     // withCredentials: true
                 });
                 if (response.data.success) {
@@ -459,7 +475,9 @@ export default function DriverTable() {
                             <SelectItem key={status} value={status}>
                                 {status}
                             </SelectItem>
+                            
                         ))}
+                        
                     </SelectContent>
                 </Select>
 

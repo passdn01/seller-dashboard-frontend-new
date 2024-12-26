@@ -263,7 +263,7 @@ function SideNavbar() {
     const handleLogout = async () => {
         try {
             console.log("logout called.")
-            const response = await fetch('https://55kqzrxn-2003.inc1.devtunnels.ms/logout', {
+            const response = await fetch('https://9tw16vkj-5000.inc1.devtunnels.ms/logout', {
                 method: 'POST',
                 credentials: 'include'
             });

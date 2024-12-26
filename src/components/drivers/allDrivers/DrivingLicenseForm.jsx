@@ -59,7 +59,7 @@ const DrivingLicenseForm = ({ data, id }) => {
         setSubmitStatus(null);
 
         try {
-            const response = await fetch(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit`, {
+            const response = await fetch(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -336,6 +336,7 @@ const DrivingLicenseForm = ({ data, id }) => {
                                     <SelectItem value="LOW_BALANCE">LOW_BALANCE</SelectItem>
                                     <SelectItem value="OFFLINE">OFFLINE</SelectItem>
                                     <SelectItem value="ACCEPTED">ACCEPTED</SelectItem>
+                                    <SelectItem value="REJECTED">REJECTED</SelectItem>
                                 </SelectContent>
                             </Select>
 

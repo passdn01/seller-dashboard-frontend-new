@@ -48,7 +48,7 @@ const RideStatistics = () => {
     // Fetch data for both total rides, drivers, cancelled rides, and earnings
     const fetchData = async () => {
         try {
-            const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period });
+            const response = await axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period });
             const result = response.data;
 
             const formattedRideData = [

@@ -45,12 +45,7 @@ const columns = [
     {
         id: "sno",
         header: "S.No.",
-        cell: ({ table, row }) => {
-            // Calculate the index based on the filtered and sorted rows
-            const visibleRows = table.getRowModel().rows;
-            const rowIndex = visibleRows.findIndex(visibleRow => visibleRow.id === row.id);
-            return <div>{rowIndex + 1}</div>;
-        },
+        cell: ({ row }) => <div>{row.index + 1}</div>,
         enableHiding: false,
         enableSorting: false,
     },
@@ -173,7 +168,7 @@ export default function RideTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allRides', {
+                const response = await axios.get('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/allRides', {
                     // withCredentials: true
                 });
                 console.log(response.data.data);
