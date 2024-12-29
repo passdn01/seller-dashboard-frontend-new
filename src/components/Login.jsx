@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Oval } from 'react-loader-spinner';
 import loginImage from '../assets/loginPassdn.png';
-
+ 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -25,9 +25,11 @@ const Login = () => {
                 document.cookie = `token=${result.token}; path=/; secure; SameSite=Strict`;
                 let mycookie = document.cookie;
                 console.log(mycookie, "cookie set");
-                console.log(result);
+                const admin = result.admin;
+               
+                console.log(result);    
                 if (result.success === true) {
-                    alert("Logged in successfully");
+                    alert("Logged in successfully"+" " +admin);
                     window.location.href = '/home';
                 } else {
                     alert(result.message);
