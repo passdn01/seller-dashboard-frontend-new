@@ -104,6 +104,7 @@ const RideCard = ({ data }) => {
                         <div className="text-md text-gray-700 mt-2 space-y-1">
                             <p>Driver Name: {driverInfo.name}</p>
                             <p>Vehicle Number: {driverInfo.vehicleNumber}</p>
+                            <p>Phone: {driverInfo.phone}</p>
                             <p>Vehicle Type: {driverInfo.vehicleType}</p>
                         </div>
                     ) : (
