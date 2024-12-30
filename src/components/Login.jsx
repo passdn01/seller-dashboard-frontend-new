@@ -29,7 +29,7 @@ const Login = () => {
                
                 console.log(result);    
                 if (result.success === true) {
-                    alert("Logged in successfully"+" " +admin);
+                    alert("Welcome"+" " +admin);
                     window.location.href = '/home';
                 } else {
                     alert(result.message);
