@@ -15,7 +15,7 @@ const DriverLicense = ({ data }) => {
         <Card className="w-full">
 
             <CardHeader className='border-b border-gray-300 flex items-center flex-row gap-x-2'>
-                <img src={driverLicenseIcon} alt="" className='w-6 h-6' />Driving License detail</CardHeader>
+                <img src={driverLicenseIcon} alt="" className='w-6 h-6' /></CardHeader>
             <CardContent>
                 <div className="space-y-2 text-sm pt-4">
                     <p><strong>License Number:</strong> <br />{driverInfo?.licenseNumber}</p>

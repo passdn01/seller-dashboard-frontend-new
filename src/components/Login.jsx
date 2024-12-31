@@ -23,9 +23,10 @@ const Login = () => {
             if (response.ok) {
                 const result = await response.json();
                 document.cookie = `token=${result.token}; path=/; secure; SameSite=Strict`;
+                document.cookie = `admin=${result.admin}`;
                 let mycookie = document.cookie;
                 console.log(mycookie, "cookie set");
-                const admin = result.admin;
+               const admin = result.admin;
                
                 console.log(result);    
                 if (result.success === true) {

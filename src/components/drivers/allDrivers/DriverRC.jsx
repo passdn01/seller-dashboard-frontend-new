@@ -8,6 +8,10 @@ import {
 
     DialogTrigger,
 } from "@/components/ui/dialog"
+const handleDsubmit = (e)=>{
+    e.preventDefault();
+    
+}
 const DriverRC = ({ data }) => {
     // Using placeholder data for RC Details
     const { driverInfo } = data
@@ -24,6 +28,18 @@ const DriverRC = ({ data }) => {
                     <p><strong>RC Valid Up To:</strong> {driverInfo?.rcValidUpto}</p>
                     <p><strong>Vehicle Type:</strong> {driverInfo?.vehicleType}</p>
                     <p><strong>Category:</strong> {driverInfo?.category}</p>
+                    {/* <form onSubmit={handleDsubmit}>
+                    <strong><input id='rcn' type='text'value={driverInfo?.vehicleNumber}/></strong><br/>
+                    <strong><input id='par1' type='text'value={driverInfo?.vehicleFuelType}/></strong><br/>
+                    <strong><input id='' type='text'value={driverInfo?.vehicleMakerModel}/></strong><br/>
+                    <strong><input id='' type='text'value={driverInfo?.rcValidUpto}/></strong><br/>
+                    <strong><input id='' type='text'value={driverInfo?.rcValidUpto}/></strong><br/>
+                    <strong><input id='' type='text'value={driverInfo?.vehicleType}/></strong><br/>
+                    <strong><input id='' type='text'value={driverInfo?.category}/></strong><br/>
+                    <strong><button type='submit'> Submit</button></strong><br/>
+
+
+                    </form> */}
                 </div>
                 <div className="mt-4 space-x-2">
                     <Button variant="outline" size="sm"><Dialog>

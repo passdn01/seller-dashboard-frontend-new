@@ -49,7 +49,7 @@ const NavStats = () => {
 
 
     useEffect(() => {
-        const newSocket = io('http://localhost:2003');
+        const newSocket = io('http://localhost:5000');
         setSocket(newSocket);
 
         // Request online drivers once connected
