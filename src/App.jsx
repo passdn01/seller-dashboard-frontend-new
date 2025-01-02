@@ -11,6 +11,9 @@ import AllAgents from './components/agents/AllAgents.jsx'
 import Agent from './components/agents/Agent.jsx'
 import Issues from './components/issues/Issues.jsx'
 import AllBlogs from './components/blogs/AllBlogs.jsx'
+import AllVerified from './components/drivers/allDrivers/AllVerified'
+
+
 function App() {
   const ProtectedRoute = ({ element }) => {
     const token = document.cookie.includes('token');
@@ -26,6 +29,7 @@ function App() {
           <Route path='/drivers/allDrivers' element={<ProtectedRoute element={<AllDrivers />} />} />
           <Route path='/drivers/liveDrivers' element={<ProtectedRoute element={<LiveDrivers />} />} />
           <Route path='/drivers/allDrivers/:id' element={<ProtectedRoute element={<Driver />} />} />
+          <Route path='/drivers/allVerified/:id' element={<ProtectedRoute element={<Driver />} />} />
 
           <Route path='/rides/allRides' element={<ProtectedRoute element={<AllRides />} />} />
           <Route path='/rides/allRides/:id' element={<ProtectedRoute element={<Ride />} />} />
