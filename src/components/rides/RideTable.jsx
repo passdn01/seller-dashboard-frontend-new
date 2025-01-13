@@ -71,7 +71,7 @@ const columns = [
             const date = new Date(row.getValue("createdAt")); // Convert to Date object
             const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
             const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
-    
+
             return <div>{formattedDate}</div>; // Render the formatted date
         },
     },
@@ -115,7 +115,7 @@ const columns = [
             const date = new Date(row.getValue("updatedAt")); // Convert to Date object
             const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
             const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
-    
+
             return <div>{formattedDate}</div>; // Render the formatted date
         },
     },
@@ -124,7 +124,7 @@ const columns = [
         enableHiding: false,
         cell: ({ row }) => {
             const ride = row.original;
-            console.log("ride",ride);
+            console.log("ride", ride);
             const navigate = useNavigate();
 
             return (
@@ -168,7 +168,7 @@ export default function RideTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/allRides', {
+                const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/allRides', {
                     // withCredentials: true
                 });
                 console.log(response.data.data);
@@ -230,17 +230,17 @@ export default function RideTable() {
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">
-        <Oval
-            height={60}
-            width={60}
-            color="#4fa94d"
-            visible={true}
-            ariaLabel='oval-loading'
-            secondaryColor="#4fa94d"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-        />
-    </div>;
+            <Oval
+                height={60}
+                width={60}
+                color="#4fa94d"
+                visible={true}
+                ariaLabel='oval-loading'
+                secondaryColor="#4fa94d"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+            />
+        </div>;
     }
 
     if (error) {

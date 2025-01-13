@@ -94,7 +94,7 @@ const GeoMetrics = () => {
     }, []);
 
     const fetchRideDistribution = () => {
-        axios.get('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/ride-distribution')
+        axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/ride-distribution')
             .then(response => {
                 const data = response.data.map(cluster => [
                     cluster.center.lat,
@@ -111,7 +111,7 @@ const GeoMetrics = () => {
     };
 
     const fetchCancelledRideDistribution = () => {
-        axios.get('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/cancelled-ride-distribution')
+        axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/cancelled-ride-distribution')
             .then(response => {
                 const data = response.data.map(cluster => [
                     cluster.center.lat,
@@ -129,63 +129,63 @@ const GeoMetrics = () => {
 
 
     useEffect(() => {
-      // Establish WebSocket connection
-      const newSocket = io('http://localhost:5000'); // Replace with your WebSocket server URL
-      setSocket(newSocket);
-  
-      // Fetch driver locations if in 'drivers' view mode
-      if (viewMode === 'drivers') {
-        newSocket.emit('getOnlineDrivers'); // Request online drivers
-      }
-  
-      // Listen for driver data
-      newSocket.on('onlineDrivers', (response) => {
-        if (response && response.drivers) {
-          const allDrivers = response.drivers.flat(); // Flatten nested arrays if any
-          const validDrivers = allDrivers
-            .filter(driver => driver && driver.driverLiveLocation) // Ensure driver and location exist
-            .map(driver => {
-              const latitude = parseFloat(driver.driverLiveLocation.latitude);
-              const longitude = parseFloat(driver.driverLiveLocation.longitude);
-              return {
-                ...driver,
-                driverLiveLocation: {
-                  latitude: isNaN(latitude) ? 0 : latitude, // Fallback to 0 if invalid
-                  longitude: isNaN(longitude) ? 0 : longitude
-                }
-              };
-            });
-          setDrivers(validDrivers);
-          setAnalysis('This map shows the locations of all active drivers. Click on a marker for more information.');
+        // Establish WebSocket connection
+        const newSocket = io('https://8qklrvxb-2012.inc1.devtunnels.ms'); // Replace with your WebSocket server URL
+        setSocket(newSocket);
+
+        // Fetch driver locations if in 'drivers' view mode
+        if (viewMode === 'drivers') {
+            newSocket.emit('getOnlineDrivers'); // Request online drivers
         }
-      });
-  
-      newSocket.on('error', (error) => {
-        console.error('Error fetching driver locations:', error);
-        setAnalysis('Error fetching driver locations.');
-      });
-  
-      // Cleanup WebSocket connection on unmount
-      return () => newSocket.close();
+
+        // Listen for driver data
+        newSocket.on('onlineDrivers', (response) => {
+            if (response && response.drivers) {
+                const allDrivers = response.drivers.flat(); // Flatten nested arrays if any
+                const validDrivers = allDrivers
+                    .filter(driver => driver && driver.driverLiveLocation) // Ensure driver and location exist
+                    .map(driver => {
+                        const latitude = parseFloat(driver.driverLiveLocation.latitude);
+                        const longitude = parseFloat(driver.driverLiveLocation.longitude);
+                        return {
+                            ...driver,
+                            driverLiveLocation: {
+                                latitude: isNaN(latitude) ? 0 : latitude, // Fallback to 0 if invalid
+                                longitude: isNaN(longitude) ? 0 : longitude
+                            }
+                        };
+                    });
+                setDrivers(validDrivers);
+                setAnalysis('This map shows the locations of all active drivers. Click on a marker for more information.');
+            }
+        });
+
+        newSocket.on('error', (error) => {
+            console.error('Error fetching driver locations:', error);
+            setAnalysis('Error fetching driver locations.');
+        });
+
+        // Cleanup WebSocket connection on unmount
+        return () => newSocket.close();
     }, [viewMode]);
-  
+
     // Refresh data every 2 seconds
     useEffect(() => {
-      const interval = setInterval(() => {
-        if (viewMode === 'heatmap') {
-          if (rideType === 'completed') {
-            fetchRideDistribution(); // You might need to implement WebSocket-based heatmap fetching as well
-          } else {
-            fetchCancelledRideDistribution();
-          }
-        } else if (viewMode === 'drivers') {
-          if (socket) {
-            socket.emit('getOnlineDrivers'); // Request updated driver locations
-          }
-        }
-      }, 2000);
-  
-      return () => clearInterval(interval); // Clear interval on unmount
+        const interval = setInterval(() => {
+            if (viewMode === 'heatmap') {
+                if (rideType === 'completed') {
+                    fetchRideDistribution(); // You might need to implement WebSocket-based heatmap fetching as well
+                } else {
+                    fetchCancelledRideDistribution();
+                }
+            } else if (viewMode === 'drivers') {
+                if (socket) {
+                    socket.emit('getOnlineDrivers'); // Request updated driver locations
+                }
+            }
+        }, 2000);
+
+        return () => clearInterval(interval); // Clear interval on unmount
     }, [viewMode, rideType, socket]);
 
     return (

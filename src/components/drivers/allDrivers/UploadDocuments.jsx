@@ -16,7 +16,7 @@ const UploadDocuments = ({ id }) => {
     const handleProfileImageChange = (e) => {
         setProfileUrl(e.target.files[0]);
     };
-    
+
     const handleDrivingLicenseChange = (e) => {
         setDrivingLicense(e.target.files[0]);
     };
@@ -39,7 +39,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', profileUrl);
 
         try {
-            const response = await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/profile-image`, formData, {
+            const response = await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/profile-image`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -64,7 +64,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicense);
 
         try {
-            const response = await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl`, formData, {
+            const response = await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -89,7 +89,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicenseBack);
 
         try {
-            const response = await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl-back`, formData, {
+            const response = await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl-back`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -114,7 +114,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', registrationCertificate);
 
         try {
-            const response = await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-rc`, formData, {
+            const response = await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-rc`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -132,7 +132,7 @@ const UploadDocuments = ({ id }) => {
     return (
         <div className="space-y-6">
             <h2 className="text-xl font-bold">Upload Documents</h2>
-            
+
             <div className="grid grid-cols-2 gap-4">
                 <div className='flex items-center space-x-2'>
                     {/* <Label className="block" htmlFor="driving-license">Upload Driving License:</Label> */}

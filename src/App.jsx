@@ -12,7 +12,7 @@ import Agent from './components/agents/Agent.jsx'
 import Issues from './components/issues/Issues.jsx'
 import AllBlogs from './components/blogs/AllBlogs.jsx'
 import AllVerified from './components/drivers/allDrivers/AllVerified'
-
+import HomeMetricPage from './components/homeMetricsPage/HomeMetricPage.jsx'
 
 function App() {
   const ProtectedRoute = ({ element }) => {
@@ -24,7 +24,8 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
+          {/* <Route path="/home/mapData" element={<ProtectedRoute element={<Home />} />} /> */}
+          <Route path="/home/dashboard" element={<ProtectedRoute element={<HomeMetricPage />} />} />
           <Route path='/' element={<Login />}></Route>
           <Route path='/drivers/allDrivers' element={<ProtectedRoute element={<AllDrivers />} />} />
           <Route path='/drivers/liveDrivers' element={<ProtectedRoute element={<LiveDrivers />} />} />
@@ -39,6 +40,7 @@ function App() {
 
           <Route path='/issues' element={<ProtectedRoute element={<Issues />} />} />
           <Route path='/blogs' element={<ProtectedRoute element={<AllBlogs />} />} />
+
 
         </Routes>
       </BrowserRouter>

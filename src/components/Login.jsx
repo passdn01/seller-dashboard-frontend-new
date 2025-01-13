@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Oval } from 'react-loader-spinner';
 import loginImage from '../assets/loginPassdn.png';
- 
+
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -13,7 +13,7 @@ const Login = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch('https://9tw16vkj-5000.inc1.devtunnels.ms/login', {
+            const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
@@ -26,12 +26,12 @@ const Login = () => {
                 document.cookie = `admin=${result.admin}`;
                 let mycookie = document.cookie;
                 console.log(mycookie, "cookie set");
-               const admin = result.admin;
-               
-                console.log(result);    
+                const admin = result.admin;
+
+                console.log(result);
                 if (result.success === true) {
-                    alert("Welcome"+" " +admin);
-                    window.location.href = '/home';
+                    alert("Welcome" + " " + admin);
+                    window.location.href = '/home/dashboard';
                 } else {
                     alert(result.message);
                 }
@@ -74,7 +74,7 @@ const Login = () => {
                         className="w-full h-full object-cover"
                     />
                 </div>
-                
+
                 {/* Login Form Section */}
                 <div className="w-full p-8 md:w-1/2">
                     <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Login</h2>

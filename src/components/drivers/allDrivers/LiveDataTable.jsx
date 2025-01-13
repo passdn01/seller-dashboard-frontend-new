@@ -113,7 +113,7 @@ export default function LiveDriverTable() {
     // Effect to initialize WebSocket connection
     useEffect(() => {
         // Establish WebSocket connection
-        const newSocket = io('http://localhost:5000'); // Change the URL to match your server
+        const newSocket = io('https://8qklrvxb-2012.inc1.devtunnels.ms'); // Change the URL to match your server
         setSocket(newSocket);
 
         // Request online drivers once connected
@@ -126,7 +126,7 @@ export default function LiveDriverTable() {
         newSocket.on('onlineDrivers', (response) => {
             console.log(response);
             const allDrivers = response.drivers.flat(); // Flatten nested arrays
-            const validData = allDrivers.filter(driver => 
+            const validData = allDrivers.filter(driver =>
                 driver && driver.driverId && driver.driverName && driver.driverLiveLocation
             );
             setData(validData); // Set only valid data
@@ -137,7 +137,7 @@ export default function LiveDriverTable() {
         return () => newSocket.close();
 
     }, []); // Empty array means this effect runs only once when the component is mounted
-    
+
 
     const table = useReactTable({
         data,

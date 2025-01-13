@@ -31,16 +31,35 @@ import IssueSolverIcon from '../assets/NavIcons/IssueSolver.svg';
 import { useNavigate } from 'react-router-dom';
 
 import { Link } from 'react-router-dom'
-
+// import { cleanUpSellerSocket } from '@/sellerSocket';
 function SideNavbar() {
+    const handleDashboardClick = (e) => {
+        e.preventDefault();
+        window.location.reload();
+    };
     const menuList = [
         {
             id: "1",
             title: "Home",
-            link: "/home",
-            submenu: false,
+            link: "",
+            submenu: true,
             icon: HomeIcon,
-        },
+            subMenuList: [
+                {
+                    id: '1',
+                    title: 'Dashboard',
+                    link: '/home/dashboard',
+                    icon: '',
+                    onClick: handleDashboardClick
+                },
+                {
+                    id: '2',
+                    title: 'Map Data',
+                    link: '/home/mapData',
+                    icon: '',
+                }
+            ]
+        }, ,
         {
             id: "2",
             title: "Driver",
@@ -262,22 +281,17 @@ function SideNavbar() {
     const navigate = useNavigate();
     const handleLogout = async () => {
         try {
-            console.log("logout called.")
-            const response = await fetch('https://9tw16vkj-5000.inc1.devtunnels.ms/logout', {
+            const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/logout', {
                 method: 'POST',
                 credentials: 'include'
             });
 
             const data = await response.json();
             if (data.success) {
-
                 document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
-
-
                 console.log(data.message);
                 window.location.href = '/';
             } else {
-
                 console.error(data.message);
             }
         } catch (error) {
@@ -285,10 +299,9 @@ function SideNavbar() {
         }
     };
 
-
     return (
         <div className='fixed border-r min-w-[250px] z-50 min-h-screen bg-white h-full overflow-hidden'>
-            <Command className="rounded-lg  ">
+            <Command className="rounded-lg">
                 <div className='p-4 flex items-center gap-2 font-bold'>
                     <img src={Logo} alt="Logo" className="h-6 w-6" />
                     <span>Vayu Admin</span>
@@ -298,37 +311,40 @@ function SideNavbar() {
                     {menuList.map((el) => (
                         <div key={el.id}>
                             {el.submenu ? (
-                                <CommandItem><Accordion type="single" collapsible className="w-full">
-                                    <AccordionItem value={el.id}>
-                                        <AccordionTrigger className='flex items-center py-1 text-sm rounded-md w-full'>
-                                            <div className="flex items-center">
-                                                <img src={el.icon} alt="" className="h-5 w-5 mr-3" />
-                                                <span className='font-normal hover:no-underline'>{el.title}</span>
-                                            </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent>
-                                            <div className="pl-10">
-                                                {el.subMenuList.map((item) => (
-                                                    <Link to={item.link}><CommandItem key={item.id} className="py-2 text-sm hover:bg-blue-50 rounded-md">
-                                                        {item.title}
-                                                    </CommandItem></Link>
-                                                ))}
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
+                                <CommandItem>
+                                    <Accordion type="single" collapsible className="w-full">
+                                        <AccordionItem value={el.id}>
+                                            <AccordionTrigger className='flex items-center py-1 text-sm rounded-md w-full'>
+                                                <div className="flex items-center">
+                                                    <img src={el.icon} alt="" className="h-5 w-5 mr-3" />
+                                                    <span className='font-normal hover:no-underline'>{el.title}</span>
+                                                </div>
+                                            </AccordionTrigger>
+                                            <AccordionContent>
+                                                <div className="pl-10">
+                                                    {el.subMenuList.map((item) => (
+                                                        <div key={item.id} onClick={item.onClick}>
+                                                            <Link to={item.link}>
+                                                                <CommandItem className="py-2 text-sm hover:bg-blue-50 rounded-md">
+                                                                    {item.title}
+                                                                </CommandItem>
+                                                            </Link>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    </Accordion>
                                 </CommandItem>
                             ) : (
                                 <Link to={el.link}>
-                                    <CommandItem className='flex items-center p-2 text-sm hover:bg-blue-100 rounded-md w-full cursor-pointer bg-white' >
+                                    <CommandItem className='flex items-center p-2 text-sm hover:bg-blue-100 rounded-md w-full cursor-pointer bg-white'>
                                         <img src={el.icon} alt="" className="h-5 w-5 mr-3" />
                                         <span>{el.title}</span>
                                     </CommandItem>
                                 </Link>
                             )}
-
                         </div>
-
                     ))}
                     <Link onClick={handleLogout}>
                         <CommandItem className='bottom-0 absolute items-center p-2 text-sm hover:bg-blue-100 rounded-md w-full cursor-pointer bg-white'>
@@ -336,12 +352,10 @@ function SideNavbar() {
                             <span>Logout</span>
                         </CommandItem>
                     </Link>
-
-
                 </CommandList>
             </Command>
         </div>
-    )
+    );
 }
 
-export default SideNavbar
+export default SideNavbar;

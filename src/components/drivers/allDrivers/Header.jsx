@@ -1,12 +1,12 @@
-// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-// import {
-//     DropdownMenu,
-//     DropdownMenuContent,
-//     DropdownMenuItem,
-//     DropdownMenuLabel,
-//     DropdownMenuSeparator,
-//     DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 function Header({ title }) {
     return (
@@ -14,7 +14,7 @@ function Header({ title }) {
             <div className='text-xl font-bold'>{title}</div>
 
 
-            {/* <DropdownMenu className='m-4'>
+            <DropdownMenu className='m-4'>
                 <DropdownMenuTrigger><Avatar className='cursor-pointer'>
                     <AvatarImage src="https://github.com/shadcn.png" />
                     <AvatarFallback>CN</AvatarFallback>
@@ -22,7 +22,7 @@ function Header({ title }) {
                 <DropdownMenuContent>
                     <DropdownMenuLabel className='mr-4'>Logout</DropdownMenuLabel>
                 </DropdownMenuContent>
-            </DropdownMenu> */}
+            </DropdownMenu>
 
 
         </div>

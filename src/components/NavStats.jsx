@@ -24,7 +24,7 @@ const NavStats = () => {
 
     const fetchTotalCompletedRides = async () => {
         try {
-            const response = await axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period: 'all time' });
+            const response = await axios.post('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period: 'all time' });
             const result = response.data;
 
             console.log(result); // Log the response to inspect the structure
@@ -49,36 +49,36 @@ const NavStats = () => {
 
 
     useEffect(() => {
-        const newSocket = io('http://localhost:5000');
+        const newSocket = io('https://8qklrvxb-2012.inc1.devtunnels.ms');
         setSocket(newSocket);
 
         // Request online drivers once connected
         newSocket.on('connect', () => {
-        console.log('Connected to WebSocket server');
-        newSocket.emit('getOnlineDrivers');
+            console.log('Connected to WebSocket server');
+            newSocket.emit('getOnlineDrivers');
         });
 
         newSocket.on('onlineDrivers', (response) => {
-        if (response && response.drivers) {
-            const totalOnlineDrivers = response.drivers.length;
-            setOnlineDriversCount(totalOnlineDrivers);
-        }
+            if (response && response.drivers) {
+                const totalOnlineDrivers = response.drivers.length;
+                setOnlineDriversCount(totalOnlineDrivers);
+            }
         });
 
         newSocket.on('error', (err) => {
-        console.error(err);
-        setError('Failed to fetch online drivers');
+            console.error(err);
+            setError('Failed to fetch online drivers');
         });
 
         return () => {
-        newSocket.close();
+            newSocket.close();
         };
 
     }, []);
 
     const fetchOngoingRides = async () => {
         try {
-            const response = await axios.get('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/total-ongoing-rides');
+            const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/total-ongoing-rides');
             const totalOngoingRides = response.data.ongoingRides;
             console.log(totalOngoingRides);
             setOngoingRidesCount(totalOngoingRides);

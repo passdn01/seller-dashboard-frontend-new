@@ -70,39 +70,39 @@ export default function DriverTable() {
         profileMissing: false,
         none: false,  // Initially not selected
     });
-    
+
     // Function to filter data based on "missing" options
     const applyMissingFilters = () => {
         const { dlMissing, dlBackMissing, rcMissing, profileMissing, none } = missingFilters;
-    
+
         const filtered = data.filter((driver) => {
             const isDlMissing = dlMissing && !driver.drivingLicense;
             const isDlBackMissing = dlBackMissing && !driver.drivingLicenseBack;
             const isRcMissing = rcMissing && !driver.registrationCertificate;
             const isProfileMissing = profileMissing && !driver.profileUrl;
-    
+
             // Handle "none" filter: only include drivers with all documents present
             if (none) {
-                return driver.drivingLicense && 
-                       driver.drivingLicenseBack && 
-                       driver.registrationCertificate && 
-                       driver.profileUrl; // All documents must be present
+                return driver.drivingLicense &&
+                    driver.drivingLicenseBack &&
+                    driver.registrationCertificate &&
+                    driver.profileUrl; // All documents must be present
             }
-    
+
             // If no filters are active, include all drivers
             if (!dlMissing && !dlBackMissing && !rcMissing && !profileMissing) {
                 return true; // No filters applied, include all
             }
-    
+
             // Return true if any of the selected missing filters match
-            return (dlMissing && isDlMissing) || 
-                   (dlBackMissing && isDlBackMissing) ||
-                   (rcMissing && isRcMissing) ||
-                   (profileMissing && isProfileMissing);
+            return (dlMissing && isDlMissing) ||
+                (dlBackMissing && isDlBackMissing) ||
+                (rcMissing && isRcMissing) ||
+                (profileMissing && isProfileMissing);
         });
-    
+
         setFilteredData(filtered);
-    };    
+    };
 
     // Handler for checkbox change
     const handleCheckboxChange = (filterKey) => {
@@ -118,8 +118,8 @@ export default function DriverTable() {
     }, [missingFilters, data]);
 
 
-     // Function to open the dialog with the selected driver ID
-     const openDeleteDialog = (driverId) => {
+    // Function to open the dialog with the selected driver ID
+    const openDeleteDialog = (driverId) => {
         setDriverToDelete(driverId);
         setIsDialogOpen(true);
     };
@@ -128,10 +128,10 @@ export default function DriverTable() {
         if (!driverToDelete) return;
 
         try {
-            const response = await axios.delete(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
             if (response.data.success) {
                 // Refetch data after deletion
-                const newResponse = await axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/allDrivers');
+                const newResponse = await axios.post('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/allDrivers');
                 if (newResponse.data.success) {
                     const updatedData = newResponse.data.data;
                     setData(updatedData);
@@ -153,7 +153,7 @@ export default function DriverTable() {
 
     const handleStatusUpdate = async (driverId, currentStatus) => {
         try {
-            await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
+            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
                 completeStatus: !currentStatus // Toggle the status
             });
 
@@ -170,16 +170,16 @@ export default function DriverTable() {
 
     const handleStatusRejectUpdate = async (driverId, currentStatus) => {
         try {
-            currentStatus=currentStatus=="REJECTED"?'OFFLINE':'REJECTED'
-            await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
+            currentStatus = currentStatus == "REJECTED" ? 'OFFLINE' : 'REJECTED'
+            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
                 status: currentStatus // Toggle the status
             });
 
-            const updatedData = data.map(driver => driver._id === driverId ? { ...driver,status: currentStatus } : driver);
+            const updatedData = data.map(driver => driver._id === driverId ? { ...driver, status: currentStatus } : driver);
             setData(updatedData);
 
-            alert(`Driver marked as ${currentStatus=="REJECTED" ? 'REJECTED' : 'OFFLINE'}`);
-        
+            alert(`Driver marked as ${currentStatus == "REJECTED" ? 'REJECTED' : 'OFFLINE'}`);
+
         } catch (error) {
             console.error("Error updating status:", error);
             setError('Error updating status');
@@ -188,8 +188,8 @@ export default function DriverTable() {
     const updateIncompleteDrivers = async () => {
         setMessage('Updating, please wait...');
         try {
-            const response = await axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/updateIncompleteDrivers');
-            
+            const response = await axios.post('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/updateIncompleteDrivers');
+
             setMessage(`${response.data.message}`);
             alert(`${response.data.message}`);
         } catch (error) {
@@ -198,10 +198,10 @@ export default function DriverTable() {
             setMessage(errorMessage);
             alert(errorMessage);
         }
-    };    
-    
+    };
 
-// Columns configuration
+
+    // Columns configuration
     const columns = [
         {
             id: "sno",
@@ -227,10 +227,10 @@ export default function DriverTable() {
                 const date = new Date(row.getValue("createdAt")); // Convert to Date object
                 const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
                 const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
-        
+
                 return <div>{formattedDate}</div>; // Render the formatted date
             },
-        },        
+        },
         {
             accessorKey: "phone",
             header: "Driver Phone",
@@ -254,14 +254,13 @@ export default function DriverTable() {
                     <span>{row.getValue("name")}</span>
                     {/* Display the status dot based on isCompleteRegistration */}
                     <span
-                        className={`w-3 h-3 rounded-full ${
-row.original.status =="REJECTED"?'bg-yellow-500':row.original.isCompleteRegistration ? 'bg-green-400' : 'bg-red-400'
-                        }`}
+                        className={`w-3 h-3 rounded-full ${row.original.status == "REJECTED" ? 'bg-yellow-500' : row.original.isCompleteRegistration ? 'bg-green-400' : 'bg-red-400'
+                            }`}
                         title={row.original.isCompleteRegistration ? "Registration Complete" : "Registration Incomplete"}
                     ></span>
                 </div>
             ),
-        },        
+        },
         {
             accessorKey: "vehicleNumber",
             header: "RC Number",
@@ -282,7 +281,7 @@ row.original.status =="REJECTED"?'bg-yellow-500':row.original.isCompleteRegistra
                 if (!driver.drivingLicenseBack) missingDocs.push("DLB");
                 if (!driver.registrationCertificate) missingDocs.push("RC");
                 if (!driver.profileUrl) missingDocs.push("PF");
-    
+
                 return <div>{missingDocs.length > 0 ? missingDocs.join(", ") : "None"}</div>;
             },
         },
@@ -301,10 +300,10 @@ row.original.status =="REJECTED"?'bg-yellow-500':row.original.isCompleteRegistra
                 const date = new Date(row.getValue("updatedAt")); // Convert to Date object
                 const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
                 const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
-        
+
                 return <div>{formattedDate}</div>; // Render the formatted date
             },
-        }, 
+        },
         {
             id: "actions",
             enableHiding: false,
@@ -340,7 +339,7 @@ row.original.status =="REJECTED"?'bg-yellow-500':row.original.isCompleteRegistra
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => handleStatusRejectUpdate(driver._id, driver.status)}>
-                                    Mark as {driver.status=="REJECTED" ? 'OFFLINE' : 'REJECTED'}
+                                    Mark as {driver.status == "REJECTED" ? 'OFFLINE' : 'REJECTED'}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -375,7 +374,7 @@ row.original.status =="REJECTED"?'bg-yellow-500':row.original.isCompleteRegistra
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.post('https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/allDrivers', {
+                const response = await axios.post('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/allDrivers', {
                     // withCredentials: true
                 });
                 if (response.data.success) {
@@ -443,17 +442,17 @@ row.original.status =="REJECTED"?'bg-yellow-500':row.original.isCompleteRegistra
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">
-        <Oval
-            height={60}
-            width={60}
-            color="#4fa94d"
-            visible={true}
-            ariaLabel='oval-loading'
-            secondaryColor="#4fa94d"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-        />
-    </div>;
+            <Oval
+                height={60}
+                width={60}
+                color="#4fa94d"
+                visible={true}
+                ariaLabel='oval-loading'
+                secondaryColor="#4fa94d"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+            />
+        </div>;
     }
 
     return (
@@ -475,9 +474,9 @@ row.original.status =="REJECTED"?'bg-yellow-500':row.original.isCompleteRegistra
                             <SelectItem key={status} value={status}>
                                 {status}
                             </SelectItem>
-                            
+
                         ))}
-                        
+
                     </SelectContent>
                 </Select>
 
@@ -546,58 +545,58 @@ row.original.status =="REJECTED"?'bg-yellow-500':row.original.isCompleteRegistra
                 </Button>
             </div>
             <div className="rounded-md border">
-            <Table>
-                <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {filteredData.length ? (
-                        table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows
-                                .filter((row) => filteredData.includes(row.original)) // Filter rows based on filteredData
-                                .map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {filteredData.length ? (
+                            table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows
+                                    .filter((row) => filteredData.includes(row.original)) // Filter rows based on filteredData
+                                    .map((row) => (
+                                        <TableRow
+                                            key={row.id}
+                                            data-state={row.getIsSelected() && "selected"}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>
+                                    ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        No results.
+                                    </TableCell>
+                                </TableRow>
+                            )
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
                                     No results.
                                 </TableCell>
                             </TableRow>
-                        )
-                    ) : (
-                        <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No results.
-                            </TableCell>
-                        </TableRow>
-                    )}
+                        )}
 
-                
-                </TableBody>
-            </Table>
+
+                    </TableBody>
+                </Table>
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">

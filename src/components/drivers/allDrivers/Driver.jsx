@@ -32,7 +32,7 @@ import { Oval } from 'react-loader-spinner';
 import { Title } from '@radix-ui/react-dialog';
 function Driver() {
     const { id } = useParams();
-    console.log("driver param",id)
+    console.log("driver param", id)
     const [data, setData] = useState({});
     const [completeStatus, setCompleteStatus] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ function Driver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}`)
+        axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -60,13 +60,13 @@ function Driver() {
 
     const handleStatusUpdate = async () => {
         try {
-            await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/completeEdit`, {
+            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
             });
-            await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/send-notification`, {
+            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/send-notification`, {
                 driverId: data.driverInfo._id // Toggle the status,
-                ,title:"Your Account has been approved ✅",
-                body:"Rides are waiting for you 🛺"
+                , title: "Your Account has been approved ✅",
+                body: "Rides are waiting for you 🛺"
             });
             // Optionally, update local state
             setCompleteStatus(!completeStatus);
@@ -78,7 +78,7 @@ function Driver() {
 
     const handleDeleteDriver = async () => {
         try {
-            const response = await axios.delete(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
             if (response.data.success) {
                 alert('Driver deleted successfully');
                 navigate('/drivers/allDrivers'); // Redirect after deletion
@@ -96,17 +96,17 @@ function Driver() {
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">
-        <Oval
-            height={60}
-            width={60}
-            color="#4fa94d"
-            visible={true}
-            ariaLabel='oval-loading'
-            secondaryColor="#4fa94d"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-        />
-    </div>;
+            <Oval
+                height={60}
+                width={60}
+                color="#4fa94d"
+                visible={true}
+                ariaLabel='oval-loading'
+                secondaryColor="#4fa94d"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+            />
+        </div>;
     }
 
     if (error) {
@@ -145,36 +145,36 @@ function Driver() {
                             </BreadcrumbList>
                         </Breadcrumb>
                         <div className='justify-end'>
-                        <Dialog>
-                            <DialogTrigger className='pr-4'>
-                                <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Edit</span>
-                            </DialogTrigger>
-                            <DialogContent className="mt-[10px] mb-[10px]">
-                                <DrivingLicenseForm data={data} id={id}></DrivingLicenseForm>
-                                <UploadDocuments id={id}></UploadDocuments>
-                            </DialogContent>
-                        </Dialog>
-                        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                            <DialogTrigger className='pr-4'>
-                                <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Delete</span>
-                            </DialogTrigger>
-                            <DialogContent className="bg-white h-[200px]">
-                                <DialogHeader>
-                                    <DialogTitle>Confirm Deletion</DialogTitle>
-                                    <DialogDescription>
-                                        Are you sure you want to delete this driver? This action cannot be undone.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="flex justify-end gap-2 mt-4">
-                                    <Button variant="secondary" onClick={() => setIsDeleteDialogOpen(false)}>
-                                        Cancel
-                                    </Button>
-                                    <Button variant="destructive" onClick={handleDeleteDriver}>
-                                        Confirm
-                                    </Button>
-                                </div>
-                            </DialogContent>
-                        </Dialog>
+                            <Dialog>
+                                <DialogTrigger className='pr-4'>
+                                    <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Edit</span>
+                                </DialogTrigger>
+                                <DialogContent className="mt-[10px] mb-[10px]">
+                                    <DrivingLicenseForm data={data} id={id}></DrivingLicenseForm>
+                                    <UploadDocuments id={id}></UploadDocuments>
+                                </DialogContent>
+                            </Dialog>
+                            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                                <DialogTrigger className='pr-4'>
+                                    <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Delete</span>
+                                </DialogTrigger>
+                                <DialogContent className="bg-white h-[200px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Confirm Deletion</DialogTitle>
+                                        <DialogDescription>
+                                            Are you sure you want to delete this driver? This action cannot be undone.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="flex justify-end gap-2 mt-4">
+                                        <Button variant="secondary" onClick={() => setIsDeleteDialogOpen(false)}>
+                                            Cancel
+                                        </Button>
+                                        <Button variant="destructive" onClick={handleDeleteDriver}>
+                                            Confirm
+                                        </Button>
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </div>
                     <div>
@@ -203,7 +203,7 @@ function Driver() {
 }
 function VDriver() {
     const { id } = useParams();
-    console.log("driver param",id)
+    console.log("driver param", id)
     const [data, setData] = useState({});
     const [completeStatus, setCompleteStatus] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -213,7 +213,7 @@ function VDriver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}`)
+        axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -231,13 +231,13 @@ function VDriver() {
 
     const handleStatusUpdate = async () => {
         try {
-            await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/completeEdit`, {
+            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
             });
-            await axios.post(`https://9tw16vkj-5000.inc1.devtunnels.ms/send-notification`, {
+            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/send-notification`, {
                 driverId: data.driverInfo._id // Toggle the status,
-                ,title:"Your Account has been approved ✅",
-                body:"Rides are waiting for you 🛺"
+                , title: "Your Account has been approved ✅",
+                body: "Rides are waiting for you 🛺"
             });
             // Optionally, update local state
             setCompleteStatus(!completeStatus);
@@ -249,7 +249,7 @@ function VDriver() {
 
     const handleDeleteDriver = async () => {
         try {
-            const response = await axios.delete(`https://9tw16vkj-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
             if (response.data.success) {
                 alert('Driver deleted successfully');
                 navigate('/drivers/allDrivers'); // Redirect after deletion
@@ -267,17 +267,17 @@ function VDriver() {
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">
-        <Oval
-            height={60}
-            width={60}
-            color="#4fa94d"
-            visible={true}
-            ariaLabel='oval-loading'
-            secondaryColor="#4fa94d"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-        />
-    </div>;
+            <Oval
+                height={60}
+                width={60}
+                color="#4fa94d"
+                visible={true}
+                ariaLabel='oval-loading'
+                secondaryColor="#4fa94d"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+            />
+        </div>;
     }
 
     if (error) {
@@ -316,36 +316,36 @@ function VDriver() {
                             </BreadcrumbList>
                         </Breadcrumb>
                         <div className='justify-end'>
-                        <Dialog>
-                            <DialogTrigger className='pr-4'>
-                                <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Edit</span>
-                            </DialogTrigger>
-                            <DialogContent className="mt-[10px] mb-[10px]">
-                                <DrivingLicenseForm data={data} id={id}></DrivingLicenseForm>
-                                <UploadDocuments id={id}></UploadDocuments>
-                            </DialogContent>
-                        </Dialog>
-                        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                            <DialogTrigger className='pr-4'>
-                                <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Delete</span>
-                            </DialogTrigger>
-                            <DialogContent className="bg-white h-[200px]">
-                                <DialogHeader>
-                                    <DialogTitle>Confirm Deletion</DialogTitle>
-                                    <DialogDescription>
-                                        Are you sure you want to delete this driver? This action cannot be undone.
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="flex justify-end gap-2 mt-4">
-                                    <Button variant="secondary" onClick={() => setIsDeleteDialogOpen(false)}>
-                                        Cancel
-                                    </Button>
-                                    <Button variant="destructive" onClick={handleDeleteDriver}>
-                                        Confirm
-                                    </Button>
-                                </div>
-                            </DialogContent>
-                        </Dialog>
+                            <Dialog>
+                                <DialogTrigger className='pr-4'>
+                                    <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Edit</span>
+                                </DialogTrigger>
+                                <DialogContent className="mt-[10px] mb-[10px]">
+                                    <DrivingLicenseForm data={data} id={id}></DrivingLicenseForm>
+                                    <UploadDocuments id={id}></UploadDocuments>
+                                </DialogContent>
+                            </Dialog>
+                            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                                <DialogTrigger className='pr-4'>
+                                    <span className='text-blue-600 hover:underline text-sm border-2 p-1'>Delete</span>
+                                </DialogTrigger>
+                                <DialogContent className="bg-white h-[200px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Confirm Deletion</DialogTitle>
+                                        <DialogDescription>
+                                            Are you sure you want to delete this driver? This action cannot be undone.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="flex justify-end gap-2 mt-4">
+                                        <Button variant="secondary" onClick={() => setIsDeleteDialogOpen(false)}>
+                                            Cancel
+                                        </Button>
+                                        <Button variant="destructive" onClick={handleDeleteDriver}>
+                                            Confirm
+                                        </Button>
+                                    </div>
+                                </DialogContent>
+                            </Dialog>
                         </div>
                     </div>
                     <div>
