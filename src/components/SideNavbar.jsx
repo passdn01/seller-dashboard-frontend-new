@@ -31,6 +31,7 @@ import IssueSolverIcon from '../assets/NavIcons/IssueSolver.svg';
 import { useNavigate } from 'react-router-dom';
 
 import { Link } from 'react-router-dom'
+import { Target } from 'lucide-react';
 
 function SideNavbar() {
     const menuList = [
@@ -100,6 +101,14 @@ function SideNavbar() {
             id: "6",
             title: "Blogs",
             link: "/blogs",
+            submenu: false,
+            icon: TechCostIcon,
+        },
+        {
+            id: "7",
+            title: "Images Viewer",
+            link: "/imgs",
+            Target:"_blank",
             submenu: false,
             icon: TechCostIcon,
         },

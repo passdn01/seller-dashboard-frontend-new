@@ -14,6 +14,9 @@ import AllBlogs from './components/blogs/AllBlogs.jsx'
 import AllVerified from './components/drivers/allDrivers/AllVerified'
 
 
+import ImageComponent from './img.jsx'
+
+
 function App() {
   const ProtectedRoute = ({ element }) => {
     const token = document.cookie.includes('token');
@@ -39,6 +42,11 @@ function App() {
 
           <Route path='/issues' element={<ProtectedRoute element={<Issues />} />} />
           <Route path='/blogs' element={<ProtectedRoute element={<AllBlogs />} />} />
+          <Route path='/imgs' element={<ProtectedRoute element={<ImageComponent />} />} />
+
+
+
+          
 
         </Routes>
       </BrowserRouter>
