@@ -13,18 +13,38 @@ import Issues from './components/issues/Issues.jsx'
 import AllBlogs from './components/blogs/AllBlogs.jsx'
 import AllVerified from './components/drivers/allDrivers/AllVerified'
 import HomeMetricPage from './components/homeMetricsPage/HomeMetricPage.jsx'
+import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import roleRoutes from './roles.jsx'
+import { getCookie } from './lib/utils.js'
 
 function App() {
+
+  const [userRole, setUserRole] = useState("guest");
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const user = getCookie("role")
+      setUserRole(user)
+    }
+    fetchUserInfo()
+  }, [])
+
   const ProtectedRoute = ({ element }) => {
     const token = document.cookie.includes('token');
     console.log(token)
-    return token ? element : <Navigate to="/" />;
+
+    const { pathname: path } = useLocation();
+
+    if (!userRole) return <div>Loading</div>
+    console.log(token && roleRoutes[userRole]?.some((allowedPath) => path.startsWith(allowedPath)))
+    return token && roleRoutes[userRole]?.some((allowedPath) => path.startsWith(allowedPath)) ? element : !token ? <Navigate to="/" /> : <Navigate to="/home/dashboard" />;
   };
   return (
     <>
       <BrowserRouter>
         <Routes>
-          {/* <Route path="/home/mapData" element={<ProtectedRoute element={<Home />} />} /> */}
+          <Route path="/home/mapData" element={<ProtectedRoute element={<Home />} />} />
           <Route path="/home/dashboard" element={<ProtectedRoute element={<HomeMetricPage />} />} />
           <Route path='/' element={<Login />}></Route>
           <Route path='/drivers/allDrivers' element={<ProtectedRoute element={<AllDrivers />} />} />

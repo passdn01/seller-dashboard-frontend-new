@@ -28,15 +28,29 @@ import QuizDashboardIcon from '../assets/NavIcons/QuizDashboard.svg';
 import TechCostIcon from '../assets/NavIcons/TechCost.svg';
 import WebsiteIcon from '../assets/NavIcons/Website.svg';
 import IssueSolverIcon from '../assets/NavIcons/IssueSolver.svg';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import roleRoutes from '../roles';
+import { getCookie } from '@/lib/utils';
 
 import { Link } from 'react-router-dom'
-// import { cleanUpSellerSocket } from '@/sellerSocket';
+import { User } from 'lucide-react';
+
 function SideNavbar() {
+    const [userRole, setUserRole] = React.useState("guest");
+
+    React.useEffect(() => {
+        const fetchUserInfo = async () => {
+            const user = getCookie("role")
+            setUserRole(user)
+        }
+        fetchUserInfo()
+    }, [])
+
     const handleDashboardClick = (e) => {
         e.preventDefault();
         window.location.reload();
     };
+
     const menuList = [
         {
             id: "1",
@@ -59,7 +73,7 @@ function SideNavbar() {
                     icon: '',
                 }
             ]
-        }, ,
+        },
         {
             id: "2",
             title: "Driver",
@@ -69,12 +83,6 @@ function SideNavbar() {
             subMenuList: [
                 {
                     id: '1',
-                    title: 'Live Drivers',
-                    link: '/drivers/liveDrivers',
-                    icon: '',
-                },
-                {
-                    id: '2',
                     title: 'All Drivers',
                     link: '/drivers/allDrivers',
                     icon: '',
@@ -83,205 +91,67 @@ function SideNavbar() {
         },
         {
             id: "3",
+            title: "Users",
+            link: '/users',
+            icon: User,
+        },
+        {
+            id: "4",
             title: "Rides",
             link: '/rides/AllRides',
             icon: DriverIcon,
         },
         {
-            id: "4",
-            title: "Agent",
-            link: '',
-            submenu: true,
-            icon: AgentIcon,
-            subMenuList: [
-                // {
-                //     id: '1',
-                //     title: 'Live Agents',
-                //     link: '/agents/live',
-                //     icon: '',
-                // },
-                {
-                    id: '2',
-                    title: 'All Agents',
-                    link: '/agents/allAgents',
-                    icon: '',
-                }
-            ]
-        },
-        {
             id: "5",
-            title: "Issues",
-            link: "/issues",
+            title: "Issues Assigner",
+            link: "/issueAssigner",
             submenu: false,
             icon: OfferIcon,
         },
         {
             id: "6",
-            title: "Blogs",
-            link: "/blogs",
-            submenu: false,
-            icon: TechCostIcon,
+            title: "Issue Solver",
+            link: '/issueSolver',
+            icon: IssueSolverIcon,
         },
-        // {
-        //     id: "7",
-        //     title: "Fare Price",
-        //     link: "/home",
-        //     submenu: false,
-        //     icon: FarePriceIcon,
-        // },
-        // {
-        //     id: "8",
-        //     title: "Website",
-        //     link: '',
-        //     submenu: true,
-        //     icon: WebsiteIcon,
-        //     subMenuList: [
-        //         {
-        //             id: '1',
-        //             title: 'Website Overview',
-        //             link: '/website/overview',
-        //             icon: '',
-        //         },
-        //         {
-        //             id: '2',
-        //             title: 'Website Settings',
-        //             link: '/website/settings',
-        //             icon: '',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: "9",
-        //     title: "Finance Metrics",
-        //     link: '',
-        //     submenu: true,
-        //     icon: FinancialMetricsIcon,
-        //     subMenuList: [
-        //         {
-        //             id: '1',
-        //             title: 'Metrics Overview',
-        //             link: '/finance/overview',
-        //             icon: '',
-        //         },
-        //         {
-        //             id: '2',
-        //             title: 'Reports',
-        //             link: '/finance/reports',
-        //             icon: '',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: "10",
-        //     title: "Issue Solver",
-        //     link: '',
-        //     submenu: true,
-        //     icon: IssueSolverIcon,
-        //     subMenuList: [
-        //         {
-        //             id: '1',
-        //             title: 'Open Issues',
-        //             link: '/issues/open',
-        //             icon: '',
-        //         },
-        //         {
-        //             id: '2',
-        //             title: 'Resolved Issues',
-        //             link: '/issues/resolved',
-        //             icon: '',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: "11",
-        //     title: "Air Share",
-        //     link: '',
-        //     submenu: true,
-        //     icon: DriverIcon,
-        //     subMenuList: [
-        //         {
-        //             id: '1',
-        //             title: 'Air Share Overview',
-        //             link: '/airshare/overview',
-        //             icon: '',
-        //         },
-        //         {
-        //             id: '2',
-        //             title: 'Air Share Settings',
-        //             link: '/airshare/settings',
-        //             icon: '',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: "12",
-        //     title: "Quiz Share",
-        //     link: '',
-        //     submenu: true,
-        //     icon: QuizDashboardIcon,
-        //     subMenuList: [
-        //         {
-        //             id: '1',
-        //             title: 'Active Quizzes',
-        //             link: '/quizzes/active',
-        //             icon: '',
-        //         },
-        //         {
-        //             id: '2',
-        //             title: 'Quiz Reports',
-        //             link: '/quizzes/reports',
-        //             icon: '',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: "13",
-        //     title: "Financial Services",
-        //     link: '',
-        //     submenu: true,
-        //     icon: FinancialServicesIcon,
-        //     subMenuList: [
-        //         {
-        //             id: '1',
-        //             title: 'Service Overview',
-        //             link: '/finance/services/overview',
-        //             icon: '',
-        //         },
-        //         {
-        //             id: '2',
-        //             title: 'Service Settings',
-        //             link: '/finance/services/settings',
-        //             icon: '',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: "14",
-        //     title: "I AM Admin",
-        //     link: "/home",
-        //     submenu: false,
-        //     icon: IAMAdminIcon,
-        // },
-        // {
-        //     id: "15",
-        //     title: "Logs",
-        //     link: "/home",
-        //     submenu: false,
-        //     icon: LogsIcon,
-        // },
-        // {
-        //     id: "15",
-        //     title: "Log out",
-        //     link: "/home",
-        //     submenu: false,
-        //     icon: LogoutIcon,
-        // },
+        {
+            id: "7",
+            title: "I AM Admin",
+            link: "/admin",
+            submenu: false,
+            icon: IAMAdminIcon,
+        },
     ];
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const getAccessibleMenu = (menuList, allowedRoutes) => {
+        return menuList
+            .filter((menu) => {
+                return (
+                    (menu.link && allowedRoutes.some((route) => menu.link.startsWith(route))) ||
+                    (menu.subMenuList &&
+                        menu.subMenuList.some((subMenu) =>
+                            allowedRoutes.some((route) => subMenu.link.startsWith(route))
+                        ))
+                );
+            })
+            .map((menu) => ({
+                ...menu,
+                subMenuList: menu.subMenuList
+                    ? menu.subMenuList.filter((subMenu) =>
+                        allowedRoutes.some((route) => subMenu.link.startsWith(route))
+                    )
+                    : undefined,
+            }));
+    };
+
+    const accessibleMenu = getAccessibleMenu(menuList, roleRoutes[userRole] || []);
+
     const handleLogout = async () => {
         try {
-            const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/logout', {
+            const response = await fetch('https://adminsellerbackend-1.onrender.com/logout', {
                 method: 'POST',
                 credentials: 'include'
             });
@@ -299,6 +169,10 @@ function SideNavbar() {
         }
     };
 
+    const isActive = (menuLink) => {
+        return location.pathname.startsWith(menuLink) ? "bg-blue-100" : "";
+    };
+
     return (
         <div className='fixed border-r min-w-[250px] z-50 min-h-screen bg-white h-full overflow-hidden'>
             <Command className="rounded-lg">
@@ -308,25 +182,25 @@ function SideNavbar() {
                 </div>
                 <CommandSeparator />
                 <CommandList>
-                    {menuList.map((el) => (
-                        <div key={el.id}>
-                            {el.submenu ? (
+                    {accessibleMenu.map((menu) => (
+                        <div key={menu.id}>
+                            {menu.submenu ? (
                                 <CommandItem>
                                     <Accordion type="single" collapsible className="w-full">
-                                        <AccordionItem value={el.id}>
-                                            <AccordionTrigger className='flex items-center py-1 text-sm rounded-md w-full'>
+                                        <AccordionItem value={menu.id}>
+                                            <AccordionTrigger className="flex items-center py-1 text-sm rounded-md w-full">
                                                 <div className="flex items-center">
-                                                    <img src={el.icon} alt="" className="h-5 w-5 mr-3" />
-                                                    <span className='font-normal hover:no-underline'>{el.title}</span>
+                                                    <img src={menu.icon} alt="" className="h-5 w-5 mr-3" />
+                                                    <span className="font-normal hover:no-underline">{menu.title}</span>
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent>
                                                 <div className="pl-10">
-                                                    {el.subMenuList.map((item) => (
-                                                        <div key={item.id} onClick={item.onClick}>
-                                                            <Link to={item.link}>
-                                                                <CommandItem className="py-2 text-sm hover:bg-blue-50 rounded-md">
-                                                                    {item.title}
+                                                    {menu.subMenuList.map((subMenu) => (
+                                                        <div key={subMenu.id}>
+                                                            <Link to={subMenu.link}>
+                                                                <CommandItem className={`py-2 text-sm hover:bg-blue-200 rounded-md ${isActive(subMenu.link)}`}>
+                                                                    {subMenu.title}
                                                                 </CommandItem>
                                                             </Link>
                                                         </div>
@@ -337,21 +211,15 @@ function SideNavbar() {
                                     </Accordion>
                                 </CommandItem>
                             ) : (
-                                <Link to={el.link}>
-                                    <CommandItem className='flex items-center p-2 text-sm hover:bg-blue-100 rounded-md w-full cursor-pointer bg-white'>
-                                        <img src={el.icon} alt="" className="h-5 w-5 mr-3" />
-                                        <span>{el.title}</span>
+                                <Link to={menu.link}>
+                                    <CommandItem className={`flex items-center p-2 text-sm hover:bg-blue-200 rounded-md w-full cursor-pointer bg-white ${isActive(menu.link)}`}>
+                                        <img src={menu.icon} alt="" className="h-5 w-5 mr-3" />
+                                        <span>{menu.title}</span>
                                     </CommandItem>
                                 </Link>
                             )}
                         </div>
                     ))}
-                    <Link onClick={handleLogout}>
-                        <CommandItem className='bottom-0 absolute items-center p-2 text-sm hover:bg-blue-100 rounded-md w-full cursor-pointer bg-white'>
-                            <img src={LogoutIcon} alt="" className="h-5 w-5 mr-3" />
-                            <span>Logout</span>
-                        </CommandItem>
-                    </Link>
                 </CommandList>
             </Command>
         </div>

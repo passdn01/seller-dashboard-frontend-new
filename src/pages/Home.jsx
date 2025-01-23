@@ -24,7 +24,7 @@ function Home() {
             <SideNavbar />
             <div className='flex-1 ml-[250px]'>
                 <Header className='w-full bg-[#ffffff]' title='Home' />
-                <NavStats />
+
                 <GeoMetrics
                     selectedDriver={selectedDriver}
                     onDriverSelect={handleDriverSelect}

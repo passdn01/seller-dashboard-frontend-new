@@ -168,7 +168,7 @@ export default function RideTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/allRides', {
+                const response = await axios.get('https://adminsellerbackend-1.onrender.com/dashboard/api/allRides', {
                     // withCredentials: true
                 });
                 console.log(response.data.data);

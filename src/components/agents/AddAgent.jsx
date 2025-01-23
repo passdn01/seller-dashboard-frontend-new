@@ -25,7 +25,7 @@ const AddAgent = () => {
         setError('');
         try {
             const response = await axios.post(
-                'https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/agent/add', // Adjusted endpoint for adding a new agent
+                'https://adminsellerbackend-1.onrender.com/dashboard/api/agent/add', // Adjusted endpoint for adding a new agent
                 formData
             );
             if (response.data.success) {

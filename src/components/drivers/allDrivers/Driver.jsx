@@ -30,6 +30,9 @@ import DrivingLicenseForm from './DrivingLicenseForm';
 import UploadDocuments from './UploadDocuments';
 import { Oval } from 'react-loader-spinner';
 import { Title } from '@radix-ui/react-dialog';
+
+import DriverInfoCharts from '../driverInfo/DriverInfoCharts';
+import BalanceStatement from '../driverInfo/BalanceStatement';
 function Driver() {
     const { id } = useParams();
     console.log("driver param", id)
@@ -42,7 +45,7 @@ function Driver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}`)
+        axios.post(`https://adminsellerbackend-1.onrender.com/dashboard/api/driver/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -60,10 +63,10 @@ function Driver() {
 
     const handleStatusUpdate = async () => {
         try {
-            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/completeEdit`, {
+            await axios.post(`https://adminsellerbackend-1.onrender.com/dashboard/api/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
             });
-            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/send-notification`, {
+            await axios.post(`https://adminsellerbackend-1.onrender.com/send-notification`, {
                 driverId: data.driverInfo._id // Toggle the status,
                 , title: "Your Account has been approved ✅",
                 body: "Rides are waiting for you 🛺"
@@ -78,7 +81,7 @@ function Driver() {
 
     const handleDeleteDriver = async () => {
         try {
-            const response = await axios.delete(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`https://adminsellerbackend-1.onrender.com/dashboard/api/driver/${driverToDelete}`);
             if (response.data.success) {
                 alert('Driver deleted successfully');
                 navigate('/drivers/allDrivers'); // Redirect after deletion
@@ -188,10 +191,16 @@ function Driver() {
                         <div>
                             <Performance data={data}></Performance>
                         </div>
-
+                        <div>
+                            <DriverInfoCharts data={data}></DriverInfoCharts>
+                        </div>
                         <div className=''>
 
                             <Subscription data={data}></Subscription>
+                        </div>
+
+                        <div>
+                            <BalanceStatement data={data}></BalanceStatement>
                         </div>
                     </div>
                 </div>
@@ -213,7 +222,7 @@ function VDriver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}`)
+        axios.post(`https://adminsellerbackend-1.onrender.com/dashboard/api/driver/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -231,10 +240,10 @@ function VDriver() {
 
     const handleStatusUpdate = async () => {
         try {
-            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/completeEdit`, {
+            await axios.post(`https://adminsellerbackend-1.onrender.com/dashboard/api/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
             });
-            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/send-notification`, {
+            await axios.post(`https://adminsellerbackend-1.onrender.com/send-notification`, {
                 driverId: data.driverInfo._id // Toggle the status,
                 , title: "Your Account has been approved ✅",
                 body: "Rides are waiting for you 🛺"
@@ -249,7 +258,7 @@ function VDriver() {
 
     const handleDeleteDriver = async () => {
         try {
-            const response = await axios.delete(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`https://adminsellerbackend-1.onrender.com/dashboard/api/driver/${driverToDelete}`);
             if (response.data.success) {
                 alert('Driver deleted successfully');
                 navigate('/drivers/allDrivers'); // Redirect after deletion

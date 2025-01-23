@@ -3,8 +3,10 @@ import MetricCard from './MetricCardComponent'
 import SideNavbar from '../SideNavbar'
 import { TrendingUp } from 'lucide-react'
 import { RideDashboard } from './RideDashboard'
+import { useState } from 'react'
 
 function HomeMetricPage() {
+
     return (
         <div className='flex w-full'>
             <SideNavbar></SideNavbar>

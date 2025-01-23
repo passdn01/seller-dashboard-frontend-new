@@ -59,7 +59,7 @@ const DrivingLicenseForm = ({ data, id }) => {
         setSubmitStatus(null);
 
         try {
-            const response = await fetch(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit`, {
+            const response = await fetch(`https://adminsellerbackend-1.onrender.com/dashboard/api/driver/${id}/edit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

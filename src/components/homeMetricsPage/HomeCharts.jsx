@@ -18,7 +18,7 @@ const HomeCharts = () => {
 
             try {
                 const [rideResponse, buyerResponse] = await Promise.all([
-                    fetch(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/homeCharts?type=${type}`),
+                    fetch(`https://adminsellerbackend-1.onrender.com/dashboard/api/homeCharts?type=${type}`),
                     fetch(`https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/homeCharts?type=${type}`)
                 ]);
 
@@ -95,14 +95,14 @@ const HomeCharts = () => {
     });
 
     const ChartCard = ({ title, chartData, group }) => (
-        <div> {JSON.stringify(chartData)}
-            <Card className="p-4 mb-6">
-                <AreaChart
-                    data={chartData.filter(d => d.group === group)}
-                    options={chartOptions(title, group)}
-                />
-            </Card>
-        </div>
+
+        <Card className="p-4 mb-6">
+            <AreaChart
+                data={chartData.filter(d => d.group === group)}
+                options={chartOptions(title, group)}
+            />
+        </Card>
+
 
     );
 

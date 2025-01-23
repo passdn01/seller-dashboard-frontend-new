@@ -4,3 +4,10 @@ import { twMerge } from "tailwind-merge"
 export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
+
+
+export const getCookie = (name) => {
+  const cookieArray = document.cookie.split('; ');
+  const cookie = cookieArray.find((row) => row.startsWith(`${name}=`));
+  return cookie ? cookie.split('=')[1] : null;
+};

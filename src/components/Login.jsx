@@ -13,7 +13,7 @@ const Login = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/login', {
+            const response = await fetch('https://adminsellerbackend-1.onrender.com/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
@@ -24,6 +24,7 @@ const Login = () => {
                 const result = await response.json();
                 document.cookie = `token=${result.token}; path=/; secure; SameSite=Strict`;
                 document.cookie = `admin=${result.admin}`;
+                document.cookie = `role=${result.role}`;
                 let mycookie = document.cookie;
                 console.log(mycookie, "cookie set");
                 const admin = result.admin;

@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
 
-const sellerSocket = io('https://8qklrvxb-5000.inc1.devtunnels.ms/');
+const sellerSocket = io('https://adminsellerbackend-1.onrender.com/');
 
 
 const cleanUpSellerSocket = () => {

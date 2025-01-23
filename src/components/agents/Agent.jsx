@@ -41,7 +41,7 @@ function Agent() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/agent/${id}`)
+        axios.post(`https://adminsellerbackend-1.onrender.com/dashboard/api/agent/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);

@@ -3,6 +3,7 @@ import { sellerSocket } from "@/sellerSocket";
 import { useState, useEffect } from 'react';
 import { buyerSocket } from '@/buyerSocket';
 import MetricCard from './MetricCardComponent';
+import { MeterChart } from '@carbon/charts-react'
 
 //icon imports
 import auto from '../../assets/CardGridIcons/auto.png'
@@ -33,6 +34,28 @@ function CardGrid() {
     const calculateCommission = (earnings) => {
         return typeof earnings === 'number' ? earnings * 0.25 : 0;
     };
+
+    const formatNumber = (num) => {
+        if (!num && num !== 0) return "0"; // Handle undefined or null gracefully
+        if (num >= 10000000) return `${(num / 10000000).toFixed(2)}CR`;
+        if (num >= 100000) return `${(num / 100000).toFixed(2)}L`;
+        if (num >= 1000) return `${(num / 1000).toFixed(2)}k`;
+        return num.toFixed(2); // Two decimal places for small numbers
+    };
+
+    const d = [{
+        group: 'Search/Completed Ride Ratio',
+        value: allTimeMetrics.SearchRides / allTimeMetrics.completedRides || 0
+    }]
+
+    const op = {
+        title: "Conversion Rate",
+        meter: {
+            peak: 70
+        },
+        height: '100px'
+    }
+
 
     useEffect(() => {
         const handleMetrics = (data) => {
@@ -78,103 +101,109 @@ function CardGrid() {
     const todayTabData = [
         {
             icon: search,
-            number: todayMetrics.SearchRides,
+            number: formatNumber(todayMetrics.SearchRides || 0),
             title: "Search Rides",
             increase: lastHourMetrics.SearchRides,
         },
         {
             icon: completed,
-            number: todayMetrics.completedRides,
+            number: formatNumber(todayMetrics.completedRides || 0),
             title: "Complete Rides",
             increase: lastHourMetrics.completedRides,
         },
         {
             icon: driverearning,
-            number: todayMetrics.driversEarnings,
+            number: formatNumber(todayMetrics.driversEarnings || 0),
             title: "Driver's Earnings",
             increase: lastHourMetrics.driversEarnings,
         },
         {
             icon: savecommission,
-            number: calculateCommission(todayMetrics.driversEarnings),
+            number: formatNumber(calculateCommission(todayMetrics.driversEarnings) || 0),
             title: "Save Commission",
             increase: calculateCommission(lastHourMetrics.driversEarnings),
         },
         {
             icon: user,
-            number: todayMetrics.Users,
+            number: formatNumber(todayMetrics.Users || 0),
             title: "User Registered",
             increase: lastHourMetrics.Users,
         },
         {
             icon: drivers,
-            number: todayMetrics.driversRegistered,
+            number: formatNumber(todayMetrics.driversRegistered || 0),
             title: "Driver Registered",
             increase: lastHourMetrics.driversRegistered,
         },
         {
             icon: driverwalletadd,
-            number: todayMetrics.walletCredits,
+            number: formatNumber(todayMetrics.walletCredits || 0),
             title: "Driver Wallet Add",
             increase: lastHourMetrics.walletCredits,
         },
         {
             icon: subscriptiontrans,
-            number: todayMetrics.subscriptionTransactions,
+            number: formatNumber(todayMetrics.subscriptionTransactions || 0),
             title: "Subscription Transactions",
             increase: lastHourMetrics.subscriptionTransactions,
         },
         {
             icon: totalsubscription,
-            number: todayMetrics.subscriptionAmount,
+            number: formatNumber(todayMetrics.subscriptionAmount || 0),
             title: "Total Subscription Amount",
             increase: lastHourMetrics.subscriptionAmount,
         },
         {
             icon: coinsdistributed,
-            number: todayMetrics.coinsDistributed,
+            number: formatNumber(todayMetrics.coinsDistributed || 0),
             title: "Coins Distributed",
             increase: lastHourMetrics.coinsDistributed,
         },
         {
             icon: userredeem,
-            number: todayMetrics.userRedeemMoney,
+            number: formatNumber(todayMetrics.userRedeemMoney || 0),
             title: "User Redeem Money",
             increase: lastHourMetrics.userRedeemMoney,
         },
         {
             icon: kms,
-            number: todayMetrics.kmServed,
+
+            number: formatNumber(todayMetrics.kmServed || 0),
             title: "KM We Serve",
             increase: lastHourMetrics.kmServed,
         },
         {
             icon: bike,
-            number: todayMetrics.BikeRides,
+
+            number: formatNumber(todayMetrics.BikeRides || 0),
             title: "Bike Taxi",
             increase: lastHourMetrics.BikeRides,
         },
         {
             icon: auto,
-            number: todayMetrics.AutoRides,
+
+            number: formatNumber(todayMetrics.AutoRides || 0),
             title: "Auto Rickshaw",
             increase: lastHourMetrics.AutoRides,
         },
         {
             icon: cab,
-            number: todayMetrics.CabRides,
+
+            number: formatNumber(todayMetrics.CabRides || 0),
             title: "Cab",
             increase: lastHourMetrics.CabRides,
         },
         {
             icon: fake,
-            number: todayMetrics.FakeRides,
+
+            number: formatNumber(todayMetrics.FakeRides || 0),
             title: "Fake Rides",
             increase: lastHourMetrics.FakeRides,
         },
         {
             icon: cancel,
-            number: todayMetrics.cancelledRides,
+
+            number: formatNumber(todayMetrics.cancelledRides || 0),
             title: "Cancel Rides",
             increase: lastHourMetrics.cancelledRides,
         },
@@ -184,7 +213,7 @@ function CardGrid() {
     const allTimeTabData = [
         {
             icon: search,
-            number: allTimeMetrics.SearchRides,
+            number: formatNumber(allTimeMetrics.SearchRides || 0),
             title: "Search Rides",
             increase: todayMetrics.SearchRides,
             hover: true,
@@ -198,7 +227,7 @@ function CardGrid() {
         },
         {
             icon: completed,
-            number: allTimeMetrics.completedRides,
+            number: formatNumber(allTimeMetrics.completedRides || 0),
             title: "Complete Rides",
             increase: todayMetrics.completedRides,
             hover: true,
@@ -212,7 +241,7 @@ function CardGrid() {
         },
         {
             icon: driverearning,
-            number: allTimeMetrics.driversEarnings,
+            number: formatNumber(allTimeMetrics.driversEarnings || 0),
             title: "Driver's Earnings",
             increase: todayMetrics.driversEarnings,
             hover: true,
@@ -226,7 +255,7 @@ function CardGrid() {
         },
         {
             icon: savecommission,
-            number: calculateCommission(allTimeMetrics.driversEarnings),
+            number: formatNumber(calculateCommission(allTimeMetrics.driversEarnings) || 0),
             title: "Save Commission",
             increase: calculateCommission(todayMetrics.driversEarnings),
             hover: true,
@@ -240,7 +269,7 @@ function CardGrid() {
         },
         {
             icon: user,
-            number: allTimeMetrics.Users,
+            number: formatNumber(allTimeMetrics.Users || 0),
             title: "User Registered",
             increase: todayMetrics.Users,
             hover: true,
@@ -254,7 +283,7 @@ function CardGrid() {
         },
         {
             icon: drivers,
-            number: allTimeMetrics.driversRegistered,
+            number: formatNumber(allTimeMetrics.driversRegistered || 0),
             title: "Driver Registered",
             increase: todayMetrics.driversRegistered,
             hover: true,
@@ -268,7 +297,7 @@ function CardGrid() {
         },
         {
             icon: driverwalletadd,
-            number: allTimeMetrics.walletCredits,
+            number: formatNumber(allTimeMetrics.walletCredits || 0),
             title: "Driver Wallet Add",
             increase: todayMetrics.walletCredits,
             hover: true,
@@ -282,7 +311,7 @@ function CardGrid() {
         },
         {
             icon: subscriptiontrans,
-            number: allTimeMetrics.subscriptionTransactions,
+            number: formatNumber(allTimeMetrics.subscriptionTransactions || 0),
             title: "Subscription Transactions",
             increase: todayMetrics.subscriptionTransactions,
             hover: true,
@@ -296,7 +325,7 @@ function CardGrid() {
         },
         {
             icon: totalsubscription,
-            number: allTimeMetrics.subscriptionAmount,
+            number: formatNumber(allTimeMetrics.subscriptionAmount || 0),
             title: "Total Subscription Amount",
             increase: todayMetrics.subscriptionAmount,
             hover: true,
@@ -310,7 +339,7 @@ function CardGrid() {
         },
         {
             icon: coinsdistributed,
-            number: allTimeMetrics.coinsDistributed,
+            number: formatNumber(allTimeMetrics.coinsDistributed || 0),
             title: "Coins Distributed",
             increase: todayMetrics.coinsDistributed,
             hover: true,
@@ -324,7 +353,7 @@ function CardGrid() {
         },
         {
             icon: userredeem,
-            number: allTimeMetrics.userRedeemMoney,
+            number: formatNumber(allTimeMetrics.userRedeemMoney || 0),
             title: "User Redeem Money",
             increase: todayMetrics.userRedeemMoney,
             hover: true,
@@ -338,7 +367,7 @@ function CardGrid() {
         },
         {
             icon: kms,
-            number: allTimeMetrics.kmServed,
+            number: formatNumber(allTimeMetrics.kmServed || 0),
             title: "KM We Serve",
             increase: todayMetrics.kmServed,
             hover: true,
@@ -352,7 +381,7 @@ function CardGrid() {
         },
         {
             icon: bike,
-            number: allTimeMetrics.BikeRides,
+            number: formatNumber(allTimeMetrics.BikeRides || 0),
             title: "Bike Taxi",
             increase: todayMetrics.BikeRides,
             hover: true,
@@ -366,7 +395,7 @@ function CardGrid() {
         },
         {
             icon: auto,
-            number: allTimeMetrics.AutoRides,
+            number: formatNumber(allTimeMetrics.AutoRides || 0),
             title: "Auto Rickshaw",
             increase: todayMetrics.AutoRides,
             hover: true,
@@ -380,7 +409,7 @@ function CardGrid() {
         },
         {
             icon: cab,
-            number: allTimeMetrics.CabRides,
+            number: formatNumber(allTimeMetrics.CabRides || 0),
             title: "Cab",
             increase: todayMetrics.CabRides,
             hover: true,
@@ -394,7 +423,7 @@ function CardGrid() {
         },
         {
             icon: fake,
-            number: allTimeMetrics.FakeRides,
+            number: formatNumber(allTimeMetrics.FakeRides || 0),
             title: "Fake Rides",
             increase: todayMetrics.FakeRides,
             hover: true,
@@ -408,7 +437,7 @@ function CardGrid() {
         },
         {
             icon: cancel,
-            number: allTimeMetrics.cancelledRides,
+            number: formatNumber(allTimeMetrics.cancelledRides || 0),
             title: "Cancel Rides",
             increase: todayMetrics.cancelledRides,
             hover: true,
@@ -425,48 +454,51 @@ function CardGrid() {
     const [activeTab, setActiveTab] = useState('today');
 
     return (
+        <>
+            <div className="p-6">
+                {/* Tab Switcher */}
+                <div className="flex items-center gap-4 mb-6">
+                    <span className="text-sm text-gray-500">This data show for ...</span>
+                    <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
+                        <button
+                            className={`px-4 py-2 rounded-md text-sm transition-colors ${activeTab === 'today'
+                                ? 'bg-white shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                            onClick={() => setActiveTab('today')}
+                        >
+                            Today
+                        </button>
+                        <button
+                            className={`px-4 py-2 rounded-md text-sm transition-colors ${activeTab === 'allTime'
+                                ? 'bg-blue-500 text-white shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                            onClick={() => setActiveTab('allTime')}
+                        >
+                            All Time
+                        </button>
+                    </div>
+                </div>
 
-        <div className="p-6">
-            {/* Tab Switcher */}
-            <div className="flex items-center gap-4 mb-6">
-                <span className="text-sm text-gray-500">This data show for ...</span>
-                <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
-                    <button
-                        className={`px-4 py-2 rounded-md text-sm transition-colors ${activeTab === 'today'
-                            ? 'bg-white shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                        onClick={() => setActiveTab('today')}
-                    >
-                        Today
-                    </button>
-                    <button
-                        className={`px-4 py-2 rounded-md text-sm transition-colors ${activeTab === 'allTime'
-                            ? 'bg-blue-500 text-white shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                        onClick={() => setActiveTab('allTime')}
-                    >
-                        All Time
-                    </button>
+                {/* Metrics Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {(activeTab === 'today' ? todayTabData : allTimeTabData).map((metric, index) => (
+                        <MetricCard
+                            key={`${metric.title}-${index}`}
+                            icon={metric.icon}
+                            title={metric.title}
+                            number={metric.number}
+                            increase={metric.increase}
+                            hover={metric.hover}
+                            hoverData={metric.hoverData}
+                        />
+                    ))}
                 </div>
             </div>
+            <div className='p-2 border-2 border-gray-100 m-6 rounded '><MeterChart data={d} options={op}></MeterChart></div>
 
-            {/* Metrics Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {(activeTab === 'today' ? todayTabData : allTimeTabData).map((metric, index) => (
-                    <MetricCard
-                        key={`${metric.title}-${index}`}
-                        icon={metric.icon}
-                        title={metric.title}
-                        number={metric.number}
-                        increase={metric.increase}
-                        hover={metric.hover}
-                        hoverData={metric.hoverData}
-                    />
-                ))}
-            </div>
-        </div>
+        </>
     )
 }
 
