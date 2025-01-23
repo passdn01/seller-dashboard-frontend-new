@@ -94,10 +94,7 @@ export default function DriverTable() {
         rcBackMissing: false,
         none: false,  // Initially not selected
     });
-    const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 10;
 
-    const [goToPage, setGoToPage] = useState('');
 
     const [showMissingNameAndLicense, setShowMissingNameAndLicense] = useState(false);
 
@@ -170,16 +167,7 @@ export default function DriverTable() {
         setIsDialogOpen(true);
     };
 
-    const handleGoToPage = (e) => {
-        e.preventDefault();
-        const pageNumber = parseInt(goToPage);
-        if (pageNumber >= 1 && pageNumber <= totalPages) {
-            setCurrentPage(pageNumber);
-            setGoToPage(''); // Reset input after navigation
-        } else {
-            alert(`Please enter a page number between 1 and ${totalPages}`);
-        }
-    };
+
     const handleDelete = async () => {
         if (!driverToDelete) return;
 
@@ -249,11 +237,7 @@ export default function DriverTable() {
         {
             id: "sno",
             header: "S.No.",
-            cell: ({ row }) => {
-                // Calculate S.No. based on current page and page size
-                const sNo = (currentPage - 1) * pageSize + row.index + 1;
-                return <div>{sNo}</div>;
-            },
+            cell: ({ row }) => <div>{row.index + 1}</div>,
             enableHiding: false,
             enableSorting: false,
         },
@@ -452,7 +436,7 @@ export default function DriverTable() {
         };
 
         fetchData(); // Always fetch fresh data
-    }, []); // Empty dependency array ensures it runs only once on component mount
+    }, []);
 
 
 
