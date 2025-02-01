@@ -93,7 +93,7 @@ function SideNavbar() {
             id: "3",
             title: "Users",
             link: '/users',
-            icon: User,
+            icon: AgentIcon,
         },
         {
             id: "4",

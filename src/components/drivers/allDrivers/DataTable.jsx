@@ -374,9 +374,12 @@ export default function DriverTable() {
                                     Copy Driver Phone
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => navigate(`/drivers/allDrivers/${driver._id}`)}>
+                                <DropdownMenuItem
+                                    onClick={() => window.open(`/drivers/allDrivers/${driver._id}`, "_blank", "noopener,noreferrer")}
+                                >
                                     View Driver Details
                                 </DropdownMenuItem>
+
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => openDeleteDialog(driver._id)}>
                                     Delete Driver

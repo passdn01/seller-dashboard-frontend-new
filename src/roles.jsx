@@ -11,6 +11,7 @@ const roleRoutes = {
         "/agents/allAgents",
         "/issues",
         "/blogs",
+        "/users",
     ],
     admin: [
         "/home/dashboard",

@@ -17,10 +17,12 @@ import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import roleRoutes from './roles.jsx'
 import { getCookie } from './lib/utils.js'
-
+import allUserTable from './components/users/AllUserTable.jsx'
+import AllUserPage from './components/users/AllUserPage.jsx'
+import UserInfoPage from './components/users/UserInfoPage.jsx'
 function App() {
 
-  const [userRole, setUserRole] = useState("guest");
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -60,6 +62,10 @@ function App() {
 
           <Route path='/issues' element={<ProtectedRoute element={<Issues />} />} />
           <Route path='/blogs' element={<ProtectedRoute element={<AllBlogs />} />} />
+
+          <Route path='/users' element={<ProtectedRoute element={< AllUserPage />} />} />
+          <Route path='/users/:id' element={<ProtectedRoute element={< UserInfoPage />} />} />
+
 
 
         </Routes>

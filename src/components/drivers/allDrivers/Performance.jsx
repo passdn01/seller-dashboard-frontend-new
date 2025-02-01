@@ -8,7 +8,7 @@ import EarningsIcon from '../../../assets/driverPerformance/totalearning.svg'
 
 const Performance = ({ data }) => {
     const { driverInfo, otherInfo, referrals } = data
- 
+
     const dataList = [
         { icon: TotalRideIcon, label: 'Total ride', value: otherInfo[0]?.totalRides || 0 },
         { icon: RatingIcon, label: 'Rating', value: driverInfo?.rating },

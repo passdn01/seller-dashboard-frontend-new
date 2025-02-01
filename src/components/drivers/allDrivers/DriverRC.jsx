@@ -8,9 +8,9 @@ import {
 
     DialogTrigger,
 } from "@/components/ui/dialog"
-const handleDsubmit = (e)=>{
+const handleDsubmit = (e) => {
     e.preventDefault();
-    
+
 }
 const DriverRC = ({ data }) => {
     // Using placeholder data for RC Details
