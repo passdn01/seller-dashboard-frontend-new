@@ -15,7 +15,7 @@ const UserPerformance = ({ userData }) => {
         const fetchPerformance = async () => {
             try {
                 const response = await axios.post(
-                    "https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/users/performance",
+                    "https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/users/performance",
                     { userId }
                 );
 

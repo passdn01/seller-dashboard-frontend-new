@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, ZoomControl, Marker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, ZoomControl, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet.heat/dist/leaflet-heat.js';
@@ -68,6 +68,8 @@ HeatmapLegend.propTypes = {
     type: PropTypes.string.isRequired,
 };
 
+
+
 const GeoMetrics = () => {
     const [heatmapData, setHeatmapData] = useState([]);
     const [drivers, setDrivers] = useState([]);
@@ -77,6 +79,7 @@ const GeoMetrics = () => {
     const [mapLoading, setMapLoading] = useState(true);
     const [socket, setSocket] = useState(null);
     const [optionLoading, setOptionLoading] = useState(false);
+    const [selectedDate, setSelectedDate] = useState('');
 
     useEffect(() => {
         const timer = setTimeout(() => setMapLoading(false), 1000);
@@ -119,6 +122,37 @@ const GeoMetrics = () => {
         }
     };
 
+    // Function to format date as DD-MM-YYYY
+    const formatDate = (dateString) => {
+        const [year, month, day] = dateString.split('-');
+        return `${day}-${month}-${year}`;
+    };
+
+    const fetchDateRides = async (date) => {
+        try {
+            setOptionLoading(true);
+            const formattedDate = formatDate(date); // Convert date to DD-MM-YYYY format
+            const response = await axios.post('http://localhost:5000/dashboard/api/start-ride-clustering', { date: formattedDate });
+            const clusters = response.data.map(cluster => ({
+                center: [cluster.center.lat, cluster.center.lng],
+                count: cluster.numRides,
+            }));
+            setHeatmapData(clusters);
+            setAnalysis(`Ride clustering for ${formattedDate}`);
+        } catch (error) {
+            console.error('Error fetching ride data:', error);
+            setAnalysis('Error fetching ride clustering data.');
+        } finally {
+            setOptionLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (viewMode === 'ride24hrs' && selectedDate) {
+            fetchDateRides(selectedDate);
+        }
+    }, [viewMode, selectedDate]);
+
     useEffect(() => {
         const newSocket = io('https://adminsellerbackend-1.onrender.com/');
         setSocket(newSocket);
@@ -143,6 +177,7 @@ const GeoMetrics = () => {
 
         return () => newSocket.close();
     }, [viewMode]);
+;
 
     useEffect(() => {
         if (viewMode === 'heatmap') {
@@ -170,6 +205,7 @@ const GeoMetrics = () => {
                         <option value="">Select a view</option>
                         <option value="heatmap">Rides Heatmap</option>
                         <option value="drivers">All Drivers Location</option>
+                        <option value="ride24hrs">Ride 24 Hrs</option>
                     </select>
                 </div>
 
@@ -183,6 +219,18 @@ const GeoMetrics = () => {
                             <option value="completed">Completed Rides</option>
                             <option value="cancelled">Cancelled Rides</option>
                         </select>
+                    </div>
+                )}
+
+                {/* Show date input field when "Ride by Date" is selected */}
+                {viewMode === 'ride24hrs' && (
+                    <div className="select-container">
+                        <label>Select Date:</label>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                        />
                     </div>
                 )}
 
@@ -227,6 +275,28 @@ const GeoMetrics = () => {
                                 </Popup>
                             </Marker>
                         ))}
+                        {viewMode === 'ride24hrs' && heatmapData.map((cluster, index) => (
+                            <Circle
+                                key={index}
+                                center={cluster.center}
+                                radius={cluster.count * 50}
+                                color="blue"
+                                fillOpacity={0.5}
+                                eventHandlers={{
+                                    mouseover: (e) => {
+                                        const popupContent = `<b>Number of Rides:</b> ${cluster.count}`;
+                                        L.popup()
+                                            .setLatLng(e.latlng)
+                                            .setContent(popupContent)
+                                            .openOn(e.target._map);
+                                    },
+                                    mouseout: () => {
+                                        e.target._map.closePopup();
+                                    }
+                                }}
+                            />
+                        ))}
+
                     </MapContainer>
                 )}
             </div>
