@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, ZoomControl, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -80,6 +80,10 @@ const GeoMetrics = () => {
     const [socket, setSocket] = useState(null);
     const [optionLoading, setOptionLoading] = useState(false);
     const [selectedDate, setSelectedDate] = useState('');
+    const [startTime, setStartTime] = useState('');
+    const [endTime, setEndTime] = useState('');
+    const [varient, setVarient] = useState('ALL');
+    const [type, setType] = useState('all');
 
     useEffect(() => {
         const timer = setTimeout(() => setMapLoading(false), 1000);
@@ -132,7 +136,17 @@ const GeoMetrics = () => {
         try {
             setOptionLoading(true);
             const formattedDate = formatDate(date); // Convert date to DD-MM-YYYY format
-            const response = await axios.post('http://localhost:5000/dashboard/api/start-ride-clustering', { date: formattedDate });
+            const requestData = { date: formattedDate };
+    
+            // Add startTime and endTime to the request data if they are provided
+            if (startTime) requestData.startTime = startTime;
+            if (endTime) requestData.endTime = endTime;
+    
+            // Only send varient and type if they're not "ALL" or "all"
+            if (varient !== 'ALL') requestData.varient = varient;
+            if (type !== 'all') requestData.type = type;
+    
+            const response = await axios.post('http://localhost:5000/dashboard/api/start-ride-clustering', requestData);
             const clusters = response.data.map(cluster => ({
                 center: [cluster.center.lat, cluster.center.lng],
                 count: cluster.numRides,
@@ -151,7 +165,7 @@ const GeoMetrics = () => {
         if (viewMode === 'ride24hrs' && selectedDate) {
             fetchDateRides(selectedDate);
         }
-    }, [viewMode, selectedDate]);
+    }, [viewMode, selectedDate, startTime, endTime, varient, type]);
 
     useEffect(() => {
         const newSocket = io('https://adminsellerbackend.onrender.com/');
@@ -192,6 +206,8 @@ const GeoMetrics = () => {
         }
     }, [viewMode, rideType]);
 
+    
+
     return (
         <div className="geo-container">
             <div className="geo-sidebar">
@@ -222,16 +238,69 @@ const GeoMetrics = () => {
                     </div>
                 )}
 
-                {/* Show date input field when "Ride by Date" is selected */}
                 {viewMode === 'ride24hrs' && (
-                    <div className="select-container">
-                        <label>Select Date:</label>
-                        <input
-                            type="date"
-                            value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
-                        />
-                    </div>
+                    <>
+                        <div className="select-container">
+                            <label>Select Date:</label>
+                            <input
+                                type="date"
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Add start time selection */}
+                        <div className="select-container">
+                            <label>Start Time:</label>
+                            <input
+                                type="time"
+                                value={startTime}
+                                onChange={(e) => setStartTime(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Add end time selection */}
+                        <div className="select-container">
+                            <label>End Time:</label>
+                            <input
+                                type="time"
+                                value={endTime}
+                                onChange={(e) => setEndTime(e.target.value)}
+                            />
+                        </div>
+
+                        {/* Reset button */}
+                        <div>
+                            <button onClick={() => { setStartTime(''); setEndTime(''); }}>Reset</button>
+                        </div>
+
+                        {/* Add varient selection */}
+                        <div className="select-container">
+                            <label>Varient:</label>
+                            <select
+                                value={varient}
+                                onChange={(e) => setVarient(e.target.value)}
+                            >
+                                <option value="ALL">ALL</option>
+                                <option value="AUTO">AUTO</option>
+                                <option value="CAB">CAB</option>
+                                <option value="SEDAN">SEDAN</option>
+                            </select>
+                        </div>
+
+                        {/* Add type selection */}
+                        <div className="select-container">
+                            <label>Type:</label>
+                            <select
+                                value={type}
+                                onChange={(e) => setType(e.target.value)}
+                            >
+                                <option value="all">ALL</option>
+                                <option value="start">START</option>
+                                <option value="end">END</option>
+                            </select>
+                        </div>
+                    </>
                 )}
 
                 <div className="analysis-section">
@@ -275,27 +344,79 @@ const GeoMetrics = () => {
                                 </Popup>
                             </Marker>
                         ))}
-                        {viewMode === 'ride24hrs' && heatmapData.map((cluster, index) => (
-                            <Circle
-                                key={index}
-                                center={cluster.center}
-                                radius={cluster.count * 50}
-                                color="blue"
-                                fillOpacity={0.5}
-                                eventHandlers={{
-                                    mouseover: (e) => {
-                                        const popupContent = `<b>Number of Rides:</b> ${cluster.count}`;
-                                        L.popup()
-                                            .setLatLng(e.latlng)
-                                            .setContent(popupContent)
-                                            .openOn(e.target._map);
-                                    },
-                                    mouseout: () => {
-                                        e.target._map.closePopup();
-                                    }
-                                }}
-                            />
-                        ))}
+                       {viewMode === 'ride24hrs' && (
+  <>
+    {/* Render start circles if type is 'start' or 'all' */}
+    {heatmapData.map((cluster, index) => {
+      if (type === 'start' || type === 'all') {
+        return (
+          <Circle
+            key={`start-${index}`}
+            center={[
+              cluster.center[0] + (index % 2 === 0 ? 0.0001 : -0.0001), 
+              cluster.center[1]
+            ]}  // Slight offset to avoid overlap for start type
+            radius={cluster.count * 50}
+            color="blue"
+            fillOpacity={0.5}
+            eventHandlers={{
+              mouseover: (e) => {
+                const popup = L.popup()
+                  .setLatLng(e.latlng)
+                  .setContent(`<b>Number of Rides:</b> ${cluster.count}`)
+                  .openOn(e.target._map);
+                e.target._popup = popup;
+              },
+              mouseout: (e) => {
+                if (e.target._popup) {
+                  e.target._map.closePopup(e.target._popup);
+                }
+              },
+            }}
+          />
+        );
+      }
+      return null;
+    })}
+
+    {/* Render end circles if type is 'end' or 'all' */}
+    {heatmapData.map((cluster, index) => {
+      if (type === 'end' || type === 'all') {
+        return (
+          <Circle
+            key={`end-${index}`}
+            center={[
+              cluster.center[0] + (index % 2 === 0 ? -0.0001 : 0.0001), 
+              cluster.center[1]
+            ]}  // Slight offset to avoid overlap for end type
+            radius={cluster.count * 50}
+            color="green"
+            fillOpacity={0.5}
+            eventHandlers={{
+              mouseover: (e) => {
+                const popup = L.popup()
+                  .setLatLng(e.latlng)
+                  .setContent(`<b>Number of Rides:</b> ${cluster.count}`)
+                  .openOn(e.target._map);
+                e.target._popup = popup;
+              },
+              mouseout: (e) => {
+                if (e.target._popup) {
+                  e.target._map.closePopup(e.target._popup);
+                }
+              },
+            }}
+          />
+        );
+      }
+      return null;
+    })}
+  </>
+)}
+
+
+
+
 
                     </MapContainer>
                 )}
