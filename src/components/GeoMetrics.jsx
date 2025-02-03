@@ -88,7 +88,7 @@ const GeoMetrics = () => {
 
     const fetchRideDistribution = async () => {
         try {
-            const response = await axios.get('https://adminsellerbackend-1.onrender.com/dashboard/api/ride-distribution');
+            const response = await axios.get('https://adminsellerbackend.onrender.com/dashboard/api/ride-distribution');
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -106,7 +106,7 @@ const GeoMetrics = () => {
 
     const fetchCancelledRideDistribution = async () => {
         try {
-            const response = await axios.get('https://adminsellerbackend-1.onrender.com/dashboard/api/cancelled-distribution');
+            const response = await axios.get('https://adminsellerbackend.onrender.com/dashboard/api/cancelled-distribution');
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -154,7 +154,7 @@ const GeoMetrics = () => {
     }, [viewMode, selectedDate]);
 
     useEffect(() => {
-        const newSocket = io('https://adminsellerbackend-1.onrender.com/');
+        const newSocket = io('https://adminsellerbackend.onrender.com/');
         setSocket(newSocket);
 
         // Emit "getOnlineDrivers" to fetch the list of drivers when in "drivers" view

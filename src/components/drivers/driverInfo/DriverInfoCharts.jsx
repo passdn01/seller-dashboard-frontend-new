@@ -20,7 +20,7 @@ const DriverInfoCharts = ({ data }) => {
             setError(null);
 
             try {
-                const response = await fetch(`https://adminsellerbackend-1.onrender.com/dashboard/api/driverInfoCharts`, {
+                const response = await fetch(`https://adminsellerbackend.onrender.com/dashboard/api/driverInfoCharts`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
