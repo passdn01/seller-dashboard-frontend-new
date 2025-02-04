@@ -43,7 +43,7 @@ function UserInfoPage() {
 
     const fetchUserData = async () => {
         try {
-            const response = await axios.post(`https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/users/${id}`);
+            const response = await axios.post(`https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/users/${id}`);
             if (response.data.success) {
                 setData(response.data.data);
                 setCompleteStatus(response.data.data.isComplete || false);

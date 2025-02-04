@@ -24,7 +24,7 @@ const NavStats = () => {
 
     const fetchTotalCompletedRides = async () => {
         try {
-            const response = await axios.post('https://adminsellerbackend-1.onrender.com/dashboard/api/totalStatsData', { period: 'all time' });
+            const response = await axios.post('https://adminsellerbackend.onrender.com/dashboard/api/totalStatsData', { period: 'all time' });
             const result = response.data;
 
             console.log(result); // Log the response to inspect the structure
@@ -78,7 +78,7 @@ const NavStats = () => {
 
     const fetchOngoingRides = async () => {
         try {
-            const response = await axios.get('https://adminsellerbackend-1.onrender.com/dashboard/api/total-ongoing-rides');
+            const response = await axios.get('https://adminsellerbackend.onrender.com/dashboard/api/total-ongoing-rides');
             const totalOngoingRides = response.data.ongoingRides;
             console.log(totalOngoingRides);
             setOngoingRidesCount(totalOngoingRides);

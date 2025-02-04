@@ -14,7 +14,7 @@ const DriverChart = () => {
     useEffect(() => {
         const fetchRides = async () => {
             try {
-                const response = await axios.post('https://adminsellerbackend-1.onrender.com/dashboard/api/rides-by-driver', { driverId });
+                const response = await axios.post('https://adminsellerbackend.onrender.com/dashboard/api/rides-by-driver', { driverId });
                 const { data } = response.data;
 
                 setWeeks(data);

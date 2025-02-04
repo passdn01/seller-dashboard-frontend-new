@@ -33,14 +33,19 @@ function App() {
   }, [])
 
   const ProtectedRoute = ({ element }) => {
-    const token = document.cookie.includes('token');
-    console.log(token)
-
+    const token = localStorage.getItem("token"); // Get token from localStorage
+    const userRole = localStorage.getItem("role"); // Get user role from localStorage
     const { pathname: path } = useLocation();
 
-    if (!userRole) return <div>Loading</div>
-    console.log(token && roleRoutes[userRole]?.some((allowedPath) => path.startsWith(allowedPath)))
-    return token && roleRoutes[userRole]?.some((allowedPath) => path.startsWith(allowedPath)) ? element : !token ? <Navigate to="/" /> : <Navigate to="/home/dashboard" />;
+    if (!userRole) return <div>Loading...</div>;
+
+    const hasAccess = token && roleRoutes[userRole]?.some((allowedPath) => path.startsWith(allowedPath));
+
+    console.log("Token exists:", !!token);
+    console.log("User Role:", userRole);
+    console.log("Access granted:", hasAccess);
+
+    return hasAccess ? element : <Navigate to={token ? "/home/dashboard" : "/"} />;
   };
   return (
     <>

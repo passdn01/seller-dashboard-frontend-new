@@ -12,30 +12,26 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        
         try {
-            const response = await fetch('https://adminsellerbackend-1.onrender.com/login', {
+            const response = await fetch('https://adminsellerbackend.onrender.com/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
-                credentials: 'include'
+                credentials: "include" // Ensure cookies are included
             });
-
+    
             if (response.ok) {
                 const result = await response.json();
-                document.cookie = `token=${result.token}; path=/; secure; SameSite=Strict`;
-                document.cookie = `admin=${result.admin}`;
-                document.cookie = `role=${result.role}`;
-                let mycookie = document.cookie;
-                console.log(mycookie, "cookie set");
-                const admin = result.admin;
-
-                console.log(result);
-                if (result.success === true) {
-                    alert("Welcome" + " " + admin);
-                    window.location.href = '/home/dashboard';
-                } else {
-                    alert(result.message);
-                }
+    
+                // Use localStorage instead of cookies for debugging
+                localStorage.setItem("token", result.token);
+                localStorage.setItem("admin", result.admin);
+                localStorage.setItem("role", result.role);
+                
+                console.log("Login successful:", result);
+                alert("Welcome " + result.admin);
+                window.location.href = '/home/dashboard';
             } else {
                 alert("Login Failed");
             }
@@ -46,6 +42,7 @@ const Login = () => {
             setLoading(false);
         }
     };
+    
 
     if (loading) {
         return (

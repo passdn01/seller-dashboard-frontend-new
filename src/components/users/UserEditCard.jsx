@@ -41,7 +41,7 @@ const UserEditCard = ({ userData }) => {
     const handleSubmit = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/updateUser', {
+            const response = await fetch('https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/updateUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

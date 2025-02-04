@@ -13,7 +13,7 @@ const RideCard = ({ data }) => {
 
     const getAddressFromBackend = async (lat, lon, setAddress) => {
         try {
-            const response = await axios.post('https://adminsellerbackend-1.onrender.com/dashboard/api/gpsToAddress', { lat, lon });
+            const response = await axios.post('https://adminsellerbackend.onrender.com/dashboard/api/gpsToAddress', { lat, lon });
             const address = response.data.address || 'Unknown Location';
             setAddress(address);
         } catch (error) {
