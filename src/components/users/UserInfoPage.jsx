@@ -25,6 +25,9 @@ import backArrow from '../../assets/backArrow.svg'
 import UserInfoCard from './UserInfoCard';
 import UserBankCard from './UserBankCard';
 import UserPerformance from './UserPerformance';
+import UserRideChart from './UserRideChart';
+import UserCashStatement from './UserCashStatement';
+import UserLastRides from './UserLastRides';
 function UserInfoPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -54,30 +57,7 @@ function UserInfoPage() {
         }
     };
 
-    const handleStatusUpdate = async () => {
-        try {
-            const response = await axios.post(`/api/users/${id}/status`, {
-                status: !completeStatus
-            });
-            if (response.data.success) {
-                setCompleteStatus(!completeStatus);
-            }
-        } catch (error) {
-            console.error('Error updating status:', error);
-        }
-    };
 
-    const handleDeleteDriver = async () => {
-        try {
-            const response = await axios.delete(`/api/users/${id}`);
-            if (response.data.success) {
-                navigate('/drivers/allDrivers');
-            }
-        } catch (error) {
-            console.error('Error deleting driver:', error);
-        }
-        setIsDeleteDialogOpen(false);
-    };
 
     if (loading) {
         return <div className="flex justify-center items-center h-screen">Loading...</div>;
@@ -144,14 +124,17 @@ function UserInfoPage() {
                         </div> */}
                     </div>
 
-                    {data && <UserProfileCard userData={data} />}
+                    {/* {data && <UserProfileCard userData={data} />} */}
 
-                    <div className="flex flex-col md:flex-row gap-12 p-4 justify-evenly">
+                    {/* <div className="flex flex-col md:flex-row gap-12 p-4 justify-evenly">
                         <UserInfoCard data={data}></UserInfoCard>
                         <UserBankCard data={data} />
 
-                    </div>
+                    </div> */}
                     <UserPerformance userData={data} />
+                    {/* <UserRideChart userId={id}></UserRideChart>
+                    <UserLastRides userId={id}></UserLastRides>
+                    <UserCashStatement userId={id}></UserCashStatement> */}
                 </div>
             </div>
         </div>

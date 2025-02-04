@@ -8,31 +8,37 @@ import ReferralIcon from '../../assets/driverPerformance/referral.svg';
 import EarningsIcon from '../../assets/driverPerformance/totalearning.svg';
 
 const UserPerformance = ({ userData }) => {
+    console.log("user data in performance is", userData)
     const [pdata, setPdata] = useState({});
-    const userId = userData?.id;
-
+    const userId = userData?._id;
+    console.log("id", userId);
     useEffect(() => {
-        const fetchPerformance = async () => {
-            try {
-                const response = await axios.post(
-                    "https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/users/performance",
-                    { userId }
-                );
 
-                if (response.data.success) {
-                    setPdata(response.data.data);
-                } else {
-                    window.alert(response.data.message);
-                }
-            } catch (error) {
-                console.error("Error fetching performance data:", error);
-            }
-        };
 
         if (userId) {
             fetchPerformance();
         }
     }, [userId]);
+
+    const fetchPerformance = async () => {
+        try {
+            const response = await fetch("https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/coinTransactionNumber", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    id: userId
+                }),
+            });
+
+
+        } catch (error) {
+            console.error("Error fetching performance data:", error);
+        }
+    };
+
+    console.log("pdata", pdata);
 
     const dataList = [
         { icon: TotalRideIcon, label: 'Total ride', value: userData?.rideCreated?.length || 0 },
