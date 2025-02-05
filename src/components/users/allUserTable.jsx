@@ -56,7 +56,7 @@ const UserManagementTable = () => {
         const fetchUsers = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get("https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/allUserTable");
+                const response = await axios.get("https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/allUserTable");
                 setUsers(response.data.data);
             } catch (error) {
                 console.error("Error fetching users:", error);

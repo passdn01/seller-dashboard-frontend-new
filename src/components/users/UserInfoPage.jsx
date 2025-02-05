@@ -43,7 +43,7 @@ function UserInfoPage() {
 
     const fetchUserData = async () => {
         try {
-            const response = await axios.post(`https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/users/${id}`);
+            const response = await axios.post(`https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/users/${id}`);
             if (response.data.success) {
                 setData(response.data.data);
                 setCompleteStatus(response.data.data.isComplete || false);
@@ -124,17 +124,22 @@ function UserInfoPage() {
                         </div> */}
                     </div>
 
-                    {/* {data && <UserProfileCard userData={data} />} */}
+                    {data && <UserProfileCard userData={data} />}
 
-                    {/* <div className="flex flex-col md:flex-row gap-12 p-4 justify-evenly">
+                    <div className="flex flex-col md:flex-row gap-12 p-4 justify-evenly">
                         <UserInfoCard data={data}></UserInfoCard>
                         <UserBankCard data={data} />
 
-                    </div> */}
+                    </div>
                     <UserPerformance userData={data} />
-                    {/* <UserRideChart userId={id}></UserRideChart>
-                    <UserLastRides userId={id}></UserLastRides>
-                    <UserCashStatement userId={id}></UserCashStatement> */}
+                    <div className='px-4 m-4 mb-8'>
+                        <UserRideChart userId={id}></UserRideChart>
+                    </div>
+                    <div className='px-4 m-4'>
+                        <h1>Last 10 Rides</h1>
+                        <UserLastRides userId={id} data={data}></UserLastRides>
+                    </div>
+                    <UserCashStatement userId={id}></UserCashStatement>
                 </div>
             </div>
         </div>

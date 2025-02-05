@@ -32,6 +32,16 @@ const UserPerformance = ({ userData }) => {
                 }),
             });
 
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const dt = await response.json(); // Extract JSON response
+            console.log("Parsed response:", dt);
+            setPdata(dt.data)
+
+            console.log("response that came is ", response);
+
 
         } catch (error) {
             console.error("Error fetching performance data:", error);

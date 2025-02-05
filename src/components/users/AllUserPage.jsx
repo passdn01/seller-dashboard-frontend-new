@@ -10,7 +10,7 @@ function AllUserPage() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/allUserTable');
+                const response = await axios.get('https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/allUserTable');
                 console.log(response, "reesdsds")
                 if (response.data.success) {
                     setData(response.data.data);

@@ -36,11 +36,12 @@ import { Link } from 'react-router-dom'
 import { User } from 'lucide-react';
 
 function SideNavbar() {
-    const [userRole, setUserRole] = React.useState("guest");
+
+    const [userRole, setUserRole] = React.useState(null);
 
     React.useEffect(() => {
         const fetchUserInfo = async () => {
-            const user = getCookie("role")
+            const user = localStorage.getItem("role")
             setUserRole(user)
         }
         fetchUserInfo()
@@ -48,6 +49,7 @@ function SideNavbar() {
 
     const handleDashboardClick = (e) => {
         e.preventDefault();
+        navigate('/home/dashboard', { replace: true });
         window.location.reload();
     };
 
