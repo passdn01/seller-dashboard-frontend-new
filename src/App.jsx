@@ -9,7 +9,7 @@ import AllRides from './components/rides/AllRides.jsx'
 import Ride from './components/rides/Ride.jsx'
 import AllAgents from './components/agents/AllAgents.jsx'
 import Agent from './components/agents/Agent.jsx'
-import Issues from './components/issues/Issues.jsx'
+// import Issues from './components/issues/Issues.jsx'
 import AllBlogs from './components/blogs/AllBlogs.jsx'
 import AllVerified from './components/drivers/allDrivers/AllVerified'
 import HomeMetricPage from './components/homeMetricsPage/HomeMetricPage.jsx'
@@ -20,6 +20,9 @@ import { getCookie } from './lib/utils.js'
 import allUserTable from './components/users/AllUserTable.jsx'
 import AllUserPage from './components/users/AllUserPage.jsx'
 import UserInfoPage from './components/users/UserInfoPage.jsx'
+import IssueAssignerIndex from './components/issues/issueAssigner/issueAssignerIndex.jsx'
+import IssueDetailIndex from './components/issues/issueDetailIndex.jsx/issueDetailIndex.jsx'
+import IssueSolverIndex from './components/issues/issueSolver/issueSolverIndex.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -35,6 +38,7 @@ function App() {
   const ProtectedRoute = ({ element }) => {
     const token = localStorage.getItem("token"); // Get token from localStorage
     const userRole = localStorage.getItem("role"); // Get user role from localStorage
+    const userId = localStorage.getItem("userId"); // Get user ID from localStorage
     const { pathname: path } = useLocation();
 
     if (!userRole) return <div>Loading...</div>;
@@ -44,6 +48,7 @@ function App() {
     console.log("Token exists:", !!token);
     console.log("User Role:", userRole);
     console.log("Access granted:", hasAccess);
+    console.log("User ID:", userId);
 
     return hasAccess ? element : <Navigate to={token ? "/home/dashboard" : "/"} />;
   };
@@ -65,7 +70,10 @@ function App() {
           <Route path='/agents/allAgents' element={<ProtectedRoute element={<AllAgents />} />} />
           <Route path='/agents/allAgents/:id' element={<ProtectedRoute element={<Agent />} />} />
 
-          <Route path='/issues' element={<ProtectedRoute element={<Issues />} />} />
+          {/* <Route path='/issues' element={<ProtectedRoute element={<Issues />} />} /> */}
+          <Route path='/issueAssigner' element={<ProtectedRoute element={<IssueAssignerIndex />} />} />
+          <Route path='/issueSolver' element={<ProtectedRoute element={<IssueSolverIndex />} />} />
+          <Route path='/issueDetail/:id' element={<ProtectedRoute element={<IssueDetailIndex />} />} />
           <Route path='/blogs' element={<ProtectedRoute element={<AllBlogs />} />} />
 
           <Route path='/users' element={<ProtectedRoute element={< AllUserPage />} />} />

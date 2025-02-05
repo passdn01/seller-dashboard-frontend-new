@@ -14,20 +14,24 @@ const Login = () => {
         setLoading(true);
         
         try {
-            const response = await fetch('https://adminsellerbackend.onrender.com/login', {
+            const response = await fetch('http://localhost:5000/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
                 credentials: "include" // Ensure cookies are included
             });
+
+            console.log(response);
     
             if (response.ok) {
                 const result = await response.json();
+                console.log(result);
     
                 // Use localStorage instead of cookies for debugging
                 localStorage.setItem("token", result.token);
                 localStorage.setItem("admin", result.admin);
                 localStorage.setItem("role", result.role);
+                localStorage.setItem("userId", result.userId);
                 
                 console.log("Login successful:", result);
                 alert("Welcome " + result.admin);
