@@ -39,7 +39,7 @@ import {
     SelectValue,
 } from "../ui/select";
 import { Oval } from 'react-loader-spinner';
-
+import RideDetail from './RideDetail';
 // Columns configuration
 const columns = [
     {
@@ -50,11 +50,6 @@ const columns = [
         enableSorting: false,
     },
     {
-        accessorKey: "_id",
-        header: "Ride Id",
-        cell: ({ row }) => <div>{row.getValue("_id")}</div>,
-    },
-    {
         accessorKey: "createdAt",
         header: ({ column }) => (
             <div className="flex items-center gap-2">
@@ -62,7 +57,7 @@ const columns = [
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Joining
+                    Created At
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             </div>
@@ -76,22 +71,19 @@ const columns = [
         },
     },
     {
+        accessorKey: "userInfo",
+        header: "User Name",
+        cell: ({ row }) => <div>{row.getValue("userInfo")?.name} </div>
+    },
+    {
         accessorKey: "fare",
         header: "Fare",
         cell: ({ row }) => <div>{row.getValue("fare")}</div>,
     },
     {
-        accessorKey: "name",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-                Name
-                <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-        ),
-        cell: ({ row }) => <div>{row.getValue("name")}</div>,
+        accessorKey: "distance",
+        header: "Distance",
+        cell: ({ row }) => <div>{row.getValue("distance")}</div>,
     },
     {
         accessorKey: "status",
@@ -124,7 +116,7 @@ const columns = [
         enableHiding: false,
         cell: ({ row }) => {
             const ride = row.original;
-            console.log("ride", ride);
+
             const navigate = useNavigate();
 
             return (
@@ -143,7 +135,7 @@ const columns = [
                             Copy Driver Phone
                         </DropdownMenuItem> */}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => navigate(`/rides/allRides/${ride._id}`)}>
+                        <DropdownMenuItem onClick={() => window.open(`/rides/allRides/${ride._id}`, "_blank", "noopener,noreferrer")}>
                             View Ride Details
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -154,26 +146,33 @@ const columns = [
 ];
 
 export default function RideTable() {
+    const [expandedRowId, setExpandedRowId] = useState(null);
+    const handleRowClick = (rowId) => {
+        setExpandedRowId(expandedRowId === rowId ? null : rowId);
+    };
     const [sorting, setSorting] = useState([]);
     const [rideColumnFilters, setRideColumnFilters] = useState([]);
     const [columnVisibility, setColumnVisibility] = useState({});
     const [rowSelection, setRowSelection] = useState({});
     const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("all");
     const [globalFilter, setGlobalFilter] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://adminsellerbackend.onrender.com/dashboard/api/allRides', {
+                const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/allRides', {
                     // withCredentials: true
                 });
-                console.log(response.data.data);
                 if (response.data.success) {
                     setData(response.data.data);
+                    setFilteredData(response.data.data);
                     sessionStorage.setItem('myRideData', JSON.stringify(response.data.data));
                     sessionStorage.setItem('lastFetchTime', Date.now().toString());
                 } else {
@@ -191,16 +190,39 @@ export default function RideTable() {
         const currentTime = Date.now();
         const timeSinceLastFetch = currentTime - (lastFetchTime ? parseInt(lastFetchTime) : 0);
 
-        if (storedData && timeSinceLastFetch < 60000) { // 60000 ms = 1 minute
-            setData(JSON.parse(storedData));
+        if (storedData && timeSinceLastFetch < 60000) {
+            const parsedData = JSON.parse(storedData);
+            setData(parsedData);
+            setFilteredData(parsedData);
             setLoading(false);
         } else {
             fetchData();
         }
     }, []);
 
+    // Handle date range filtering
+    useEffect(() => {
+        let filtered = [...data];
+
+        if (startDate || endDate) {
+            filtered = filtered.filter(item => {
+                const itemDate = new Date(item.createdAt);
+                const start = startDate ? new Date(startDate) : new Date(0);
+                const end = endDate ? new Date(endDate) : new Date(8640000000000000);
+
+                // Set the time to midnight for accurate date comparison
+                start.setHours(0, 0, 0, 0);
+                end.setHours(23, 59, 59, 999);
+
+                return itemDate >= start && itemDate <= end;
+            });
+        }
+
+        setFilteredData(filtered);
+    }, [data, startDate, endDate]);
+
     const table = useReactTable({
-        data,
+        data: filteredData, // Use filteredData instead of data
         columns,
         onSortingChange: setSorting,
         onrideColumnFiltersChange: setRideColumnFilters,
@@ -247,18 +269,32 @@ export default function RideTable() {
         return <div>Error: {error}</div>;
     }
 
-    // Get unique status values for the filter
     const statusOptions = [...new Set(data.map(item => item.status))];
 
     return (
         <div className="w-[80%] mx-24">
-            <div className="flex items-center py-4">
+            <div className="flex items-center py-4 space-x-4">
                 <Input
                     placeholder="Search all columns..."
                     value={globalFilter ?? ""}
                     onChange={(event) => setGlobalFilter(event.target.value)}
-                    className="max-w-sm mr-4"
+                    className="max-w-sm"
                 />
+                <div className="flex items-center space-x-2">
+                    <Input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-40"
+                    />
+                    <span>to</span>
+                    <Input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-40"
+                    />
+                </div>
                 <Select onValueChange={setStatusFilter} value={statusFilter}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Filter by status" />
@@ -295,6 +331,7 @@ export default function RideTable() {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
+            {/* Rest of the component remains the same... */}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -315,18 +352,30 @@ export default function RideTable() {
                     </TableHeader>
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
+                            table.getRowModel().rows.map((row) => ([
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
+                                    className="cursor-pointer hover:bg-gray-100"
+                                    onClick={() => handleRowClick(row.id)}
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
-                                </TableRow>
-                            ))
+                                </TableRow>,
+                                expandedRowId === row.id && (
+                                    <TableRow key={`${row.id}-detail`}>
+                                        <TableCell colSpan={columns.length} className="p-0">
+                                            <div className="p-4 bg-gray-50">
+                                                <RideDetail transactionId={row.original.transaction_id} distance={row.original.distance} userInfo={row.original.userInfo}></RideDetail>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
+
+                            ]).flat())
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">

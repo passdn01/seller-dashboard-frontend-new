@@ -7,7 +7,7 @@ const roleRoutes = {
         "/drivers/liveDrivers",
         "/drivers/allDrivers",
         "/drivers/allVerified",
-        "/rides/AllRides",
+        "/rides/allRides",
         "/agents/allAgents",
         "/issues",
         "/blogs",

@@ -20,6 +20,7 @@ import { getCookie } from './lib/utils.js'
 import allUserTable from './components/users/AllUserTable.jsx'
 import AllUserPage from './components/users/AllUserPage.jsx'
 import UserInfoPage from './components/users/UserInfoPage.jsx'
+import RideInfo from './components/rides/RideInfo.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -60,7 +61,7 @@ function App() {
           <Route path='/drivers/allVerified/:id' element={<ProtectedRoute element={<Driver />} />} />
 
           <Route path='/rides/allRides' element={<ProtectedRoute element={<AllRides />} />} />
-          <Route path='/rides/allRides/:id' element={<ProtectedRoute element={<Ride />} />} />
+          <Route path='/rides/allRides/:id' element={<ProtectedRoute element={<RideInfo />} />} />
 
           <Route path='/agents/allAgents' element={<ProtectedRoute element={<AllAgents />} />} />
           <Route path='/agents/allAgents/:id' element={<ProtectedRoute element={<Agent />} />} />

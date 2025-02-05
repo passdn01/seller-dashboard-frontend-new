@@ -100,7 +100,7 @@ function SideNavbar() {
         {
             id: "4",
             title: "Rides",
-            link: '/rides/AllRides',
+            link: '/rides/allRides',
             icon: DriverIcon,
         },
         {
