@@ -42,7 +42,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', profileUrl);
 
         try {
-            const response = await axios.post(`https://adminsellerbackend.onrender.com/dashboard/api/driver/${id}/profile-image`, formData, {
+            const response = await axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/profile-image`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -67,7 +67,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicense);
 
         try {
-            const response = await axios.post(`https://adminsellerbackend.onrender.com/dashboard/api/driver/${id}/edit-dl`, formData, {
+            const response = await axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -92,7 +92,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicenseBack);
 
         try {
-            const response = await axios.post(`https://adminsellerbackend.onrender.com/dashboard/api/driver/${id}/edit-dl-back`, formData, {
+            const response = await axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl-back`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -117,7 +117,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', RCBack);
 
         try {
-            const response = await axios.post(`https://adminsellerbackend.onrender.com/dashboard/api/driver/${id}/edit-rc-back`, formData, {
+            const response = await axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-rc-back`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -142,7 +142,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', registrationCertificate);
 
         try {
-            const response = await axios.post(`https://adminsellerbackend.onrender.com/dashboard/api/driver/${id}/edit-rc`, formData, {
+            const response = await axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-rc`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

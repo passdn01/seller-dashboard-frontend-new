@@ -24,7 +24,7 @@ const NavStats = () => {
 
     const fetchTotalCompletedRides = async () => {
         try {
-            const response = await axios.post('https://adminsellerbackend.onrender.com/dashboard/api/totalStatsData', { period: 'all time' });
+            const response = await axios.post('https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period: 'all time' });
             const result = response.data;
 
             console.log(result); // Log the response to inspect the structure
@@ -49,7 +49,7 @@ const NavStats = () => {
 
 
     useEffect(() => {
-        const newSocket = io('https://8qklrvxb-2012.inc1.devtunnels.ms');
+        const newSocket = io('http://localhost:5000');
         setSocket(newSocket);
 
         // Request online drivers once connected
@@ -78,7 +78,7 @@ const NavStats = () => {
 
     const fetchOngoingRides = async () => {
         try {
-            const response = await axios.get('https://adminsellerbackend.onrender.com/dashboard/api/total-ongoing-rides');
+            const response = await axios.get('https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/total-ongoing-rides');
             const totalOngoingRides = response.data.ongoingRides;
             console.log(totalOngoingRides);
             setOngoingRidesCount(totalOngoingRides);

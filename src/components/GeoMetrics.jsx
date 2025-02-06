@@ -92,7 +92,7 @@ const GeoMetrics = () => {
 
     const fetchRideDistribution = async () => {
         try {
-            const response = await axios.get('https://adminsellerbackend.onrender.com/dashboard/api/ride-distribution');
+            const response = await axios.get('https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/ride-distribution');
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -110,7 +110,7 @@ const GeoMetrics = () => {
 
     const fetchCancelledRideDistribution = async () => {
         try {
-            const response = await axios.get('https://adminsellerbackend.onrender.com/dashboard/api/cancelled-distribution');
+            const response = await axios.get('https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/cancelled-distribution');
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -146,7 +146,7 @@ const GeoMetrics = () => {
             if (varient !== 'ALL') requestData.varient = varient;
             if (type !== 'all') requestData.type = type;
     
-            const response = await axios.post('http://localhost:5000/dashboard/api/start-ride-clustering', requestData);
+            const response = await axios.post('https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/start-ride-clustering', requestData);
             const clusters = response.data.map(cluster => ({
                 center: [cluster.center.lat, cluster.center.lng],
                 count: cluster.numRides,
@@ -168,7 +168,7 @@ const GeoMetrics = () => {
     }, [viewMode, selectedDate, startTime, endTime, varient, type]);
 
     useEffect(() => {
-        const newSocket = io('https://adminsellerbackend.onrender.com/');
+        const newSocket = io('https://55kqzrxn-5000.inc1.devtunnels.ms/');
         setSocket(newSocket);
 
         // Emit "getOnlineDrivers" to fetch the list of drivers when in "drivers" view

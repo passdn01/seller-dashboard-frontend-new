@@ -45,7 +45,7 @@ function Driver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://adminsellerbackend.onrender.com/dashboard/api/driver/${id}`)
+        axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -63,10 +63,10 @@ function Driver() {
 
     const handleStatusUpdate = async () => {
         try {
-            await axios.post(`https://adminsellerbackend.onrender.com/dashboard/api/driver/${id}/completeEdit`, {
+            await axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
             });
-            await axios.post(`https://adminsellerbackend.onrender.com/send-notification`, {
+            await axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/send-notification`, {
                 driverId: data.driverInfo._id // Toggle the status,
                 , title: "Your Account has been approved ✅",
                 body: "Rides are waiting for you 🛺"
@@ -81,7 +81,7 @@ function Driver() {
 
     const handleDeleteDriver = async () => {
         try {
-            const response = await axios.delete(`https://adminsellerbackend.onrender.com/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
             if (response.data.success) {
                 alert('Driver deleted successfully');
                 navigate('/drivers/allDrivers'); // Redirect after deletion
@@ -222,7 +222,7 @@ function VDriver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://adminsellerbackend.onrender.com/dashboard/api/driver/${id}`)
+        axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -240,10 +240,10 @@ function VDriver() {
 
     const handleStatusUpdate = async () => {
         try {
-            await axios.post(`https://adminsellerbackend.onrender.com/dashboard/api/driver/${id}/completeEdit`, {
+            await axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
             });
-            await axios.post(`https://adminsellerbackend.onrender.com/send-notification`, {
+            await axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/send-notification`, {
                 driverId: data.driverInfo._id // Toggle the status,
                 , title: "Your Account has been approved ✅",
                 body: "Rides are waiting for you 🛺"
@@ -258,7 +258,7 @@ function VDriver() {
 
     const handleDeleteDriver = async () => {
         try {
-            const response = await axios.delete(`https://adminsellerbackend.onrender.com/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
             if (response.data.success) {
                 alert('Driver deleted successfully');
                 navigate('/drivers/allDrivers'); // Redirect after deletion

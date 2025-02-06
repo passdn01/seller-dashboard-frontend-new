@@ -182,16 +182,16 @@ function CardGrid() {
         {
             icon: auto,
 
-            number: formatNumber(todayMetrics.AutoRides || 0),
+            number: formatNumber(todayMetrics.totalVerifiedAuto || 0),
             title: "Auto Rickshaw",
-            increase: lastHourMetrics.AutoRides,
+            increase: lastHourMetrics.totalVerifiedAuto,
         },
         {
             icon: cab,
 
-            number: formatNumber(todayMetrics.CabRides || 0),
+            number: formatNumber(todayMetrics.totalVerifiedCab || 0),
             title: "Cab",
-            increase: lastHourMetrics.CabRides,
+            increase: lastHourMetrics.totalVerifiedCab,
         },
         {
             icon: fake,
@@ -395,29 +395,29 @@ function CardGrid() {
         },
         {
             icon: auto,
-            number: formatNumber(allTimeMetrics.AutoRides || 0),
+            number: formatNumber(allTimeMetrics.totalVerifiedAuto || 0),
             title: "Auto Rickshaw",
-            increase: todayMetrics.AutoRides,
+            increase: todayMetrics.totalVerifiedAuto,
             hover: true,
             hoverData: {
                 title: "Number of Auto Rickshaw Rides",
-                todayNumber: todayMetrics.AutoRides,
+                todayNumber: todayMetrics.totalVerifiedAuto,
                 todayNumberLine: "Today's Auto Rickshaw Rides",
-                lastHourNumber: lastHourMetrics.AutoRides,
+                lastHourNumber: lastHourMetrics.totalVerifiedAuto,
                 lastHourNumberLine: "Last hour's Auto Rickshaw Rides",
             },
         },
         {
             icon: cab,
-            number: formatNumber(allTimeMetrics.CabRides || 0),
+            number: formatNumber(allTimeMetrics.totalVerifiedCab || 0),
             title: "Cab",
-            increase: todayMetrics.CabRides,
+            increase: todayMetrics.totalVerifiedCab,
             hover: true,
             hoverData: {
                 title: "Number of Cab Rides",
-                todayNumber: todayMetrics.CabRides,
+                todayNumber: todayMetrics.totalVerifiedCab,
                 todayNumberLine: "Today's Cab Rides",
-                lastHourNumber: lastHourMetrics.CabRides,
+                lastHourNumber: lastHourMetrics.totalVerifiedCab,
                 lastHourNumberLine: "Last hour's Cab Rides",
             },
         },

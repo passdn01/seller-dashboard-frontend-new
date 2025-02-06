@@ -151,7 +151,7 @@ function SideNavbar() {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch('https://adminsellerbackend.onrender.com/logout', {
+            const response = await fetch('https://55kqzrxn-5000.inc1.devtunnels.ms/logout', {
                 method: 'POST',
                 credentials: 'include'
             });
