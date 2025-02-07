@@ -30,6 +30,7 @@ const Login = () => {
                 localStorage.setItem("admin", result.admin);
                 localStorage.setItem("role", result.role);
                 localStorage.setItem("username", result.username);
+                localStorage.setItem("userId", result.userId);
 
                 console.log("Login successful:", result);
                 alert("Welcome " + result.admin);

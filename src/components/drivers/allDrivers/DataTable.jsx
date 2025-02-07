@@ -61,6 +61,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 
 import DriverDetails from './DriverDetailsInTable';
+import { io } from 'socket.io-client';
 
 export default function DriverTable() {
 
@@ -172,10 +173,10 @@ export default function DriverTable() {
         if (!driverToDelete) return;
 
         try {
-            const response = await axios.delete(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
             if (response.data.success) {
                 // Refetch data after deletion
-                const newResponse = await axios.post('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/allDrivers');
+                const newResponse = await axios.post('https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/allDrivers');
                 if (newResponse.data.success) {
                     const updatedData = newResponse.data.data;
                     setData(updatedData);
@@ -197,7 +198,7 @@ export default function DriverTable() {
 
     const handleStatusUpdate = async (driverId, currentStatus) => {
         try {
-            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
+            await axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
                 completeStatus: !currentStatus // Toggle the status
             });
 
@@ -215,7 +216,7 @@ export default function DriverTable() {
     const handleStatusRejectUpdate = async (driverId, currentStatus) => {
         try {
             currentStatus = currentStatus == "REJECTED" ? 'OFFLINE' : 'REJECTED'
-            await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
+            await axios.post(`https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
                 status: currentStatus // Toggle the status
             });
 
@@ -422,25 +423,49 @@ export default function DriverTable() {
 
 
     useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const response = await axios.post('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/allDrivers');
-                if (response.data.success) {
-                    setData(response.data.data);
-                } else {
-                    throw new Error(response.data.message || 'Failed to fetch data');
-                }
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
+        const socket = io("https://55kqzrxn-5000.inc1.devtunnels.ms/"); // Replace with your server URL
+
+        console.time("Socket API Response Time"); // Start measuring time
+
+        socket.on("connect", () => {
+            console.log("Connected to socket server");
+            // Request to get all drivers
+            socket.emit("getAllDrivers");
+        });
+
+        // Handle incoming driver data (batch-based)
+        socket.on("driverData", (data) => {
+            setData((prevDrivers) => [...prevDrivers, ...data]); // Add new data to state dynamically
+            setLoading(false);
+        });
+
+        // Handle the end of the data stream
+        socket.on("driverDataEnd", () => {
+            console.timeEnd("Socket API Response Time"); // End measuring time
+            setLoading(false); // Stop loading when all data is received
+        });
+
+        // Handle errors
+        socket.on("driverDataError", (error) => {
+            console.error("Error:", error.message);
+            setError(error.message); // Set error message
+            setLoading(false); // Stop loading in case of error
+        });
+
+        // Clean up the socket connection when the component unmounts
+        return () => {
+            socket.off("driverData");
+            socket.off("driverDataEnd");
+            socket.off("driverDataError");
+            socket.disconnect();
         };
 
-        fetchData(); // Always fetch fresh data
     }, []);
 
+    useEffect(() => {
+        // Filter the data dynamically if necessary
+        setFilteredData(data);
+    }, [data]);
 
 
     const table = useReactTable({

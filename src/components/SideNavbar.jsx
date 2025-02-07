@@ -36,12 +36,14 @@ import { Link } from 'react-router-dom'
 import { User } from 'lucide-react';
 
 function SideNavbar() {
-
     const [userRole, setUserRole] = React.useState(null);
+
+
 
     React.useEffect(() => {
         const fetchUserInfo = async () => {
             const user = localStorage.getItem("role")
+
             setUserRole(user)
         }
         fetchUserInfo()
