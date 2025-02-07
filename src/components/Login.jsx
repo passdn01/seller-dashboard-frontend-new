@@ -12,23 +12,25 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        
+
         try {
-            const response = await fetch('https://adminsellerbackend.onrender.com/login', {
+            const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
                 credentials: "include" // Ensure cookies are included
             });
-    
+
             if (response.ok) {
                 const result = await response.json();
-    
+
                 // Use localStorage instead of cookies for debugging
+                console.log(result, "checking user")
                 localStorage.setItem("token", result.token);
                 localStorage.setItem("admin", result.admin);
                 localStorage.setItem("role", result.role);
-                
+                localStorage.setItem("username", result.username);
+
                 console.log("Login successful:", result);
                 alert("Welcome " + result.admin);
                 window.location.href = '/home/dashboard';
@@ -42,7 +44,7 @@ const Login = () => {
             setLoading(false);
         }
     };
-    
+
 
     if (loading) {
         return (

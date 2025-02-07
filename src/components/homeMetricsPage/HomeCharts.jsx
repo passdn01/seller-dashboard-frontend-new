@@ -18,7 +18,7 @@ const HomeCharts = () => {
 
             try {
                 const [rideResponse, buyerResponse] = await Promise.all([
-                    fetch(`https://adminsellerbackend.onrender.com/dashboard/api/homeCharts?type=${type}`),
+                    fetch(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/homeCharts?type=${type}`),
                     fetch(`https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/homeCharts?type=${type}`)
                 ]);
 

@@ -21,6 +21,7 @@ import allUserTable from './components/users/AllUserTable.jsx'
 import AllUserPage from './components/users/AllUserPage.jsx'
 import UserInfoPage from './components/users/UserInfoPage.jsx'
 import RideInfo from './components/rides/RideInfo.jsx'
+import IAMUserPage from './components/admin/IAMUserPage.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -71,6 +72,7 @@ function App() {
 
           <Route path='/users' element={<ProtectedRoute element={< AllUserPage />} />} />
           <Route path='/users/:id' element={<ProtectedRoute element={< UserInfoPage />} />} />
+          <Route path='/admin' element={<ProtectedRoute element={< IAMUserPage />} />} />
 
 
 

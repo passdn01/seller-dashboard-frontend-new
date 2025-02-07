@@ -92,7 +92,7 @@ const GeoMetrics = () => {
 
     const fetchRideDistribution = async () => {
         try {
-            const response = await axios.get('https://adminsellerbackend.onrender.com/dashboard/api/ride-distribution');
+            const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/ride-distribution');
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -110,7 +110,7 @@ const GeoMetrics = () => {
 
     const fetchCancelledRideDistribution = async () => {
         try {
-            const response = await axios.get('https://adminsellerbackend.onrender.com/dashboard/api/cancelled-distribution');
+            const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/cancelled-distribution');
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -137,15 +137,15 @@ const GeoMetrics = () => {
             setOptionLoading(true);
             const formattedDate = formatDate(date); // Convert date to DD-MM-YYYY format
             const requestData = { date: formattedDate };
-    
+
             // Add startTime and endTime to the request data if they are provided
             if (startTime) requestData.startTime = startTime;
             if (endTime) requestData.endTime = endTime;
-    
+
             // Only send varient and type if they're not "ALL" or "all"
             if (varient !== 'ALL') requestData.varient = varient;
             if (type !== 'all') requestData.type = type;
-    
+
             const response = await axios.post('http://localhost:5000/dashboard/api/start-ride-clustering', requestData);
             const clusters = response.data.map(cluster => ({
                 center: [cluster.center.lat, cluster.center.lng],
@@ -168,7 +168,7 @@ const GeoMetrics = () => {
     }, [viewMode, selectedDate, startTime, endTime, varient, type]);
 
     useEffect(() => {
-        const newSocket = io('https://adminsellerbackend.onrender.com/');
+        const newSocket = io('https://8qklrvxb-5000.inc1.devtunnels.ms/');
         setSocket(newSocket);
 
         // Emit "getOnlineDrivers" to fetch the list of drivers when in "drivers" view
@@ -191,7 +191,7 @@ const GeoMetrics = () => {
 
         return () => newSocket.close();
     }, [viewMode]);
-;
+    ;
 
     useEffect(() => {
         if (viewMode === 'heatmap') {
@@ -206,7 +206,7 @@ const GeoMetrics = () => {
         }
     }, [viewMode, rideType]);
 
-    
+
 
     return (
         <div className="geo-container">
@@ -344,75 +344,75 @@ const GeoMetrics = () => {
                                 </Popup>
                             </Marker>
                         ))}
-                       {viewMode === 'ride24hrs' && (
-  <>
-    {/* Render start circles if type is 'start' or 'all' */}
-    {heatmapData.map((cluster, index) => {
-      if (type === 'start' || type === 'all') {
-        return (
-          <Circle
-            key={`start-${index}`}
-            center={[
-              cluster.center[0] + (index % 2 === 0 ? 0.0001 : -0.0001), 
-              cluster.center[1]
-            ]}  // Slight offset to avoid overlap for start type
-            radius={cluster.count * 50}
-            color="blue"
-            fillOpacity={0.5}
-            eventHandlers={{
-              mouseover: (e) => {
-                const popup = L.popup()
-                  .setLatLng(e.latlng)
-                  .setContent(`<b>Number of Rides:</b> ${cluster.count}`)
-                  .openOn(e.target._map);
-                e.target._popup = popup;
-              },
-              mouseout: (e) => {
-                if (e.target._popup) {
-                  e.target._map.closePopup(e.target._popup);
-                }
-              },
-            }}
-          />
-        );
-      }
-      return null;
-    })}
+                        {viewMode === 'ride24hrs' && (
+                            <>
+                                {/* Render start circles if type is 'start' or 'all' */}
+                                {heatmapData.map((cluster, index) => {
+                                    if (type === 'start' || type === 'all') {
+                                        return (
+                                            <Circle
+                                                key={`start-${index}`}
+                                                center={[
+                                                    cluster.center[0] + (index % 2 === 0 ? 0.0001 : -0.0001),
+                                                    cluster.center[1]
+                                                ]}  // Slight offset to avoid overlap for start type
+                                                radius={cluster.count * 50}
+                                                color="blue"
+                                                fillOpacity={0.5}
+                                                eventHandlers={{
+                                                    mouseover: (e) => {
+                                                        const popup = L.popup()
+                                                            .setLatLng(e.latlng)
+                                                            .setContent(`<b>Number of Rides:</b> ${cluster.count}`)
+                                                            .openOn(e.target._map);
+                                                        e.target._popup = popup;
+                                                    },
+                                                    mouseout: (e) => {
+                                                        if (e.target._popup) {
+                                                            e.target._map.closePopup(e.target._popup);
+                                                        }
+                                                    },
+                                                }}
+                                            />
+                                        );
+                                    }
+                                    return null;
+                                })}
 
-    {/* Render end circles if type is 'end' or 'all' */}
-    {heatmapData.map((cluster, index) => {
-      if (type === 'end' || type === 'all') {
-        return (
-          <Circle
-            key={`end-${index}`}
-            center={[
-              cluster.center[0] + (index % 2 === 0 ? -0.0001 : 0.0001), 
-              cluster.center[1]
-            ]}  // Slight offset to avoid overlap for end type
-            radius={cluster.count * 50}
-            color="green"
-            fillOpacity={0.5}
-            eventHandlers={{
-              mouseover: (e) => {
-                const popup = L.popup()
-                  .setLatLng(e.latlng)
-                  .setContent(`<b>Number of Rides:</b> ${cluster.count}`)
-                  .openOn(e.target._map);
-                e.target._popup = popup;
-              },
-              mouseout: (e) => {
-                if (e.target._popup) {
-                  e.target._map.closePopup(e.target._popup);
-                }
-              },
-            }}
-          />
-        );
-      }
-      return null;
-    })}
-  </>
-)}
+                                {/* Render end circles if type is 'end' or 'all' */}
+                                {heatmapData.map((cluster, index) => {
+                                    if (type === 'end' || type === 'all') {
+                                        return (
+                                            <Circle
+                                                key={`end-${index}`}
+                                                center={[
+                                                    cluster.center[0] + (index % 2 === 0 ? -0.0001 : 0.0001),
+                                                    cluster.center[1]
+                                                ]}  // Slight offset to avoid overlap for end type
+                                                radius={cluster.count * 50}
+                                                color="green"
+                                                fillOpacity={0.5}
+                                                eventHandlers={{
+                                                    mouseover: (e) => {
+                                                        const popup = L.popup()
+                                                            .setLatLng(e.latlng)
+                                                            .setContent(`<b>Number of Rides:</b> ${cluster.count}`)
+                                                            .openOn(e.target._map);
+                                                        e.target._popup = popup;
+                                                    },
+                                                    mouseout: (e) => {
+                                                        if (e.target._popup) {
+                                                            e.target._map.closePopup(e.target._popup);
+                                                        }
+                                                    },
+                                                }}
+                                            />
+                                        );
+                                    }
+                                    return null;
+                                })}
+                            </>
+                        )}
 
 
 

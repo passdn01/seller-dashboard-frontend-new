@@ -98,7 +98,7 @@ const DriverDetails = ({ driver }) => {
         };
 
         try {
-            const response = await fetch("https://adminsellerbackend.onrender.com/dashboard/api/driverTableEdit", {
+            const response = await fetch("https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driverTableEdit", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

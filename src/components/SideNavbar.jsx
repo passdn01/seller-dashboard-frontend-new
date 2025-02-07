@@ -49,8 +49,7 @@ function SideNavbar() {
 
     const handleDashboardClick = (e) => {
         e.preventDefault();
-        navigate('/home/dashboard', { replace: true });
-        window.location.reload();
+        window.location.href = '/home/dashboard';
     };
 
     const menuList = [
@@ -118,7 +117,7 @@ function SideNavbar() {
         },
         {
             id: "7",
-            title: "I AM Admin",
+            title: "I AM User",
             link: "/admin",
             submenu: false,
             icon: IAMAdminIcon,
@@ -153,7 +152,7 @@ function SideNavbar() {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch('https://adminsellerbackend.onrender.com/logout', {
+            const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/logout', {
                 method: 'POST',
                 credentials: 'include'
             });
@@ -201,7 +200,17 @@ function SideNavbar() {
                                                     {menu.subMenuList.map((subMenu) => (
                                                         <div key={subMenu.id}>
                                                             <Link to={subMenu.link}>
-                                                                <CommandItem className={`py-2 text-sm hover:bg-blue-200 rounded-md ${isActive(subMenu.link)}`}>
+                                                                <CommandItem
+                                                                    className={`py-2 text-sm hover:bg-blue-200 rounded-md ${isActive(subMenu.link)}`}
+                                                                    onSelect={() => {
+                                                                        if (subMenu.onClick) {
+                                                                            console.log("ovsd")
+                                                                            window.location.href = '/home/dashboard';
+                                                                        } else {
+                                                                            navigate(subMenu.link);
+                                                                        }
+                                                                    }}
+                                                                >
                                                                     {subMenu.title}
                                                                 </CommandItem>
                                                             </Link>

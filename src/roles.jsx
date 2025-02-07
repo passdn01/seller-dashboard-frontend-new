@@ -12,6 +12,7 @@ const roleRoutes = {
         "/issues",
         "/blogs",
         "/users",
+        "/admin"
     ],
     admin: [
         "/home/dashboard",
@@ -28,7 +29,8 @@ const roleRoutes = {
         "/issues",
         "/agents/allAgents",
     ],
-    issueAssigner: ["/home/dashboard", "/issues"],
+    issueAssigner: ["/home/dashboard", "/issuesAssigner"],
+    issueSolver: ["/home/dashboard", "/issueSolver"],
     guest: ["/home/dashboard"],
 };
 
