@@ -25,16 +25,22 @@ const Login = () => {
                 const result = await response.json();
 
                 // Use localStorage instead of cookies for debugging
-                console.log(result, "checking user")
-                localStorage.setItem("token", result.token);
-                localStorage.setItem("admin", result.admin);
-                localStorage.setItem("role", result.role);
-                localStorage.setItem("username", result.username);
-                localStorage.setItem("userId", result.userId);
 
-                console.log("Login successful:", result);
-                alert("Welcome " + result.admin);
-                window.location.href = '/home/dashboard';
+                console.log(result, "result")
+                if (result?.success) {
+                    console.log(result, "checking user")
+                    localStorage.setItem("token", result.token);
+                    localStorage.setItem("admin", result.admin);
+                    localStorage.setItem("role", result.role);
+                    localStorage.setItem("username", result.username);
+                    localStorage.setItem("userId", result.userId);
+
+                    console.log("Login successful:", result);
+                    alert("Welcome " + result.admin);
+                    window.location.href = '/home/dashboard';
+                } else {
+                    alert(result?.message)
+                }
             } else {
                 alert("Login Failed");
             }

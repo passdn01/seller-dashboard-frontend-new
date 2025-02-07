@@ -1,18 +1,16 @@
 import React from 'react'
 import RoleCard from './RoleCard'
-function RoleList({ roleData }) {
-
+function RoleList({ roleData, onUserDeleted, onUserEdited }) {
     return (
-        <div className='flex justify-center items-center'>
-            <div className='p-4 grid grid-cols-2 gap-y-4 w-[70%] gap-x-4 items-center'>
-                {roleData.map((role) => {
-                    return (
-                        <RoleCard data={role}></RoleCard>
-                    )
-                })}
+        <div className='flex '>
+            <div className='p-8 grid grid-cols-2 w-full gap-8'>
+                {roleData.map((role) => (
+                    <RoleCard key={role._id} data={role} onUserDeleted={onUserDeleted} onUserEdited={onUserEdited} />
+                ))}
             </div>
         </div>
-    )
+    );
 }
+
 
 export default RoleList

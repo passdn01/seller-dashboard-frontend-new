@@ -22,6 +22,11 @@ function CurrentUserCard() {
     const role = localStorage.getItem('role')
 
     const handlePasswordUpdate = async () => {
+        if (!password.trim()) {
+            window.alert('Password cannot be empty');
+            return;
+        }
+
         try {
             const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/editDashboardUser', {
                 method: 'POST',
@@ -36,18 +41,25 @@ function CurrentUserCard() {
                 })
             });
 
-            if (response?.data?.success) {
-                window.alert('Password updated successfully');
-                setOpen(false);
-                setPassword("");
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data, "response data");
+
+                if (data.success) {
+                    window.alert('Password updated successfully');
+                    setOpen(false);
+                    setPassword("");
+                } else {
+                    window.alert('Password update failed');
+                }
             } else {
-                window.alert('Password update failed');
+                console.error('Error: Failed to update password, status:', response.status);
+                window.alert('Error updating password');
             }
         } catch (error) {
             console.error('Error updating password:', error);
         }
     };
-
     const getInitials = (name) => {
         return name
             .split(' ')

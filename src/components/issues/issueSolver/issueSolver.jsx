@@ -53,7 +53,7 @@ const IssueSolver = () => {
     // Fetch all assigned tickets
     const fetchTickets = async () => {
         try {
-            const response = await axios.get(`https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/tickets/assigned/${userId}`);
+            const response = await axios.get(`https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/tickets/assigned/${userId}`);
             setTickets(response.data);
         } catch (err) {
             setError("Failed to load tickets");
@@ -66,15 +66,15 @@ const IssueSolver = () => {
     // mark issue as complete
     const markComplete = async (ticketId) => {
         try {
-            await axios.put(`https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/tickets/${ticketId}/solve`);
+            await axios.put(`https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/tickets/${ticketId}/solve`);
             // Refresh issue details after marking as complete
             fetchTickets();
         } catch (err) {
             setError("Failed to mark the ticket as complete");
         }
     };
-    
-    
+
+
 
     // Define columns for the table
     const columns = [
@@ -82,7 +82,7 @@ const IssueSolver = () => {
             accessorKey: "serialNo",
             header: "S.No",
             cell: ({ row }) => <div>{row.index + 1}</div>, // Adding 1 to start from 1 instead of 0
-        },        
+        },
         {
             accessorKey: "_id",
             header: "Ticket ID",
@@ -115,7 +115,7 @@ const IssueSolver = () => {
             cell: ({ row }) => {
                 const user = row.original.userId;
                 return <div>{user ? `${user.firstName} ${user.lastName}` : "User Not Available"}</div>;
-            }              
+            }
         },
         {
             accessorKey: "status",
@@ -147,8 +147,8 @@ const IssueSolver = () => {
             cell: ({ row }) => {
                 const assigner = row.original.assignerId;
                 return <div>{assigner ? `${assigner.name}` : "Assigner Not Available"}</div>;
-            }              
-        },             
+            }
+        },
         {
             id: "markComplete",
             header: "Mark Complete",
@@ -162,89 +162,89 @@ const IssueSolver = () => {
             ),
         },
         {
-                id: "actions",
-                enableHiding: false,
-                cell: ({ row }) => {
-                    const tickets = row.original;
-                    const navigate = useNavigate();
-        
-                    return (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                    <span className="sr-only">Open menu</span>
-                                    <MoreHorizontal className="h-4 w-4" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                {/* <DropdownMenuItem
+            id: "actions",
+            enableHiding: false,
+            cell: ({ row }) => {
+                const tickets = row.original;
+                const navigate = useNavigate();
+
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            {/* <DropdownMenuItem
                                     onClick={() => navigator.clipboard.writeText(.phone)}
                                 >
                                     Copy Driver Phone
                                 </DropdownMenuItem> */}
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => navigate(`/issueDetail/${tickets._id}`)}>
-                                    View issue Details
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    );
-                },
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={() => navigate(`/issueDetail/${tickets._id}`)}>
+                                View issue Details
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                );
             },
+        },
     ];
 
     // Initialize the table
     const table = useReactTable({
-            data: tickets,
-            columns,
-            onSortingChange: setSorting,
-            onissueColumnFiltersChange: setIssueColumnFilters,
-            getCoreRowModel: getCoreRowModel(),
-            getPaginationRowModel: getPaginationRowModel(),
-            getSortedRowModel: getSortedRowModel(),
-            getFilteredRowModel: getFilteredRowModel(),
-            onColumnVisibilityChange: setColumnVisibility,
-            onRowSelectionChange: setRowSelection,
-            state: {
-                sorting,
-                issueColumnFilters,
-                columnVisibility,
-                rowSelection,
-                globalFilter,
-            },
-            onGlobalFilterChange: setGlobalFilter,
-        });
-    
-        useEffect(() => {
-            if (statusFilter && statusFilter !== "all") {
-                table.getColumn("status")?.setFilterValue(statusFilter);
-            } else {
-                table.getColumn("status")?.setFilterValue("");
-            }
-        }, [statusFilter, table]);
-    
-        if (loading) {
-            return <div className="flex items-center justify-center min-h-screen">
-                <Oval
-                    height={60}
-                    width={60}
-                    color="#4fa94d"
-                    visible={true}
-                    ariaLabel='oval-loading'
-                    secondaryColor="#4fa94d"
-                    strokeWidth={2}
-                    strokeWidthSecondary={2}
-                />
-            </div>;
+        data: tickets,
+        columns,
+        onSortingChange: setSorting,
+        onissueColumnFiltersChange: setIssueColumnFilters,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onColumnVisibilityChange: setColumnVisibility,
+        onRowSelectionChange: setRowSelection,
+        state: {
+            sorting,
+            issueColumnFilters,
+            columnVisibility,
+            rowSelection,
+            globalFilter,
+        },
+        onGlobalFilterChange: setGlobalFilter,
+    });
+
+    useEffect(() => {
+        if (statusFilter && statusFilter !== "all") {
+            table.getColumn("status")?.setFilterValue(statusFilter);
+        } else {
+            table.getColumn("status")?.setFilterValue("");
         }
-    
-        if (error) {
-            return <div>Error: {error}</div>;
-        }
-    
-        // Get unique status values for the filter
-        const statusOptions = [...new Set(tickets.map(item => item.status))];
+    }, [statusFilter, table]);
+
+    if (loading) {
+        return <div className="flex items-center justify-center min-h-screen">
+            <Oval
+                height={60}
+                width={60}
+                color="#4fa94d"
+                visible={true}
+                ariaLabel='oval-loading'
+                secondaryColor="#4fa94d"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+            />
+        </div>;
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
+    // Get unique status values for the filter
+    const statusOptions = [...new Set(tickets.map(item => item.status))];
 
     return (
         <div className="w-[90%] mx-12">

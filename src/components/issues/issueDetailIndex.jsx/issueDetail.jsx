@@ -10,7 +10,7 @@ const IssueDetail = () => {
   useEffect(() => {
     const fetchIssueDetails = async () => {
       try {
-        const response = await axios.get(`https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/tickets/${id}`);
+        const response = await axios.get(`https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/tickets/${id}`);
         setIssue(response.data);
       } catch (error) {
         console.error('Error fetching issue details:', error);
@@ -59,11 +59,10 @@ const IssueDetail = () => {
               {messages.map((message) => (
                 <div
                   key={message._id}
-                  className={`p-4 rounded-lg shadow-sm flex flex-col space-y-2 max-w-[80%] ${
-                    message.sender === 'user'
+                  className={`p-4 rounded-lg shadow-sm flex flex-col space-y-2 max-w-[80%] ${message.sender === 'user'
                       ? 'bg-blue-100 self-start text-left'
                       : 'bg-gray-200 self-end text-right'
-                  }`}
+                    }`}
                 >
                   <div className="flex justify-between items-center">
                     <strong className="text-gray-800 capitalize">{message.sender}</strong>

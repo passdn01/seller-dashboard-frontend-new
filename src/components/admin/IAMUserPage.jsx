@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from '../ui/button'
 import AddUser from './AddUser'
+
 function IAMUserPage() {
     const [roleData, setRoleData] = useState([])
     const [filteredRoleData, setFilteredRoleData] = useState([])
@@ -56,7 +57,6 @@ function IAMUserPage() {
             filtered = filtered.filter(user => user.role === roleFilter)
         }
 
-
         if (searchQuery) {
             filtered = filtered.filter(user =>
                 user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -66,6 +66,49 @@ function IAMUserPage() {
 
         setFilteredRoleData(filtered)
     }, [roleFilter, searchQuery, roleData])
+
+    useEffect(() => {
+        const handleUserAdded = (event) => {
+            const newData = event.detail;
+            const filtered = newData.filter((role) => role.username !== username);
+            setRoleData(filtered);
+            setFilteredRoleData(filtered);
+        };
+
+        window.addEventListener('userAdded', handleUserAdded);
+
+        return () => {
+            window.removeEventListener('userAdded', handleUserAdded);
+        };
+    }, [username]);
+
+    const handleUserDeleted = (userId) => {
+        setRoleData(prev => prev.filter(user => user._id !== userId));
+        setFilteredRoleData(prev => prev.filter(user => user._id !== userId));
+    };
+
+    const handleAddUser = (newUser) => {
+        if (newUser.username !== username) {
+            setRoleData(prev => [...prev, newUser]);
+            setFilteredRoleData(prev => [...prev, newUser]);
+        }
+    };
+
+    const handleEditUser = (updatedUser) => {
+        setRoleData(prev =>
+            prev.map(user =>
+                user._id === updatedUser._id ? { ...user, ...updatedUser } : user
+            )
+        );
+        setFilteredRoleData(prev =>
+            prev.map(user =>
+                user._id === updatedUser._id ? { ...user, ...updatedUser } : user
+            )
+        );
+    }
+
+
+
 
     return (
         <div>
@@ -104,13 +147,16 @@ function IAMUserPage() {
                             <DialogHeader>
                                 <DialogTitle>Add New User</DialogTitle>
                             </DialogHeader>
-                            <AddUser />
+                            <AddUser onUserAdded={handleAddUser} />
                         </DialogContent>
                     </Dialog>
-
                 </div>
 
-                <RoleList roleData={filteredRoleData} />
+                <RoleList
+                    roleData={filteredRoleData}
+                    onUserDeleted={handleUserDeleted}
+                    onUserEdited={handleEditUser}
+                />
             </div>
         </div>
     )
