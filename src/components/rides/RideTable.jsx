@@ -41,6 +41,7 @@ import {
 import { Oval } from 'react-loader-spinner';
 import RideDetail from './RideDetail';
 import { SELLER_URL_LOCAL } from '@/lib/utils';
+import { io } from 'socket.io-client';
 // Columns configuration
 const columns = [
     {
@@ -165,42 +166,43 @@ export default function RideTable() {
     const [endDate, setEndDate] = useState("");
 
     useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/allRides`, {
-                    // withCredentials: true
-                });
-                if (response.data.success) {
-                    setData(response.data.data);
-                    setFilteredData(response.data.data);
-                    // sessionStorage.setItem('myRideData', JSON.stringify(response.data.data));
-                    sessionStorage.setItem('lastFetchTime', Date.now().toString());
-                } else {
-                    throw new Error(response.data.message || 'Failed to fetch data');
-                }
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
+        const socket = io(`${SELLER_URL_LOCAL}`); // Replace with your server URL
+
+        console.time("Socket API Response Time"); // Start measuring time
+
+        socket.on("connect", () => {
+            console.log("Connected to socket server");
+            // Request to get all drivers
+            socket.emit("getAllRides");
+        });
+
+        // Handle incoming driver data (batch-based)
+        socket.on("rideData", (data) => {
+            setData((prevDrivers) => [...prevDrivers, ...data]); // Add new data to state dynamically
+            setLoading(false);
+        });
+
+        // Handle the end of the data stream
+        socket.on("rideDataEnd", () => {
+            console.timeEnd("Socket API Response Time"); // End measuring time
+            setLoading(false); // Stop loading when all data is received
+        });
+
+        // Handle errors
+        socket.on("rideDataError", (error) => {
+            console.error("Error:", error.message);
+            setError(error.message); // Set error message
+            setLoading(false); // Stop loading in case of error
+        });
+
+        // Clean up the socket connection when the component unmounts
+        return () => {
+            socket.off("rideData");
+            socket.off("rideDataEnd");
+            socket.off("rideDataError");
+            socket.disconnect();
         };
 
-        fetchData();
-
-        // const storedData = sessionStorage.getItem('myRideData');
-        const lastFetchTime = sessionStorage.getItem('lastFetchTime');
-        const currentTime = Date.now();
-        const timeSinceLastFetch = currentTime - (lastFetchTime ? parseInt(lastFetchTime) : 0);
-
-        // if (myRideData && timeSinceLastFetch < 60000) {
-        //     const parsedData = JSON.parse(myRideData);
-        //     setData(parsedData);
-        //     setFilteredData(parsedData);
-        //     setLoading(false);
-        // } else {
-        //     fetchData();
-        // }
     }, []);
 
     // Handle date range filtering
