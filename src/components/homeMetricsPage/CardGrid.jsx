@@ -177,7 +177,9 @@ function CardGrid() {
 
             number: formatNumber(todayMetrics.BikeRides || 0),
             title: "Bike Taxi",
-            increase: lastHourMetrics.BikeRides,
+            // increase: lastHourMetrics.BikeRides,
+            increase: 0
+
         },
         {
             icon: auto,
@@ -381,15 +383,19 @@ function CardGrid() {
         },
         {
             icon: bike,
-            number: formatNumber(allTimeMetrics.BikeRides || 0),
+            // number: formatNumber(allTimeMetrics.BikeRides || 0),
+            number: 0,
             title: "Bike Taxi",
-            increase: todayMetrics.BikeRides,
+            // increase: todayMetrics.BikeRides,
+            increase: 0,
             hover: true,
             hoverData: {
                 title: "Number of Bike Rides",
-                todayNumber: todayMetrics.BikeRides,
+                // todayNumber: todayMetrics.BikeRides,
+                todayNumber: 0,
                 todayNumberLine: "Today's Bike Rides",
-                lastHourNumber: lastHourMetrics.BikeRides,
+                // lastHourNumber: lastHourMetrics.BikeRides,
+                lastHourNumber: 0,
                 lastHourNumberLine: "Last hour's Bike Rides",
             },
         },
