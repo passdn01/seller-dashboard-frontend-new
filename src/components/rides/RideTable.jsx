@@ -40,6 +40,7 @@ import {
 } from "../ui/select";
 import { Oval } from 'react-loader-spinner';
 import RideDetail from './RideDetail';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 // Columns configuration
 const columns = [
     {
@@ -167,13 +168,13 @@ export default function RideTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/allRides', {
+                const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/allRides`, {
                     // withCredentials: true
                 });
                 if (response.data.success) {
                     setData(response.data.data);
                     setFilteredData(response.data.data);
-                    sessionStorage.setItem('myRideData', JSON.stringify(response.data.data));
+                    // sessionStorage.setItem('myRideData', JSON.stringify(response.data.data));
                     sessionStorage.setItem('lastFetchTime', Date.now().toString());
                 } else {
                     throw new Error(response.data.message || 'Failed to fetch data');
@@ -185,19 +186,21 @@ export default function RideTable() {
             }
         };
 
-        const storedData = sessionStorage.getItem('myRideData');
+        fetchData();
+
+        // const storedData = sessionStorage.getItem('myRideData');
         const lastFetchTime = sessionStorage.getItem('lastFetchTime');
         const currentTime = Date.now();
         const timeSinceLastFetch = currentTime - (lastFetchTime ? parseInt(lastFetchTime) : 0);
 
-        if (storedData && timeSinceLastFetch < 60000) {
-            const parsedData = JSON.parse(storedData);
-            setData(parsedData);
-            setFilteredData(parsedData);
-            setLoading(false);
-        } else {
-            fetchData();
-        }
+        // if (myRideData && timeSinceLastFetch < 60000) {
+        //     const parsedData = JSON.parse(myRideData);
+        //     setData(parsedData);
+        //     setFilteredData(parsedData);
+        //     setLoading(false);
+        // } else {
+        //     fetchData();
+        // }
     }, []);
 
     // Handle date range filtering

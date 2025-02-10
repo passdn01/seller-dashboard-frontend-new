@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
+import { SELLER_URL_LOCAL } from './lib/utils';
 
-
-const sellerSocket = io('https://8qklrvxb-5000.inc1.devtunnels.ms/');
+const sellerSocket = io(`${SELLER_URL_LOCAL}`);
 
 
 const cleanUpSellerSocket = () => {

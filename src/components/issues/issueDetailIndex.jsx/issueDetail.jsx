@@ -1,76 +1,166 @@
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { useParams } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"; // Assuming you have the custom Card components
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const IssueDetail = () => {
   const [issue, setIssue] = useState(null);
+  const [ride, setRide] = useState(null);
+  const [error, setError] = useState(null);
   const { id } = useParams();
 
   useEffect(() => {
-    const fetchIssueDetails = async () => {
-      try {
-        const response = await axios.get(`https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/tickets/${id}`);
-        setIssue(response.data);
-      } catch (error) {
-        console.error('Error fetching issue details:', error);
-      }
-    };
-
     fetchIssueDetails();
   }, [id]);
 
-  if (!issue) return <div>Loading...</div>;
+  const fetchIssueDetails = async () => {
+    try {
+      const response = await axios.get(
+        `https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/tickets/${id}`
+      );
+      setIssue(response.data);
 
-  const { transactionId, concern, status, solverId, assignerId, messages, userId } = issue;
-  const { firstName, lastName } = userId;
-  const { name: solverName, username: solverUsername } = solverId;
-  const { name: assignerName, username: assignerUsername } = assignerId;
+      if (response.data?.rideId) {
+        fetchRideDetails(response.data.rideId);
+      } else {
+        setRide(null);
+      }
+    } catch (error) {
+      console.error("Error fetching issue details:", error);
+      setError("Failed to fetch issue details");
+    }
+  };
+
+  const fetchRideDetails = async (rideId) => {
+    try {
+      const response = await axios.post(
+        `https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/rideTransaction/${rideId}`
+      );
+      setRide(response.data.data.ride);
+    } catch (error) {
+      console.error("Error fetching ride details:", error);
+      setError("Failed to fetch ride details");
+    }
+  };
+
+  const markComplete = async (ticketId) => {
+    try {
+      await axios.put(
+        `https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/tickets/${ticketId}/solve`
+      );
+      fetchIssueDetails();
+    } catch (err) {
+      setError("Failed to mark the ticket as complete");
+    }
+  };
+
+  const markPending = async (ticketId) => {
+    try {
+      await axios.put(
+        `https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/tickets/${ticketId}/pending`
+      );
+      fetchIssueDetails();
+    } catch (err) {
+      setError("Failed to mark the ticket as complete");
+    }
+  };
+
+  if (!issue) return <div className="text-center py-6 text-gray-600">Loading...</div>;
+
+  const user = issue?.userId || {};
+  const displayName = user?.firstName ? `${user.firstName} ${user.lastName}` : "Unknown User";
 
   return (
-    <div className="container mx-auto p-4 space-y-6">
-      <h2 className="text-2xl font-semibold text-gray-800">Issue Detail</h2>
+    <div className="container mx-auto p-6 space-y-6">
+      {error && <p className="text-red-500">{error}</p>}
 
-      {/* Issue Information Card */}
-      <Card className="rounded-lg">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="rounded-sm">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold">Issue Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p><strong>Transaction Id: </strong>{issue.rideId || "N/A"}</p>
+            <p><strong>Concern:</strong> {issue.concern || "N/A"}</p>
+            <p><strong>Status:</strong> {issue.status || "N/A"}</p>
+            <p><strong>User:</strong> {displayName}</p>
+            <div className="flex space-x-4 mt-4">
+              <button
+                onClick={() => markComplete(id)}
+                className="px-4 py-2 bg-green-600 text-white rounded-sm hover:bg-green-700"
+              >
+                Mark as Complete
+              </button>
+              <button
+                onClick={() => markPending(id)}
+                className="px-4 py-2 bg-yellow-600 text-white rounded-sm hover:bg-yellow-700"
+              >
+                Mark as Pending
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {ride && (
+          <Card className="rounded-sm">
+            <div className="flex justify-between items-center p-6">
+              <p className="text-xl font-semibold">Ride Information</p>
+              <p><strong>Status:</strong> {ride.status || "N/A"}</p>
+            </div>
+            <CardContent className="space-y-3">
+              <p><strong>Pickup:</strong> {ride.location?.fromLocation?.name || "N/A"}</p>
+              <p><strong>Drop:</strong> {ride.location?.toLocation?.name || "N/A"}</p>
+              <div className="grid grid-cols-2 gap-4">
+                <Card className="rounded-sm p-4 border">
+                  <p className="text-lg font-semibold">Fare</p>
+                  <p className="text-2xl">₹{ride.fare || "N/A"}</p>
+                </Card>
+                <Card className="rounded-sm p-4 border">
+                  <p className="text-lg font-semibold">Distance</p>
+                  <p className="text-2xl">{ride.distance || "N/A"} km</p>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      <Card className="rounded-sm">
         <CardHeader>
-          <CardTitle className="text-xl font-semibold">Issue Information</CardTitle>
+          <CardTitle className="text-xl font-semibold">User Information</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <p><strong>Transaction ID:</strong> {transactionId}</p>
-            <p><strong>Concern:</strong> {concern}</p>
-            <p><strong>Status:</strong> {status}</p>
-            <p><strong>User:</strong> {firstName} {lastName}</p>
-            <p><strong>Solver:</strong> {solverName} ({solverUsername})</p>
-            <p><strong>Assigner:</strong> {assignerName} ({assignerUsername})</p>
-          </div>
+        <CardContent className="space-y-3">
+          <p><strong>Name:</strong> {displayName}</p>
+          <p><strong>Phone:</strong> {issue.userInfo?.phone || "N/A"}</p>
         </CardContent>
       </Card>
 
-      {/* Messages Card */}
-      <Card className="rounded-lg">
+      <Card className="rounded-sm">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">Messages</CardTitle>
         </CardHeader>
         <CardContent>
-          {messages && messages.length > 0 ? (
+          {issue?.messages?.length > 0 ? (
             <div className="space-y-4">
-              {messages.map((message) => (
+              {issue.messages.map((message) => (
                 <div
-                  key={message._id}
-                  className={`p-4 rounded-lg shadow-sm flex flex-col space-y-2 max-w-[80%] ${message.sender === 'user'
-                      ? 'bg-blue-100 self-start text-left'
-                      : 'bg-gray-200 self-end text-right'
+                  key={message?._id || Math.random()}
+                  className={`p-4 rounded-lg shadow-sm max-w-[80%] ${message?.sender === "user"
+                      ? "bg-blue-100 self-start text-left"
+                      : "bg-gray-200 self-end text-right"
                     }`}
                 >
                   <div className="flex justify-between items-center">
-                    <strong className="text-gray-800 capitalize">{message.sender}</strong>
+                    <strong className="text-gray-800 capitalize">
+                      {message?.sender || "Unknown"}
+                    </strong>
                     <span className="text-sm text-gray-500">
-                      {new Date(message.timestamp).toLocaleString()}
+                      {message?.timestamp ? new Date(message.timestamp).toLocaleString() : "N/A"}
                     </span>
                   </div>
-                  <p className="mt-2 text-gray-700 break-words">{message.message}</p>
+                  <p className="mt-2 text-gray-700 break-words">
+                    {message?.message || "No message content"}
+                  </p>
                 </div>
               ))}
             </div>

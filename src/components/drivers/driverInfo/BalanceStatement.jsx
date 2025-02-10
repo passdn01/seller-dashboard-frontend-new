@@ -5,6 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { format } from 'date-fns';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 // Helper functions for formatting
 const formatDate = (dateString) => {
@@ -146,7 +147,7 @@ const DriverBalanceStatement = ({ data }) => {
         setError("");
 
         try {
-            const response = await fetch(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/balance?type=${dialogType === "add" ? "add" : "cut"}`, {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/driver/balance?type=${dialogType === "add" ? "add" : "cut"}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

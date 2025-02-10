@@ -3,6 +3,7 @@ import SideNavbar from '../SideNavbar'
 import AllUserTable from './AllUserTable'
 import Header from '../drivers/allDrivers/Header'
 import axios from 'axios'
+import { BUYER_URL_LOCAL } from '@/lib/utils'
 function AllUserPage() {
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
@@ -10,7 +11,7 @@ function AllUserPage() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/allUserTable');
+                const response = await axios.get(`${BUYER_URL_LOCAL}/dashboard/api/allUserTable`);
                 console.log(response, "reesdsds")
                 if (response.data.success) {
                     setData(response.data.data);

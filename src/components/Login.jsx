@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Oval } from 'react-loader-spinner';
 import loginImage from '../assets/loginPassdn.png';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -14,7 +15,7 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/login', {
+            const response = await fetch(`${SELLER_URL_LOCAL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),

@@ -11,3 +11,6 @@ export const getCookie = (name) => {
   const cookie = cookieArray.find((row) => row.startsWith(`${name}=`));
   return cookie ? cookie.split('=')[1] : null;
 };
+
+export const SELLER_URL_LOCAL = "https://8qklrvxb-5000.inc1.devtunnels.ms"
+export const BUYER_URL_LOCAL = "https://8qklrvxb-6000.inc1.devtunnels.ms"

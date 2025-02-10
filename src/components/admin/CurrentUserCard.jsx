@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 function CurrentUserCard() {
     const [password, setPassword] = useState("");
@@ -28,7 +29,7 @@ function CurrentUserCard() {
         }
 
         try {
-            const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/editDashboardUser', {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/editDashboardUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

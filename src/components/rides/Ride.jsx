@@ -29,6 +29,7 @@ import RideCard from './RideCard';
 import SideNavbar from '../SideNavbar';
 import Header from '../drivers/allDrivers/Header';
 import { Oval } from 'react-loader-spinner';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 function Ride() {
     const { id } = useParams();
@@ -39,7 +40,7 @@ function Ride() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/ride/${id}`)
+        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/ride/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);

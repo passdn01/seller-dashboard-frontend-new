@@ -24,6 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const roleOptions = [
     "admin",
@@ -49,7 +50,7 @@ const RoleCard = ({ data, onUserDeleted, onUserEdited }) => {
     const handleDeleteRole = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/deleteDashboardUser', {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/deleteDashboardUser`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: data._id })
@@ -82,7 +83,7 @@ const RoleCard = ({ data, onUserDeleted, onUserEdited }) => {
     const handleSaveChanges = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/editDashboardUser', {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/editDashboardUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

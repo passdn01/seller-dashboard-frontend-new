@@ -30,7 +30,7 @@ import WebsiteIcon from '../assets/NavIcons/Website.svg';
 import IssueSolverIcon from '../assets/NavIcons/IssueSolver.svg';
 import { useNavigate, useLocation } from 'react-router-dom';
 import roleRoutes from '../roles';
-import { getCookie } from '@/lib/utils';
+import { getCookie, SELLER_URL_LOCAL } from '@/lib/utils';
 
 import { Link } from 'react-router-dom'
 import { User } from 'lucide-react';
@@ -154,7 +154,7 @@ function SideNavbar() {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/logout', {
+            const response = await fetch(`${SELLER_URL_LOCAL}/logout`, {
                 method: 'POST',
                 credentials: 'include'
             });

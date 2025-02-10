@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import axios from 'axios';
 import startPoint from '../../assets/startPointImg.png';
 import endPoint from '../../assets/endPointImg.png';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const RideCard = ({ data }) => {
     const { ride, driverInfo } = data;
@@ -13,7 +14,7 @@ const RideCard = ({ data }) => {
 
     const getAddressFromBackend = async (lat, lon, setAddress) => {
         try {
-            const response = await axios.post('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/gpsToAddress', { lat, lon });
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/gpsToAddress`, { lat, lon });
             const address = response.data.address || 'Unknown Location';
             setAddress(address);
         } catch (error) {

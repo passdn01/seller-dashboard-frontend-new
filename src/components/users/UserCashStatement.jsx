@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BUYER_URL_LOCAL } from '@/lib/utils';
 
 
 const UserCashStatement = ({ userId }) => {
@@ -19,7 +20,7 @@ const UserCashStatement = ({ userId }) => {
     const [title, setTitle] = useState('');
     const fetchCoinStatement = async () => {
         try {
-            const response = await axios.post('https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/getUserCoinStatement', { userId });
+            const response = await axios.post(`${BUYER_URL_LOCAL}/dashboard/api/getUserCoinStatement`, { userId });
             setCoinTransactions(response.data.coinTransactions || []);
             setLoading(false);
         } catch (err) {
@@ -39,7 +40,7 @@ const UserCashStatement = ({ userId }) => {
         const isDebit = coinAction === 'cut';
 
         try {
-            const response = await axios.post(`https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/modifyCoinBalance`, {
+            const response = await axios.post(`${BUYER_URL_LOCAL}/dashboard/api/modifyCoinBalance`, {
                 userId,
                 title,
                 coins,

@@ -6,6 +6,7 @@ import TotalRideIcon from '../../assets/driverPerformance/totalrides.svg';
 import RatingIcon from '../../assets/driverPerformance/rating.svg';
 import ReferralIcon from '../../assets/driverPerformance/referral.svg';
 import EarningsIcon from '../../assets/driverPerformance/totalearning.svg';
+import { BUYER_URL_LOCAL } from '@/lib/utils';
 
 const UserPerformance = ({ userData }) => {
     console.log("user data in performance is", userData)
@@ -22,7 +23,7 @@ const UserPerformance = ({ userData }) => {
 
     const fetchPerformance = async () => {
         try {
-            const response = await fetch("https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/coinTransactionNumber", {
+            const response = await fetch(`${BUYER_URL_LOCAL}/dashboard/api/coinTransactionNumber`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

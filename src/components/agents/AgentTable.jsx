@@ -42,6 +42,7 @@ import { Oval } from 'react-loader-spinner';
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
 import AgentEdit from './AgentEdit';
 import AddAgent from './AddAgent';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 // Columns configuration
 const columns = [
@@ -134,7 +135,7 @@ export default function AgentTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/allAgents', {
+                const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/allAgents`, {
                     // withCredentials: true
                 });
                 console.log(response.data.data);

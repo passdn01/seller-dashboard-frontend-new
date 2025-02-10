@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button"
 import backArrow from '../../assets/backArrow.svg'
 import RideInfoCard from './RideInfoCard'
+import { SELLER_URL_LOCAL } from '@/lib/utils'
 function RideInfo() {
     const { id } = useParams();
 
@@ -24,7 +25,7 @@ function RideInfo() {
     const navigate = useNavigate()
     useEffect(() => {
         const fetchRideInfo = async () => {
-            const response = await axios.post("https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/getRide", { id: id })
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/getRide`, { id: id })
             console.log(response.data, "response in rideinfo")
             if (response?.data?.success) {
                 setTransactionId(response.data.data.transactionId)

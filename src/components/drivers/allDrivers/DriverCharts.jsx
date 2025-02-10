@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Chart } from 'react-google-charts';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const DriverChart = () => {
     const [ridesData, setRidesData] = useState([]);  // Holds rides data for the week
@@ -14,7 +15,7 @@ const DriverChart = () => {
     useEffect(() => {
         const fetchRides = async () => {
             try {
-                const response = await axios.post('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/rides-by-driver', { driverId });
+                const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/rides-by-driver`, { driverId });
                 const { data } = response.data;
 
                 setWeeks(data);

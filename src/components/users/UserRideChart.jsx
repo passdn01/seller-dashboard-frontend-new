@@ -52,7 +52,7 @@ function UserRideChart({ userId }) {
 
     const fetchRides = async () => {
         try {
-            const response = await fetch("https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/getUserRideChart", {
+            const response = await fetch(`${BUYER_URL_LOCAL}/dashboard/api/getUserRideChart`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: userId }),

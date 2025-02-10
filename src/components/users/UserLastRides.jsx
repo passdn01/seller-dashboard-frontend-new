@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
+import { BUYER_URL_LOCAL } from '@/lib/utils';
 
 function UserLastRides({ userId, data }) {
     const [userdata, setUserdata] = useState([]);
@@ -23,7 +24,7 @@ function UserLastRides({ userId, data }) {
 
     const fetchRides = async () => {
         try {
-            const response = await fetch("https://8qklrvxb-6000.inc1.devtunnels.ms/dashboaard/api/getLastTenRides", {
+            const response = await fetch(`${BUYER_URL_LOCAL}/dashboaard/api/getLastTenRides`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: userId }),

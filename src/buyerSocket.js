@@ -1,7 +1,8 @@
 import { io } from 'socket.io-client';
+import { BUYER_URL_LOCAL } from './lib/utils';
 
 // Create and export a single instance of the buyer socket
-const buyerSocket = io('https://8qklrvxb-6000.inc1.devtunnels.ms/');
+const buyerSocket = io(`${BUYER_URL_LOCAL}`);
 
 // Utility function to clean up all listeners
 const cleanUpBuyerSocket = () => {

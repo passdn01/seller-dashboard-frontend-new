@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { Card } from "@/components/ui/card";
 import { MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { BUYER_URL_LOCAL } from "@/lib/utils";
 
 function RideDetail({ transactionId, distance, userInfo }) {
     console.log("userInfo is ", userInfo)
@@ -17,7 +18,7 @@ function RideDetail({ transactionId, distance, userInfo }) {
 
         setIsLoading(true);
         axios
-            .post("https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/rideDetail", { transactionId })
+            .post(`${BUYER_URL_LOCAL}/dashboard/api/rideDetail`, { transactionId })
             .then(response => {
                 setIsLoading(false)
                 console.log(response.data, "response in ride detail");

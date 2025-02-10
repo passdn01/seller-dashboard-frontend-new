@@ -2,6 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const AddAgent = () => {
     const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ const AddAgent = () => {
         setError('');
         try {
             const response = await axios.post(
-                'https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/agent/add', // Adjusted endpoint for adding a new agent
+                `${SELLER_URL_LOCAL}/dashboard/api/agent/add`, // Adjusted endpoint for adding a new agent
                 formData
             );
             if (response.data.success) {

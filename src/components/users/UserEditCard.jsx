@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { User } from 'lucide-react';
+import { BUYER_URL_LOCAL } from '@/lib/utils';
 
 const UserEditCard = ({ userData }) => {
     const [formData, setFormData] = useState({
@@ -41,7 +42,7 @@ const UserEditCard = ({ userData }) => {
     const handleSubmit = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/updateUser', {
+            const response = await fetch(`${BUYER_URL_LOCAL}/dashboard/api/updateUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

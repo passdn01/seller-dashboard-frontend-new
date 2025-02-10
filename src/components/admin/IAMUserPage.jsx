@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from '../ui/button'
 import AddUser from './AddUser'
+import { SELLER_URL_LOCAL } from '@/lib/utils'
 
 function IAMUserPage() {
     const [roleData, setRoleData] = useState([])
@@ -37,7 +38,7 @@ function IAMUserPage() {
 
     useEffect(() => {
         try {
-            fetch('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/getDashboardUsers')
+            fetch(`${SELLER_URL_LOCAL}/dashboard/api/getDashboardUsers`)
                 .then(response => response.json())
                 .then(data => {
                     const filtered = data.data.filter((role) => role.username !== username)

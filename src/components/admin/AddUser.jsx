@@ -1,3 +1,4 @@
+import { SELLER_URL_LOCAL } from "@/lib/utils";
 import React, { useState } from "react";
 
 const ROLES = [
@@ -54,7 +55,7 @@ const AddUser = ({ onUserAdded }) => {
         setSuccess(false);
 
         try {
-            const response = await fetch("https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/addDashboardUser", {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/addDashboardUser`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

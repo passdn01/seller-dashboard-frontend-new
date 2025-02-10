@@ -34,6 +34,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select";
 import { Oval } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
+import { BUYER_URL_LOCAL } from "@/lib/utils";
 
 const IssueAssigner = () => {
     const [tickets, setTickets] = useState([]);
@@ -54,7 +55,7 @@ const IssueAssigner = () => {
     useEffect(() => {
         const fetchTickets = async () => {
             try {
-                const response = await axios.get("https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/tickets");
+                const response = await axios.get(`${BUYER_URL_LOCAL}/dashboard/api/tickets`);
                 setTickets(response.data);
             } catch (err) {
                 setError("Failed to load tickets");
@@ -67,7 +68,7 @@ const IssueAssigner = () => {
     useEffect(() => {
         const fetchSolvers = async () => {
             try {
-                const response = await axios.get("https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/tickets/solvers");
+                const response = await axios.get(`${BUYER_URL_LOCAL}/dashboard/api/tickets/solvers`);
                 setSolvers(response.data);
             } catch (err) {
                 setError("Failed to load solvers");
@@ -87,7 +88,7 @@ const IssueAssigner = () => {
 
         try {
             setLoading(true);
-            await axios.post("https://8qklrvxb-6000.inc1.devtunnels.ms/dashboard/api/tickets/assign", {
+            await axios.post(`${BUYER_URL_LOCAL}/dashboard/api/tickets/assign`, {
                 assignerId: userId,
                 ticketId,
                 solverId: selectedSolver[ticketId]

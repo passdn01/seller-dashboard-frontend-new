@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { Label } from "@/components/ui/label"; // ShadCN label component
 import { Input } from "@/components/ui/input"; // ShadCN input component
 import { Button } from "@/components/ui/button"; // ShadCN button component
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const UploadDocuments = ({ id }) => {
     const [profileUrl, setProfileUrl] = useState(null);
@@ -42,7 +43,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', profileUrl);
 
         try {
-            const response = await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/profile-image`, formData, {
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/driver/${id}/profile-image`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -67,7 +68,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicense);
 
         try {
-            const response = await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl`, formData, {
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/driver/${id}/edit-dl`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -92,7 +93,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicenseBack);
 
         try {
-            const response = await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl-back`, formData, {
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/driver/${id}/edit-dl-back`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -117,7 +118,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', RCBack);
 
         try {
-            const response = await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-rc-back`, formData, {
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/driver/${id}/edit-rc-back`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -142,7 +143,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', registrationCertificate);
 
         try {
-            const response = await axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-rc`, formData, {
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/driver/${id}/edit-rc`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

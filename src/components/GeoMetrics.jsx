@@ -7,6 +7,7 @@ import axios from 'axios';
 import './MapComponent.css';
 import PropTypes from 'prop-types';
 import { io } from 'socket.io-client';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 // Custom HeatmapLayer Component
 const HeatmapLayer = ({ data }) => {
@@ -92,7 +93,7 @@ const GeoMetrics = () => {
 
     const fetchRideDistribution = async () => {
         try {
-            const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/ride-distribution');
+            const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/ride-distribution`);
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -110,7 +111,7 @@ const GeoMetrics = () => {
 
     const fetchCancelledRideDistribution = async () => {
         try {
-            const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/cancelled-distribution');
+            const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/cancelled-distribution`);
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -146,7 +147,7 @@ const GeoMetrics = () => {
             if (varient !== 'ALL') requestData.varient = varient;
             if (type !== 'all') requestData.type = type;
 
-            const response = await axios.post('http://localhost:5000/dashboard/api/start-ride-clustering', requestData);
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/start-ride-clustering`, requestData);
             const clusters = response.data.map(cluster => ({
                 center: [cluster.center.lat, cluster.center.lng],
                 count: cluster.numRides,
@@ -168,7 +169,7 @@ const GeoMetrics = () => {
     }, [viewMode, selectedDate, startTime, endTime, varient, type]);
 
     useEffect(() => {
-        const newSocket = io('https://8qklrvxb-5000.inc1.devtunnels.ms/');
+        const newSocket = io(`${SELLER_URL_LOCAL}`);
         setSocket(newSocket);
 
         // Emit "getOnlineDrivers" to fetch the list of drivers when in "drivers" view

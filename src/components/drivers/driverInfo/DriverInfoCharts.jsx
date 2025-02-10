@@ -3,6 +3,7 @@ import { SimpleBarChart } from '@carbon/charts-react'
 import '@carbon/charts/styles.css';
 import { Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const DriverInfoCharts = ({ data }) => {
     const { driverInfo } = data;
@@ -20,7 +21,7 @@ const DriverInfoCharts = ({ data }) => {
             setError(null);
 
             try {
-                const response = await fetch(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/driverInfoCharts`, {
+                const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/driverInfoCharts`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

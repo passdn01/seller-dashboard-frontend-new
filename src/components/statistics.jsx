@@ -4,6 +4,7 @@ import axios from 'axios';
 import moment from 'moment';
 import './statistics.css';
 import { ExpandIcon } from 'lucide-react';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const RideStatistics = () => {
     const [period, setPeriod] = useState('monthly'); // Default period
@@ -48,7 +49,7 @@ const RideStatistics = () => {
     // Fetch data for both total rides, drivers, cancelled rides, and earnings
     const fetchData = async () => {
         try {
-            const response = await axios.post('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period });
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/totalStatsData`, { period });
             const result = response.data;
 
             const formattedRideData = [

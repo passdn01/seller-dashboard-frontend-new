@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './NavStats.css';
 import { io } from 'socket.io-client';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const NavStats = () => {
     const [allCompletedRides, setAllCompletedRides] = useState(0);
@@ -24,7 +25,7 @@ const NavStats = () => {
 
     const fetchTotalCompletedRides = async () => {
         try {
-            const response = await axios.post('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period: 'all time' });
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/totalStatsData`, { period: 'all time' });
             const result = response.data;
 
             console.log(result); // Log the response to inspect the structure
@@ -49,7 +50,7 @@ const NavStats = () => {
 
 
     useEffect(() => {
-        const newSocket = io('http://localhost:5000');
+        const newSocket = io(`${SELLER_URL_LOCAL}`);
         setSocket(newSocket);
 
         // Request online drivers once connected
@@ -78,7 +79,7 @@ const NavStats = () => {
 
     const fetchOngoingRides = async () => {
         try {
-            const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/total-ongoing-rides');
+            const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/total-ongoing-rides`);
             const totalOngoingRides = response.data.ongoingRides;
             console.log(totalOngoingRides);
             setOngoingRidesCount(totalOngoingRides);

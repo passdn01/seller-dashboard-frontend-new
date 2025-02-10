@@ -31,6 +31,7 @@ import Header from '../drivers/allDrivers/Header';
 import { Oval } from 'react-loader-spinner';
 import AgentCard from './AgentCard';
 import AgentEdit from './AgentEdit';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 function Agent() {
     const { id } = useParams();
@@ -41,7 +42,7 @@ function Agent() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://8qklrvxb-5000.inc1.devtunnels.ms/dashboard/api/agent/${id}`)
+        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/agent/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
