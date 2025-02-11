@@ -78,25 +78,14 @@ const IssueAssigner = () => {
     }, []);
 
     // Assign a ticket to a solver
-<<<<<<< HEAD
-    const handleAssignTicket = async (ticketId) => {
-        // if (!selectedSolver[ticketId]) {
-        //     alert("Please select a solver before assigning!");
-        //     return;
-        // }
-
-        console.log("Assigning ticket", userId, "to solver", selectedSolver[ticketId], ticketId);
-
-=======
     const handleAssignTicket = async (ticketId, solverId) => {
         if (!solverId) {
             alert("Please select a solver before assigning!");
             return;
         }
-    
+
         console.log("Assigning ticket", userId, "to solver", solverId, ticketId);
-    
->>>>>>> 826d58863e25206ed9fac22d48226c9a47f21244
+
         try {
             setLoading(true);
             await axios.post(`${BUYER_URL_LOCAL}/dashboard/api/tickets/assign`, {
@@ -104,7 +93,7 @@ const IssueAssigner = () => {
                 ticketId,
                 solverId
             });
-    
+
             alert("Ticket assigned successfully!");
             setTickets(tickets.map(ticket =>
                 ticket._id === ticketId ? { ...ticket, solverId, status: "In Progress" } : ticket
@@ -115,7 +104,7 @@ const IssueAssigner = () => {
             setLoading(false);
         }
     };
-    
+
 
     // Define columns for the table
     const columns = [
@@ -189,14 +178,8 @@ const IssueAssigner = () => {
                 <Select
                     value={selectedSolver[row.original._id] || row.original.solverId?._id || ""}
                     onValueChange={(value) => {
-<<<<<<< HEAD
-                        setSelectedSolver({ ...selectedSolver, [row.original._id]: value })
-                        handleAssignTicket(row.original._id)
-
-=======
                         setSelectedSolver({ ...selectedSolver, [row.original._id]: value });
-                        handleAssignTicket(row.original._id, value); 
->>>>>>> 826d58863e25206ed9fac22d48226c9a47f21244
+                        handleAssignTicket(row.original._id, value);
                     }}
                 >
                     <SelectTrigger className="w-[180px]">
@@ -212,21 +195,7 @@ const IssueAssigner = () => {
                 </Select>
             ),
         },
-<<<<<<< HEAD
-        // {
-        //     id: "assign",
-        //     header: "Assign",
-        //     cell: ({ row }) => (
-        //         <Button
-        //             onClick={() => }
-        //             disabled={loading}
-        //         >
-        //             {loading ? "Assigning..." : "Assign"}
-        //         </Button>
-        //     ),
-        // },
-=======
-        
+
         {
             id: "assign",
             header: "Assign",
@@ -239,7 +208,6 @@ const IssueAssigner = () => {
                 </Button>
             ),
         },
->>>>>>> 826d58863e25206ed9fac22d48226c9a47f21244
         {
             id: "actions",
             enableHiding: false,
