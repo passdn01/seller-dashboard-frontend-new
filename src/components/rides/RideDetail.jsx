@@ -3,7 +3,7 @@ import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapPin } from "lucide-react";
-import { BUYER_URL_LOCAL } from "@/lib/utils";
+import { BUYER_URL_LOCAL, SELLER_URL_LOCAL } from "@/lib/utils";
 
 function RideDetail({ transactionId, distance, userInfo }) {
     const [rideData, setRideData] = useState(null);

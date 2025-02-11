@@ -12,5 +12,5 @@ export const getCookie = (name) => {
   return cookie ? cookie.split('=')[1] : null;
 };
 
-export const SELLER_URL_LOCAL = "https://55kqzrxn-5000.inc1.devtunnels.ms"
-export const BUYER_URL_LOCAL = "https://55kqzrxn-6000.inc1.devtunnels.ms"
+export const SELLER_URL_LOCAL = "https://8qklrvxb-5000.inc1.devtunnels.ms"
+export const BUYER_URL_LOCAL = "https://8qklrvxb-6000.inc1.devtunnels.ms"

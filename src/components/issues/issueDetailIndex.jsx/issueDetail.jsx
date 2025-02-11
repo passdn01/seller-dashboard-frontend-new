@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BUYER_URL_LOCAL, SELLER_URL_LOCAL } from "@/lib/utils";
 
 const IssueDetail = () => {
   const [issue, setIssue] = useState(null);
@@ -16,7 +17,7 @@ const IssueDetail = () => {
   const fetchIssueDetails = async () => {
     try {
       const response = await axios.get(
-        `https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/tickets/${id}`
+        `${BUYER_URL_LOCAL}/dashboard/api/tickets/${id}`
       );
       setIssue(response.data);
 
@@ -34,7 +35,7 @@ const IssueDetail = () => {
   const fetchRideDetails = async (rideId) => {
     try {
       const response = await axios.post(
-        `https://55kqzrxn-5000.inc1.devtunnels.ms/dashboard/api/rideTransaction/${rideId}`
+        `${SELLER_URL_LOCAL}/dashboard/api/rideTransaction/${rideId}`
       );
       setRide(response.data.data.ride);
     } catch (error) {
@@ -46,7 +47,7 @@ const IssueDetail = () => {
   const markComplete = async (ticketId) => {
     try {
       await axios.put(
-        `https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/tickets/${ticketId}/solve`
+        `${BUYER_URL_LOCAL}/dashboard/api/tickets/${ticketId}/solve`
       );
       fetchIssueDetails();
     } catch (err) {
@@ -57,7 +58,7 @@ const IssueDetail = () => {
   const markPending = async (ticketId) => {
     try {
       await axios.put(
-        `https://55kqzrxn-6000.inc1.devtunnels.ms/dashboard/api/tickets/${ticketId}/pending`
+        `${BUYER_URL_LOCAL}/dashboard/api/tickets/${ticketId}/pending`
       );
       fetchIssueDetails();
     } catch (err) {
@@ -146,8 +147,8 @@ const IssueDetail = () => {
                 <div
                   key={message?._id || Math.random()}
                   className={`p-4 rounded-lg shadow-sm max-w-[80%] ${message?.sender === "user"
-                      ? "bg-blue-100 self-start text-left"
-                      : "bg-gray-200 self-end text-right"
+                    ? "bg-blue-100 self-start text-left"
+                    : "bg-gray-200 self-end text-right"
                     }`}
                 >
                   <div className="flex justify-between items-center">
