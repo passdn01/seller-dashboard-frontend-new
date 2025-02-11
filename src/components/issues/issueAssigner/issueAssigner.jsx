@@ -79,10 +79,10 @@ const IssueAssigner = () => {
 
     // Assign a ticket to a solver
     const handleAssignTicket = async (ticketId) => {
-        if (!selectedSolver[ticketId]) {
-            alert("Please select a solver before assigning!");
-            return;
-        }
+        // if (!selectedSolver[ticketId]) {
+        //     alert("Please select a solver before assigning!");
+        //     return;
+        // }
 
         console.log("Assigning ticket", userId, "to solver", selectedSolver[ticketId], ticketId);
 
@@ -176,7 +176,11 @@ const IssueAssigner = () => {
             cell: ({ row }) => (
                 <Select
                     value={selectedSolver[row.original._id] || row.original.solverId?._id || ""}
-                    onValueChange={(value) => setSelectedSolver({ ...selectedSolver, [row.original._id]: value })}
+                    onValueChange={(value) => {
+                        setSelectedSolver({ ...selectedSolver, [row.original._id]: value })
+                        handleAssignTicket(row.original._id)
+
+                    }}
                 >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select Solver" />
@@ -192,18 +196,18 @@ const IssueAssigner = () => {
                 </Select>
             ),
         },
-        {
-            id: "assign",
-            header: "Assign",
-            cell: ({ row }) => (
-                <Button
-                    onClick={() => handleAssignTicket(row.original._id)}
-                    disabled={loading}
-                >
-                    {loading ? "Assigning..." : "Assign"}
-                </Button>
-            ),
-        },
+        // {
+        //     id: "assign",
+        //     header: "Assign",
+        //     cell: ({ row }) => (
+        //         <Button
+        //             onClick={() => }
+        //             disabled={loading}
+        //         >
+        //             {loading ? "Assigning..." : "Assign"}
+        //         </Button>
+        //     ),
+        // },
         {
             id: "actions",
             enableHiding: false,

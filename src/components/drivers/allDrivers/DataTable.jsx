@@ -109,23 +109,23 @@ export default function DriverTable() {
             // Request to get all drivers
             socket.emit("getAllDrivers");
         });
-        
+
         // Handle incoming driver data (batch-based)
         socket.on("driverData", (data) => {
             // Process data to add 'verify' field before updating state
             const processedData = data.map(driver => {
                 const isIncompleteRegistration = driver.isCompleteRegistration === false;
                 const isMissingNameOrLicense = driver.licenseNumber || driver.name;
-            
+
                 let verificationStatus = "Verified"; // Default to verified
-            
+
                 if (isIncompleteRegistration || !isMissingNameOrLicense) {
                     verificationStatus = "Unverified";
                 }
-    
+
                 return { ...driver, verify: verificationStatus };
             });
-    
+
             setData((prevDrivers) => [...prevDrivers, ...processedData]); // Add new data to state dynamically
             setLoading(false);
         });
@@ -203,14 +203,14 @@ export default function DriverTable() {
     //     const filtered = data.filter((driver) => {
     //         const isIncompleteRegistration = driver.isCompleteRegistration === false;
     //         const isMissingNameOrLicense = !driver.licenseNumber || !driver.name;
-    
+
     //         if (verifyFilter === "verified") {
     //             return !(isIncompleteRegistration || isMissingNameOrLicense);
     //         }
     //         if (verifyFilter === "unverified") {
     //             return isIncompleteRegistration || isMissingNameOrLicense;
     //         }
-    
+
     //         return true; // If "all" is selected, return all data.
     //     });
 
@@ -502,7 +502,7 @@ export default function DriverTable() {
     ];
 
 
-    
+
 
 
     const table = useReactTable({
@@ -575,7 +575,7 @@ export default function DriverTable() {
     }
 
     return (
-        <div className="w-[85%] mx-20">
+        <div className="w-[90%] m-auto">
             <div className="flex items-center py-4">
                 <Input
                     placeholder="Search all columns..."

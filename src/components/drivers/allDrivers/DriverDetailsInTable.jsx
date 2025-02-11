@@ -24,6 +24,7 @@ import UploadDocuments from './UploadDocuments';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { SELLER_URL_LOCAL } from '@/lib/utils';
 const DriverDetails = ({ driver }) => {
+    console.log("driver coming in driver detials ", driver)
     const [formData, setFormData] = useState({
         licenseNumber: driver?.licenseNumber || "",
         name: driver?.name || "",
@@ -41,6 +42,7 @@ const DriverDetails = ({ driver }) => {
         balance: driver?.balance || "",
         status: driver?.status || "",
         isVerify: driver?.isVerify || false,
+        rejectReason: driver?.rejectReason || 'NA'
     });
 
     const [imageUrls, setImageUrls] = useState({
@@ -222,9 +224,9 @@ const DriverDetails = ({ driver }) => {
 
 
                         {/* //reject reasons to be added later */}
-                        {/* <DropdownField
+                        <DropdownField
                             label="Reject reasons"
-                            value=''
+                            value={formData.rejectReason}
                             options={[
                                 { label: "License not clear", value: "license not clear" },
                                 { label: "License expired", value: "license expired" },
@@ -232,9 +234,10 @@ const DriverDetails = ({ driver }) => {
                                 { label: "RC of bike", value: "rc of bike" },
                                 { label: "RC Number different", value: "rc number different" },
                                 { label: "License name is different than submitted", value: "license name is different than submitted" },
+                                { label: "NA", value: "NA" },
                             ]}
-                            onChange={(val) => handleChange("category", val)}
-                        /> */}
+                            onChange={(val) => handleChange("rejectReason", val)}
+                        />
                         <DropdownField
                             label="Fuel Type"
                             value={formData.fuelType}
