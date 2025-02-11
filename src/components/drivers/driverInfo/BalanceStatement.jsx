@@ -128,7 +128,7 @@ const DriverBalanceStatement = ({ data }) => {
     const [error, setError] = useState("");
 
     // Filter successful transactions
-    const successfulTransactions = transactionHistory.filter(tx => tx.status === "SUCCESS");
+    const successfulTransactions = transactionHistory.filter(tx => tx.status === "SUCCESS" || tx.status === "Success");
 
     const cashInTransactions = successfulTransactions.filter(tx => tx.type === "credited");
     const cashOutTransactions = successfulTransactions.filter(tx => tx.type === "debited");
@@ -147,20 +147,29 @@ const DriverBalanceStatement = ({ data }) => {
         setError("");
 
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/driver/balance?type=${dialogType === "add" ? "add" : "cut"}`, {
+            console.log("adfa")
+            console.log(data?.driverInfo?._id)
+            console.log(`${SELLER_URL_LOCAL}/dashboard/api/balance?type=${dialogType === "add" ? "add" : "cut"}`)
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/balance?type=${dialogType === "add" ? "add" : "cut"}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    driverId: _id,
+                    driverId: data?.driverInfo?._id,
                     amount: parseFloat(amount),
-                    by: localStorage.getItem(admin),
+                    by: localStorage.getItem("admin"),
                     title,
                 }),
             });
 
+
+
+            console.log("2")
+
             const result = await response.json();
+
+            console.log(result, "result")
 
             if (result.success) {
                 alert(`Balance ${dialogType === "add" ? "added" : "deducted"} successfully!`);
