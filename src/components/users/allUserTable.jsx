@@ -36,6 +36,8 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import UserEditCard from "./UserEditCard";
+import { BUYER_URL_LOCAL } from "@/lib/utils";
+import { io } from "socket.io-client";
 
 const UserManagementTable = () => {
     const [expandedRowId, setExpandedRowId] = useState(null);
@@ -44,28 +46,53 @@ const UserManagementTable = () => {
     };
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    // const [data, setData] = useState([]);
+    const [error, setError] = useState(null);
 
     // Filters
     const [search, setSearch] = useState("");
     const [genderFilter, setGenderFilter] = useState("");
-    const [coinRange, setCoinRange] = useState({ min: 0, max: Infinity });
+    const [coinRange, setCoinRange] = useState({ min: 0, max: 1000000 });
     const [dateFilter, setDateFilter] = useState({ from: "", to: "" });
 
-    // Fetch users from API
     useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                setLoading(true);
-                const response = await axios.get(`${BUYER_URL_LOCAL}/dashboard/api/allUserTable`);
-                setUsers(response.data.data);
-            } catch (error) {
-                console.error("Error fetching users:", error);
-            } finally {
-                setLoading(false);
-            }
+        const socket = io(`${BUYER_URL_LOCAL}`); // Replace with your server URL
+
+        console.time("Socket API Response Time"); // Start measuring time
+
+        socket.on("connect", () => {
+            console.log("Connected to socket server");
+            // Request to get all drivers
+            socket.emit("getAllUsers");
+        });
+
+        // Handle incoming driver data (batch-based)
+        socket.on("userData", (user) => {
+            setUsers((prevUsers) => [...prevUsers, ...user]); // Add new data to state dynamically
+            setLoading(false);
+        });
+
+        // Handle the end of the data stream
+        socket.on("userDataEnd", () => {
+            console.timeEnd("Socket API Response Time"); // End measuring time
+            setLoading(false); // Stop loading when all data is received
+        });
+
+        // Handle errors
+        socket.on("userDataError", (error) => {
+            console.error("Error:", error.message);
+            setError(error.message); // Set error message
+            setLoading(false); // Stop loading in case of error
+        });
+
+        // Clean up the socket connection when the component unmounts
+        return () => {
+            socket.off("userData");
+            socket.off("userDataEnd");
+            socket.off("userDataError");
+            socket.disconnect();
         };
 
-        fetchUsers();
     }, []);
 
     // Filtered Data
@@ -79,7 +106,7 @@ const UserManagementTable = () => {
 
             const matchesCoins =
                 user.coins >= (coinRange.min || 0) &&
-                user.coins <= (coinRange.max || Infinity);
+                user.coins <= (coinRange.max || "Infinity");
 
             const userCreatedAt = new Date(user.createdAt);
             const matchesDate =
