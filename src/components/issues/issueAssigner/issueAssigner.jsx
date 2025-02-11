@@ -78,25 +78,25 @@ const IssueAssigner = () => {
     }, []);
 
     // Assign a ticket to a solver
-    const handleAssignTicket = async (ticketId) => {
-        if (!selectedSolver[ticketId]) {
+    const handleAssignTicket = async (ticketId, solverId) => {
+        if (!solverId) {
             alert("Please select a solver before assigning!");
             return;
         }
-
-        console.log("Assigning ticket", userId, "to solver", selectedSolver[ticketId], ticketId);
-
+    
+        console.log("Assigning ticket", userId, "to solver", solverId, ticketId);
+    
         try {
             setLoading(true);
             await axios.post(`${BUYER_URL_LOCAL}/dashboard/api/tickets/assign`, {
                 assignerId: userId,
                 ticketId,
-                solverId: selectedSolver[ticketId]
+                solverId
             });
-
+    
             alert("Ticket assigned successfully!");
             setTickets(tickets.map(ticket =>
-                ticket._id === ticketId ? { ...ticket, solverId: selectedSolver[ticketId], status: "In Progress" } : ticket
+                ticket._id === ticketId ? { ...ticket, solverId, status: "In Progress" } : ticket
             ));
         } catch (err) {
             alert("Failed to assign ticket");
@@ -104,6 +104,7 @@ const IssueAssigner = () => {
             setLoading(false);
         }
     };
+    
 
     // Define columns for the table
     const columns = [
@@ -176,13 +177,15 @@ const IssueAssigner = () => {
             cell: ({ row }) => (
                 <Select
                     value={selectedSolver[row.original._id] || row.original.solverId?._id || ""}
-                    onValueChange={(value) => setSelectedSolver({ ...selectedSolver, [row.original._id]: value })}
+                    onValueChange={(value) => {
+                        setSelectedSolver({ ...selectedSolver, [row.original._id]: value });
+                        handleAssignTicket(row.original._id, value); 
+                    }}
                 >
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Select Solver" />
                     </SelectTrigger>
                     <SelectContent>
-                        {/* Show the name of the assigned solver in the options directly */}
                         {solvers.map(solver => (
                             <SelectItem key={solver._id} value={solver._id}>
                                 {solver.name}
@@ -192,6 +195,7 @@ const IssueAssigner = () => {
                 </Select>
             ),
         },
+        
         {
             id: "assign",
             header: "Assign",
