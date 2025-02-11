@@ -81,6 +81,7 @@ export default function DriverTable() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("all");
+    const [verifyFilter, setVerifyFilter] = useState("all");
     const [categoryFilter, setCategoryFilter] = useState("all");
     const [globalFilter, setGlobalFilter] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -98,19 +99,82 @@ export default function DriverTable() {
     });
 
 
+    useEffect(() => {
+        const socket = io(`${SELLER_URL_LOCAL}`); // Replace with your server URL
+
+        console.time("Socket API Response Time"); // Start measuring time
+
+        socket.on("connect", () => {
+            console.log("Connected to socket server");
+            // Request to get all drivers
+            socket.emit("getAllDrivers");
+        });
+        
+        // Handle incoming driver data (batch-based)
+        socket.on("driverData", (data) => {
+            // Process data to add 'verify' field before updating state
+            const processedData = data.map(driver => {
+                const isIncompleteRegistration = driver.isCompleteRegistration === false;
+                const isMissingNameOrLicense = driver.licenseNumber || driver.name;
+            
+                let verificationStatus = "Verified"; // Default to verified
+            
+                if (isIncompleteRegistration || !isMissingNameOrLicense) {
+                    verificationStatus = "Unverified";
+                }
+    
+                return { ...driver, verify: verificationStatus };
+            });
+    
+            setData((prevDrivers) => [...prevDrivers, ...processedData]); // Add new data to state dynamically
+            setLoading(false);
+        });
+
+        // Handle the end of the data stream
+        socket.on("driverDataEnd", () => {
+            console.timeEnd("Socket API Response Time"); // End measuring time
+            setLoading(false); // Stop loading when all data is received
+        });
+
+        // Handle errors
+        socket.on("driverDataError", (error) => {
+            console.error("Error:", error.message);
+            setError(error.message); // Set error message
+            setLoading(false); // Stop loading in case of error
+        });
+
+        // Clean up the socket connection when the component unmounts
+        return () => {
+            socket.off("driverData");
+            socket.off("driverDataEnd");
+            socket.off("driverDataError");
+            socket.disconnect();
+        };
+
+    }, []);
+
+    useEffect(() => {
+        // Filter the data dynamically if necessary
+        setFilteredData(data);
+    }, [data]);
+
     const [showMissingNameAndLicense, setShowMissingNameAndLicense] = useState(false);
 
-    // Function to filter data based on all filters including missing name and license
+    useEffect(() => {
+        applyMissingFilters(); // Apply filters whenever new data arrives
+    }, [data]); // Trigger on data change
+
+    useEffect(() => {
+        applyMissingFilters(); // Reapply filters when filters change
+    }, [missingFilters, showMissingNameAndLicense]);
+
+    // Function to apply filters dynamically when data updates
     const applyMissingFilters = () => {
         const { dlMissing, dlBackMissing, rcMissing, profileMissing, rcBackMissing, none } = missingFilters;
 
         const filtered = data.filter((driver) => {
-            // First check if missing name and license filter is active
             if (showMissingNameAndLicense) {
-                if (!driver.name && !driver.licenseNumber) {
-                    return true;
-                }
-                return false;
+                return !driver.name && !driver.licenseNumber;
             }
 
             const isDlMissing = dlMissing && !driver.drivingLicense;
@@ -119,7 +183,6 @@ export default function DriverTable() {
             const isProfileMissing = profileMissing && !driver.profileUrl;
             const isRcBackMissing = rcBackMissing && !driver.registrationCertificateBack;
 
-            // Handle "none" filter: only include drivers with all documents present
             if (none) {
                 return driver.drivingLicense &&
                     driver.drivingLicenseBack &&
@@ -128,26 +191,36 @@ export default function DriverTable() {
                     driver.registrationCertificateBack;
             }
 
-            // If no filters are active, include all drivers
-            if (!dlMissing && !dlBackMissing && !rcMissing && !profileMissing && !rcBackMissing) {
-                return true;
-            }
 
-            // Return true if any of the selected missing filters match
-            return (dlMissing && isDlMissing) ||
-                (dlBackMissing && isDlBackMissing) ||
-                (rcMissing && isRcMissing) ||
-                (profileMissing && isProfileMissing) ||
-                (rcBackMissing && isRcBackMissing);
+            return (!dlMissing && !dlBackMissing && !rcMissing && !profileMissing && !rcBackMissing) ||
+                isDlMissing || isDlBackMissing || isRcMissing || isProfileMissing || isRcBackMissing;
         });
 
-        setFilteredData(filtered);
+        setFilteredData(filtered); // Update filtered data dynamically
     };
 
-    // Update useEffect to include new filter
-    useEffect(() => {
-        applyMissingFilters();
-    }, [missingFilters, data, showMissingNameAndLicense]);
+    // const applyVerificationFilters = () => {
+    //     const filtered = data.filter((driver) => {
+    //         const isIncompleteRegistration = driver.isCompleteRegistration === false;
+    //         const isMissingNameOrLicense = !driver.licenseNumber || !driver.name;
+    
+    //         if (verifyFilter === "verified") {
+    //             return !(isIncompleteRegistration || isMissingNameOrLicense);
+    //         }
+    //         if (verifyFilter === "unverified") {
+    //             return isIncompleteRegistration || isMissingNameOrLicense;
+    //         }
+    
+    //         return true; // If "all" is selected, return all data.
+    //     });
+
+    //     setFilteredData(filtered);
+    // };
+
+
+    // useEffect(() => {
+    //     applyVerificationFilters();
+    // }, [verifyFilter, data]);
 
     // Handler for checkbox change
     const handleCheckboxChange = (filterKey) => {
@@ -156,6 +229,7 @@ export default function DriverTable() {
             [filterKey]: !prev[filterKey]
         }));
     };
+
 
     // Whenever the missing filter state changes, apply filters
     useEffect(() => {
@@ -295,6 +369,11 @@ export default function DriverTable() {
             ),
         },
         {
+            accessorKey: "verify",
+            header: "Verify",
+            cell: ({ row }) => <div>{row.getValue("verify")}</div>,
+        },
+        {
             accessorKey: "vehicleNumber",
             header: "RC Number",
             cell: ({ row }) => <div>{row.getValue("vehicleNumber")}</div>,
@@ -423,50 +502,7 @@ export default function DriverTable() {
     ];
 
 
-    useEffect(() => {
-        const socket = io(`${SELLER_URL_LOCAL}`); // Replace with your server URL
-
-        console.time("Socket API Response Time"); // Start measuring time
-
-        socket.on("connect", () => {
-            console.log("Connected to socket server");
-            // Request to get all drivers
-            socket.emit("getAllDrivers");
-        });
-
-        // Handle incoming driver data (batch-based)
-        socket.on("driverData", (data) => {
-            setData((prevDrivers) => [...prevDrivers, ...data]); // Add new data to state dynamically
-            setLoading(false);
-        });
-
-        // Handle the end of the data stream
-        socket.on("driverDataEnd", () => {
-            console.timeEnd("Socket API Response Time"); // End measuring time
-            setLoading(false); // Stop loading when all data is received
-        });
-
-        // Handle errors
-        socket.on("driverDataError", (error) => {
-            console.error("Error:", error.message);
-            setError(error.message); // Set error message
-            setLoading(false); // Stop loading in case of error
-        });
-
-        // Clean up the socket connection when the component unmounts
-        return () => {
-            socket.off("driverData");
-            socket.off("driverDataEnd");
-            socket.off("driverDataError");
-            socket.disconnect();
-        };
-
-    }, []);
-
-    useEffect(() => {
-        // Filter the data dynamically if necessary
-        setFilteredData(data);
-    }, [data]);
+    
 
 
     const table = useReactTable({
@@ -491,6 +527,14 @@ export default function DriverTable() {
     });
 
     useEffect(() => {
+        if (verifyFilter && verifyFilter !== "all") {
+            table.getColumn("verify")?.setFilterValue(verifyFilter);
+        } else {
+            table.getColumn("verify")?.setFilterValue("");
+        }
+    }, [verifyFilter, table]);
+
+    useEffect(() => {
         if (statusFilter && statusFilter !== "all") {
             table.getColumn("status")?.setFilterValue(statusFilter);
         } else {
@@ -506,12 +550,14 @@ export default function DriverTable() {
         }
     }, [categoryFilter, table]);
 
+
     if (error) {
         return <div>Error: {error}</div>;
     }
 
     const statusOptions = [...new Set(data.map(item => item.status))];
     const categoryOptions = [...new Set(data.map(item => item.category))]
+    const verifyOptions = [...new Set(data.map(item => item.verify))];
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">
@@ -546,6 +592,22 @@ export default function DriverTable() {
                         {statusOptions.map((status) => (
                             <SelectItem key={status} value={status}>
                                 {status}
+                            </SelectItem>
+
+                        ))}
+
+                    </SelectContent>
+                </Select>
+
+                <Select onValueChange={setVerifyFilter} value={verifyFilter}>
+                    <SelectTrigger className="w-[180px] mr-2">
+                        <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All verify status</SelectItem>
+                        {verifyOptions.map((verify) => (
+                            <SelectItem key={verify} value={verify}>
+                                {verify}
                             </SelectItem>
 
                         ))}

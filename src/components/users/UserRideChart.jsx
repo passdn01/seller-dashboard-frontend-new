@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '@carbon/charts-react/styles.css';
 import { SimpleBarChart } from '@carbon/charts-react';
+import { BUYER_URL_LOCAL } from '@/lib/utils';
 
 function UserRideChart({ userId }) {
     const [chartData, setChartData] = useState([]);
