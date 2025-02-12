@@ -40,7 +40,7 @@ import {
 } from "../ui/select";
 import { Oval } from 'react-loader-spinner';
 import RideDetail from './RideDetail';
-import { SELLER_URL_LOCAL, BUYER_URL_LOCAL } from '@/lib/utils';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 import { io } from 'socket.io-client';
 // Columns configuration
 const columns = [

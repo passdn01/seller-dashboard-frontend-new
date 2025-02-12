@@ -3,7 +3,7 @@ import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapPin } from "lucide-react";
-import { BUYER_URL_LOCAL, SELLER_URL_LOCAL } from "@/lib/utils";
+import { SELLER_URL_LOCAL } from "@/lib/utils";
 
 function RideDetail({ transactionId, distance, userInfo }) {
     const [rideData, setRideData] = useState(null);
@@ -15,7 +15,7 @@ function RideDetail({ transactionId, distance, userInfo }) {
         if (!transactionId) return;
 
         setIsLoading(true);
-        axios.post(`${BUYER_URL_LOCAL}/dashboard/api/rideDetail`, { transactionId })
+        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/buyer/rideDetail`, { transactionId })
             .then(response => {
                 setIsLoading(false);
                 if (response.data.success) {
@@ -37,8 +37,8 @@ function RideDetail({ transactionId, distance, userInfo }) {
         try {
             // Make both requests simultaneously
             const [response1, response2] = await Promise.all([
-                axios.post(`${BUYER_URL_LOCAL}/dashboard/api/rideStatusUpdate`, { transactionId, status }),
-                axios.post(`${SELLER_URL_LOCAL}/dashboard/api/rideStatusUpdate`, { transactionId, status }) // Assuming a second endpoint
+                axios.post(`${SELLER_URL_LOCAL}/dashboard/api/buyer/rideStatusUpdate`, { transactionId, status }),
+                axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/rideStatusUpdate`, { transactionId, status }) // Assuming a second endpoint
             ]);
 
             if (response1.data.success && response2.data.success) {

@@ -248,10 +248,10 @@ export default function DriverTable() {
         if (!driverToDelete) return;
 
         try {
-            const response = await axios.delete(`${SELLER_URL_LOCAL}/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverToDelete}`);
             if (response.data.success) {
                 // Refetch data after deletion
-                const newResponse = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/allDrivers`);
+                const newResponse = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/allDrivers`);
                 if (newResponse.data.success) {
                     const updatedData = newResponse.data.data;
                     setData(updatedData);
@@ -273,7 +273,7 @@ export default function DriverTable() {
 
     const handleStatusUpdate = async (driverId, currentStatus) => {
         try {
-            await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/driver/${driverId}/completeEdit`, {
+            await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverId}/completeEdit`, {
                 completeStatus: !currentStatus // Toggle the status
             });
 
@@ -291,7 +291,7 @@ export default function DriverTable() {
     const handleStatusRejectUpdate = async (driverId, currentStatus) => {
         try {
             currentStatus = currentStatus == "REJECTED" ? 'OFFLINE' : 'REJECTED'
-            await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/driver/${driverId}/completeEdit`, {
+            await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverId}/completeEdit`, {
                 status: currentStatus // Toggle the status
             });
 

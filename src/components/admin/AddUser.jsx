@@ -55,7 +55,7 @@ const AddUser = ({ onUserAdded }) => {
         setSuccess(false);
 
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/addDashboardUser`, {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/addDashboardUser`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -3,7 +3,7 @@ import { AreaChart } from '@carbon/charts-react';
 import '@carbon/charts/styles.css';
 import { Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { BUYER_URL_LOCAL, SELLER_URL_LOCAL } from '@/lib/utils';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const HomeCharts = () => {
     const [type, setType] = useState('day');
@@ -19,8 +19,8 @@ const HomeCharts = () => {
 
             try {
                 const [rideResponse, buyerResponse] = await Promise.all([
-                    fetch(`${SELLER_URL_LOCAL}/dashboard/api/homeCharts?type=${type}`),
-                    fetch(`${BUYER_URL_LOCAL}/dashboard/api/homeCharts?type=${type}`)
+                    fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/homeCharts?type=${type}`),
+                    fetch(`${SELLER_URL_LOCAL}/dashboard/api/buyer/homeCharts?type=${type}`)
                 ]);
 
                 if (!rideResponse.ok || !buyerResponse.ok) {

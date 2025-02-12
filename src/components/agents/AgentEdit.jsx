@@ -22,7 +22,7 @@ const AgentEdit = ({ data, id }) => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/agent/edit/${id}`);
+                const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/agent/edit/${id}`);
                 if (response.data.success) {
                     setFormData({
                         id: response.data.data.id,
@@ -55,7 +55,7 @@ const AgentEdit = ({ data, id }) => {
         e.preventDefault();
         setLoading(true); // Set loading to true while submitting
         try {
-            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/agent/edit/${id}`, formData);
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/agent/edit/${id}`, formData);
             if (response.data.success) {
                 // Optionally, handle success feedback (e.g., show a success message)
                 alert('Agent details updated successfully!');

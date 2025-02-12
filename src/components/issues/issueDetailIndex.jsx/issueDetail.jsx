@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BUYER_URL_LOCAL, SELLER_URL_LOCAL } from "@/lib/utils";
+import { SELLER_URL_LOCAL } from "@/lib/utils";
 
 const IssueDetail = () => {
   const [issue, setIssue] = useState(null);
@@ -17,7 +17,7 @@ const IssueDetail = () => {
   const fetchIssueDetails = async () => {
     try {
       const response = await axios.get(
-        `${BUYER_URL_LOCAL}/dashboard/api/tickets/${id}`
+        `${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${id}`
       );
       setIssue(response.data);
 
@@ -35,7 +35,7 @@ const IssueDetail = () => {
   const fetchRideDetails = async (rideId) => {
     try {
       const response = await axios.post(
-        `${SELLER_URL_LOCAL}/dashboard/api/rideTransaction/${rideId}`
+        `${SELLER_URL_LOCAL}/dashboard/api/seller/rideTransaction/${rideId}`
       );
       setRide(response.data.data.ride);
     } catch (error) {
@@ -47,7 +47,7 @@ const IssueDetail = () => {
   const markComplete = async (ticketId) => {
     try {
       await axios.put(
-        `${BUYER_URL_LOCAL}/dashboard/api/tickets/${ticketId}/solve`
+        `${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`
       );
       fetchIssueDetails();
     } catch (err) {
@@ -58,7 +58,7 @@ const IssueDetail = () => {
   const markPending = async (ticketId) => {
     try {
       await axios.put(
-        `${BUYER_URL_LOCAL}/dashboard/api/tickets/${ticketId}/pending`
+        `${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/pending`
       );
       fetchIssueDetails();
     } catch (err) {

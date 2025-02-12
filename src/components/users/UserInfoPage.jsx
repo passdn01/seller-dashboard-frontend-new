@@ -28,7 +28,7 @@ import UserPerformance from './UserPerformance';
 import UserRideChart from './UserRideChart';
 import UserCashStatement from './UserCashStatement';
 import UserLastRides from './UserLastRides';
-import { BUYER_URL_LOCAL } from '@/lib/utils';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 function UserInfoPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -44,7 +44,7 @@ function UserInfoPage() {
 
     const fetchUserData = async () => {
         try {
-            const response = await axios.post(`${BUYER_URL_LOCAL}/dashboard/api/users/${id}`);
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/buyer/users/${id}`);
             if (response.data.success) {
                 setData(response.data.data);
                 setCompleteStatus(response.data.data.isComplete || false);

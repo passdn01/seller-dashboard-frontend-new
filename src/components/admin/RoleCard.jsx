@@ -50,7 +50,7 @@ const RoleCard = ({ data, onUserDeleted, onUserEdited }) => {
     const handleDeleteRole = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/deleteDashboardUser`, {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/deleteDashboardUser`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: data._id })
@@ -83,7 +83,7 @@ const RoleCard = ({ data, onUserDeleted, onUserEdited }) => {
     const handleSaveChanges = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/editDashboardUser`, {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/editDashboardUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -38,7 +38,7 @@ function IAMUserPage() {
 
     useEffect(() => {
         try {
-            fetch(`${SELLER_URL_LOCAL}/dashboard/api/getDashboardUsers`)
+            fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/getDashboardUsers`)
                 .then(response => response.json())
                 .then(data => {
                     const filtered = data.data.filter((role) => role.username !== username)

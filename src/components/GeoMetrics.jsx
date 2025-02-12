@@ -93,7 +93,7 @@ const GeoMetrics = () => {
 
     const fetchRideDistribution = async () => {
         try {
-            const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/ride-distribution`);
+            const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/seller/ride-distribution`);
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -111,7 +111,7 @@ const GeoMetrics = () => {
 
     const fetchCancelledRideDistribution = async () => {
         try {
-            const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/cancelled-distribution`);
+            const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/seller/cancelled-distribution`);
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -147,7 +147,7 @@ const GeoMetrics = () => {
             if (varient !== 'ALL') requestData.varient = varient;
             if (type !== 'all') requestData.type = type;
 
-            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/start-ride-clustering`, requestData);
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/start-ride-clustering`, requestData);
             const clusters = response.data.map(cluster => ({
                 center: [cluster.center.lat, cluster.center.lng],
                 count: cluster.numRides,

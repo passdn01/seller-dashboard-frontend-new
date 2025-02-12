@@ -29,7 +29,7 @@ function CurrentUserCard() {
         }
 
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/editDashboardUser`, {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/editDashboardUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

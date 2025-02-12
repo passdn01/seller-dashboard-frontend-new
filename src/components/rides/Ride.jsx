@@ -40,7 +40,7 @@ function Ride() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/ride/${id}`)
+        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/ride/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);

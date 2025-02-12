@@ -25,7 +25,7 @@ function RideInfo() {
     const navigate = useNavigate()
     useEffect(() => {
         const fetchRideInfo = async () => {
-            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/getRide`, { id: id })
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/getRide`, { id: id })
             console.log(response.data, "response in rideinfo")
             if (response?.data?.success) {
                 setTransactionId(response.data.data.transactionId)

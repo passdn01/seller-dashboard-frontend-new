@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/table";
 import { format } from 'date-fns';
 import { Badge } from "@/components/ui/badge";
-import { BUYER_URL_LOCAL } from '@/lib/utils';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 function UserLastRides({ userId, data }) {
     const [userdata, setUserdata] = useState([]);
@@ -24,7 +24,7 @@ function UserLastRides({ userId, data }) {
 
     const fetchRides = async () => {
         try {
-            const response = await fetch(`${BUYER_URL_LOCAL}/dashboaard/api/getLastTenRides`, {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboaard/api/buyer/getLastTenRides`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: userId }),

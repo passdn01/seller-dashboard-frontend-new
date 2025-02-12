@@ -46,7 +46,7 @@ function Driver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/driver/${id}`)
+        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -64,7 +64,7 @@ function Driver() {
 
     const handleStatusUpdate = async () => {
         try {
-            await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/driver/${id}/completeEdit`, {
+            await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
             });
             await axios.post(`${SELLER_URL_LOCAL}/send-notification`, {
@@ -82,7 +82,7 @@ function Driver() {
 
     const handleDeleteDriver = async () => {
         try {
-            const response = await axios.delete(`${SELLER_URL_LOCAL}/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverToDelete}`);
             if (response.data.success) {
                 alert('Driver deleted successfully');
                 navigate('/drivers/allDrivers'); // Redirect after deletion
@@ -223,7 +223,7 @@ function VDriver() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/driver/${id}`)
+        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -241,7 +241,7 @@ function VDriver() {
 
     const handleStatusUpdate = async () => {
         try {
-            await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/driver/${id}/completeEdit`, {
+            await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
             });
             await axios.post(`${SELLER_URL_LOCAL}/send-notification`, {
@@ -259,7 +259,7 @@ function VDriver() {
 
     const handleDeleteDriver = async () => {
         try {
-            const response = await axios.delete(`${SELLER_URL_LOCAL}/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverToDelete}`);
             if (response.data.success) {
                 alert('Driver deleted successfully');
                 navigate('/drivers/allDrivers'); // Redirect after deletion

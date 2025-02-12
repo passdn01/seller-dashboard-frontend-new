@@ -13,4 +13,3 @@ export const getCookie = (name) => {
 };
 
 export const SELLER_URL_LOCAL = "https://8qklrvxb-5000.inc1.devtunnels.ms"
-export const BUYER_URL_LOCAL = "https://8qklrvxb-6000.inc1.devtunnels.ms"

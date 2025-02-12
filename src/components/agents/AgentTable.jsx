@@ -135,7 +135,7 @@ export default function AgentTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/allAgents`, {
+                const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/seller/allAgents`, {
                     // withCredentials: true
                 });
                 console.log(response.data.data);

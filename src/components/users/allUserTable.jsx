@@ -36,7 +36,7 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import UserEditCard from "./UserEditCard";
-import { BUYER_URL_LOCAL } from "@/lib/utils";
+import { SELLER_URL_LOCAL } from "@/lib/utils";
 import { io } from "socket.io-client";
 
 const UserManagementTable = () => {
@@ -56,7 +56,7 @@ const UserManagementTable = () => {
     const [dateFilter, setDateFilter] = useState({ from: "", to: "" });
 
     useEffect(() => {
-        const socket = io(`${BUYER_URL_LOCAL}`); // Replace with your server URL
+        const socket = io(`${SELLER_URL_LOCAL}`); // Replace with your server URL
 
         console.time("Socket API Response Time"); // Start measuring time
 

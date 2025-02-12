@@ -101,7 +101,7 @@ const DriverDetails = ({ driver }) => {
         };
 
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/driverTableEdit`, {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/driverTableEdit`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

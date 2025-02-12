@@ -1,13 +1,14 @@
-import { io } from 'socket.io-client';
-import { BUYER_URL_LOCAL } from './lib/utils';
+// import { io } from 'socket.io-client';
+// import { SELLER_URL_LOCAL } from './lib/utils';
 
-// Create and export a single instance of the buyer socket
-const buyerSocket = io(`${BUYER_URL_LOCAL}`);
+// // Create and export a single instance of the buyer socket
+// const sellerSocket = io(`${SELLER_URL_LOCAL}`);
 
-// Utility function to clean up all listeners
-const cleanUpBuyerSocket = () => {
-    buyerSocket.off();
-    buyerSocket.disconnect();
-};
+// // Utility function to clean up all listeners
+// const cleanUpsellerSocket = () => {
+//     sellerSocket.off();
+//     sellerSocket.disconnect();
+// };
 
-export { buyerSocket, cleanUpBuyerSocket };
+// export { sellerSocket, cleanUpsellerSocket };
+export const example = 'sdfd'

@@ -1,7 +1,7 @@
 import React from 'react'
 import { sellerSocket } from "@/sellerSocket";
 import { useState, useEffect } from 'react';
-import { buyerSocket } from '@/buyerSocket';
+
 import MetricCard from './MetricCardComponent';
 import { MeterChart } from '@carbon/charts-react'
 
@@ -84,16 +84,16 @@ function CardGrid() {
         sellerSocket.on("rideMetrics", handleMetrics);
         sellerSocket.on("driverMetrics", handleMetrics);
 
-        buyerSocket.on("userMetrics", handleMetrics);
-        buyerSocket.on("rideBuyerMetrics", handleMetrics);
-        buyerSocket.on("coinTransactionMetrics", handleMetrics);
+        sellerSocket.on("userMetrics", handleMetrics);
+        sellerSocket.on("rideBuyerMetrics", handleMetrics);
+        sellerSocket.on("coinTransactionMetrics", handleMetrics);
 
         return () => {
             sellerSocket.off("rideMetrics", handleMetrics);
             sellerSocket.off("driverMetrics", handleMetrics);
-            buyerSocket.off("userMetrics", handleMetrics);
-            buyerSocket.off("rideBuyerMetrics", handleMetrics);
-            buyerSocket.off("coinTransactionMetrics", handleMetrics);
+            sellerSocket.off("userMetrics", handleMetrics);
+            sellerSocket.off("rideBuyerMetrics", handleMetrics);
+            sellerSocket.off("coinTransactionMetrics", handleMetrics);
         };
     }, []);
 

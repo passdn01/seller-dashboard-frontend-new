@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '@carbon/charts-react/styles.css';
 import { SimpleBarChart } from '@carbon/charts-react';
-import { BUYER_URL_LOCAL } from '@/lib/utils';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 function UserRideChart({ userId }) {
     const [chartData, setChartData] = useState([]);
@@ -53,7 +53,7 @@ function UserRideChart({ userId }) {
 
     const fetchRides = async () => {
         try {
-            const response = await fetch(`${BUYER_URL_LOCAL}/dashboard/api/getUserRideChart`, {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/buyer/getUserRideChart`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: userId }),

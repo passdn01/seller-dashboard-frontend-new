@@ -42,7 +42,7 @@ function Agent() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/agent/${id}`)
+        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/agent/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
