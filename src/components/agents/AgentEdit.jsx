@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios'; // Import axios for API calls
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const AgentEdit = ({ data, id }) => {
     const { agentInfo } = data;
@@ -21,7 +22,7 @@ const AgentEdit = ({ data, id }) => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/agent/edit/${id}`);
+                const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/agent/edit/${id}`);
                 if (response.data.success) {
                     setFormData({
                         id: response.data.data.id,
@@ -54,7 +55,7 @@ const AgentEdit = ({ data, id }) => {
         e.preventDefault();
         setLoading(true); // Set loading to true while submitting
         try {
-            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/agent/edit/${id}`, formData);
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/agent/edit/${id}`, formData);
             if (response.data.success) {
                 // Optionally, handle success feedback (e.g., show a success message)
                 alert('Agent details updated successfully!');
@@ -110,8 +111,8 @@ const AgentEdit = ({ data, id }) => {
 
             {error && <p className="text-red-500 text-sm">{error}</p>} {/* Error message display */}
 
-            <button 
-                type="submit" 
+            <button
+                type="submit"
                 className={`mt-4 inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
                 disabled={loading} // Disable button when loading
             >

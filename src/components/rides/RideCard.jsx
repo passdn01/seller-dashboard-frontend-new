@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import axios from 'axios';
 import startPoint from '../../assets/startPointImg.png';
 import endPoint from '../../assets/endPointImg.png';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const RideCard = ({ data }) => {
     const { ride, driverInfo } = data;
@@ -13,7 +14,7 @@ const RideCard = ({ data }) => {
 
     const getAddressFromBackend = async (lat, lon, setAddress) => {
         try {
-            const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/gpsToAddress', { lat, lon });
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/gpsToAddress`, { lat, lon });
             const address = response.data.address || 'Unknown Location';
             setAddress(address);
         } catch (error) {
@@ -118,6 +119,30 @@ const RideCard = ({ data }) => {
                         </Card>
                     </div>
                 </div>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-4">
+                <Card className="flex-1 p-4 bg-gray-50 border shadow-sm rounded-lg">
+                    <span className="text-lg font-semibold text-gray-800">Driver Info</span>
+                    {driverInfo ? (
+                        <div className="text-md text-gray-700 mt-2 space-y-1">
+                            <p>Driver Name: {driverInfo.name}</p>
+                            <p>Vehicle Number: {driverInfo.vehicleNumber}</p>
+                            <p>Phone: {driverInfo.phone}</p>
+                            <p>Vehicle Type: {driverInfo.vehicleType}</p>
+                        </div>
+                    ) : (
+                        <p className="text-red-500 mt-2">Driver info unavailable</p>
+                    )}
+                </Card>
+
+                <Card className="flex-1 p-4 bg-gray-50 border shadow-sm rounded-lg">
+                    <span className="text-lg font-semibold text-gray-800">User Info</span>
+                    <div className="text-md text-gray-700 mt-2 space-y-1">
+                        <p>User Name: {ride.userInfo.name}</p>
+                        <p>User Phone: {ride.userInfo.phone}</p>
+                    </div>
+                </Card>
             </div>
         </div>
     );

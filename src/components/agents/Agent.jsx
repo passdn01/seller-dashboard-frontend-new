@@ -31,6 +31,7 @@ import Header from '../drivers/allDrivers/Header';
 import { Oval } from 'react-loader-spinner';
 import AgentCard from './AgentCard';
 import AgentEdit from './AgentEdit';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 function Agent() {
     const { id } = useParams();
@@ -41,7 +42,7 @@ function Agent() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/agent/${id}`)
+        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/agent/${id}`)
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -58,17 +59,17 @@ function Agent() {
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">
-        <Oval
-            height={60}
-            width={60}
-            color="#4fa94d"
-            visible={true}
-            ariaLabel='oval-loading'
-            secondaryColor="#4fa94d"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-        />
-    </div>;
+            <Oval
+                height={60}
+                width={60}
+                color="#4fa94d"
+                visible={true}
+                ariaLabel='oval-loading'
+                secondaryColor="#4fa94d"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+            />
+        </div>;
     }
 
     if (error) {
@@ -95,7 +96,7 @@ function Agent() {
                         <Breadcrumb className='px-4'>
                             <BreadcrumbList>
                                 <BreadcrumbItem>
-                                <BreadcrumbLink href="/agents/allAgents" className='text-blue-500' >AllAgents</BreadcrumbLink>
+                                    <BreadcrumbLink href="/agents/allAgents" className='text-blue-500' >AllAgents</BreadcrumbLink>
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator />
                                 <BreadcrumbItem>

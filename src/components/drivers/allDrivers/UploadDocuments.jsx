@@ -6,17 +6,19 @@ import PropTypes from 'prop-types';
 import { Label } from "@/components/ui/label"; // ShadCN label component
 import { Input } from "@/components/ui/input"; // ShadCN input component
 import { Button } from "@/components/ui/button"; // ShadCN button component
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const UploadDocuments = ({ id }) => {
     const [profileUrl, setProfileUrl] = useState(null);
     const [drivingLicense, setDrivingLicense] = useState(null);
     const [drivingLicenseBack, setDrivingLicenseBack] = useState(null);
     const [registrationCertificate, setRegistrationCertificate] = useState(null);
+    const [RCBack, setRCBack] = useState(null)
 
     const handleProfileImageChange = (e) => {
         setProfileUrl(e.target.files[0]);
     };
-    
+
     const handleDrivingLicenseChange = (e) => {
         setDrivingLicense(e.target.files[0]);
     };
@@ -28,7 +30,9 @@ const UploadDocuments = ({ id }) => {
     const handleRegistrationCertificateChange = (e) => {
         setRegistrationCertificate(e.target.files[0]);
     };
-
+    const handleRCbackChange = (e) => {
+        setRCBack(e.target.files[0])
+    }
     const uploadProfileImage = async () => {
         if (!profileUrl) {
             alert("Please select a Driving License file to upload.");
@@ -39,7 +43,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', profileUrl);
 
         try {
-            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/profile-image`, formData, {
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/profile-image`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -64,7 +68,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicense);
 
         try {
-            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl`, formData, {
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-dl`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -89,7 +93,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicenseBack);
 
         try {
-            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-dl-back`, formData, {
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-dl-back`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -104,6 +108,31 @@ const UploadDocuments = ({ id }) => {
         }
     };
 
+    const uploadRCBack = async () => {
+        if (!RCBack) {
+            alert("Please select a RC Back file to upload.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', RCBack);
+
+        try {
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-rc-back`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            alert(response.data.message); // Alert on success
+        } catch (error) {
+            console.error("Error uploading RC Back:", error);
+            alert(error.response?.data?.message || "Error uploading RC Back"); // Alert on error
+        } finally {
+            // Reset the state after upload
+            setRCBack(null);
+        }
+    };
+
     const uploadRegistrationCertificate = async () => {
         if (!registrationCertificate) {
             alert("Please select a Registration Certificate file to upload.");
@@ -114,7 +143,7 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', registrationCertificate);
 
         try {
-            const response = await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit-rc`, formData, {
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-rc`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
@@ -132,7 +161,7 @@ const UploadDocuments = ({ id }) => {
     return (
         <div className="space-y-6">
             <h2 className="text-xl font-bold">Upload Documents</h2>
-            
+
             <div className="grid grid-cols-2 gap-4">
                 <div className='flex items-center space-x-2'>
                     {/* <Label className="block" htmlFor="driving-license">Upload Driving License:</Label> */}
@@ -159,7 +188,7 @@ const UploadDocuments = ({ id }) => {
                     {/* <Label className="block" htmlFor="driving-license">Upload Driving License:</Label> */}
                     <Input
                         type="file"
-                        id="driving-license -back"
+                        id="driving-license-back"
                         onChange={handleDrivingLicenseBackChange}
                         accept="image/*"
                     />
@@ -175,6 +204,16 @@ const UploadDocuments = ({ id }) => {
                         accept="image/*"
                     />
                     <Button onClick={uploadRegistrationCertificate} className="">Upload Registration Certificate</Button>
+                </div>
+                <div className='flex items-center space-x-2'>
+                    {/* <Label className="block" htmlFor="registration-certificate">Upload Registration Certificate:</Label> */}
+                    <Input
+                        type="file"
+                        id="registration-certificate-back"
+                        onChange={handleRCbackChange}
+                        accept="image/*"
+                    />
+                    <Button onClick={uploadRCBack} className="">Upload RC Back</Button>
                 </div>
             </div>
         </div>

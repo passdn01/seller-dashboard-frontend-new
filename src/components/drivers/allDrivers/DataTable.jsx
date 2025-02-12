@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -9,26 +9,9 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-    flexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getPaginationRowModel,
-    getSortedRowModel,
-    useReactTable,
-} from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "../../ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuCheckboxItem,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "../../ui/dropdown-menu";
+
 import { Input } from "../../ui/input";
 import {
     Table,
@@ -47,7 +30,48 @@ import {
 } from "../../ui/select";
 import { Oval } from 'react-loader-spinner';
 
+import { Card, CardContent } from "@/components/ui/card";
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+
+import { ChevronDown, MoreHorizontal, ChevronRight, ArrowUpDown } from "lucide-react";
+import {
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable,
+} from "@tanstack/react-table";
+
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+
+
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+
+
+
+import DriverDetails from './DriverDetailsInTable';
+import { io } from 'socket.io-client';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
+
 export default function DriverTable() {
+
+
+    const [expandedRowId, setExpandedRowId] = useState(null);
+    const handleRowClick = (rowId) => {
+        setExpandedRowId(expandedRowId === rowId ? null : rowId);
+    };
+
     const [sorting, setSorting] = useState([]);
     const [columnFilters, setColumnFilters] = useState([]);
     const [columnVisibility, setColumnVisibility] = useState({});
@@ -57,6 +81,8 @@ export default function DriverTable() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("all");
+    const [verifyFilter, setVerifyFilter] = useState("all");
+    const [categoryFilter, setCategoryFilter] = useState("all");
     const [globalFilter, setGlobalFilter] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [driverToDelete, setDriverToDelete] = useState(null);
@@ -68,41 +94,133 @@ export default function DriverTable() {
         dlBackMissing: false,
         rcMissing: false,
         profileMissing: false,
+        rcBackMissing: false,
         none: false,  // Initially not selected
     });
-    
-    // Function to filter data based on "missing" options
+
+
+    useEffect(() => {
+        const socket = io(`${SELLER_URL_LOCAL}`); // Replace with your server URL
+
+        console.time("Socket API Response Time"); // Start measuring time
+
+        socket.on("connect", () => {
+            console.log("Connected to socket server");
+            // Request to get all drivers
+            socket.emit("getAllDrivers");
+        });
+
+        // Handle incoming driver data (batch-based)
+        socket.on("driverData", (data) => {
+            // Process data to add 'verify' field before updating state
+            const processedData = data.map(driver => {
+                const isIncompleteRegistration = driver.isCompleteRegistration === false;
+                const isMissingNameOrLicense = driver.licenseNumber || driver.name;
+
+                let verificationStatus = "Verified"; // Default to verified
+
+                if (isIncompleteRegistration || !isMissingNameOrLicense) {
+                    verificationStatus = "Unverified";
+                }
+
+                return { ...driver, verify: verificationStatus };
+            });
+
+            setData((prevDrivers) => [...prevDrivers, ...processedData]); // Add new data to state dynamically
+            setLoading(false);
+        });
+
+        // Handle the end of the data stream
+        socket.on("driverDataEnd", () => {
+            console.timeEnd("Socket API Response Time"); // End measuring time
+            setLoading(false); // Stop loading when all data is received
+        });
+
+        // Handle errors
+        socket.on("driverDataError", (error) => {
+            console.error("Error:", error.message);
+            setError(error.message); // Set error message
+            setLoading(false); // Stop loading in case of error
+        });
+
+        // Clean up the socket connection when the component unmounts
+        return () => {
+            socket.off("driverData");
+            socket.off("driverDataEnd");
+            socket.off("driverDataError");
+            socket.disconnect();
+        };
+
+    }, []);
+
+    useEffect(() => {
+        // Filter the data dynamically if necessary
+        setFilteredData(data);
+    }, [data]);
+
+    const [showMissingNameAndLicense, setShowMissingNameAndLicense] = useState(false);
+
+    useEffect(() => {
+        applyMissingFilters(); // Apply filters whenever new data arrives
+    }, [data]); // Trigger on data change
+
+    useEffect(() => {
+        applyMissingFilters(); // Reapply filters when filters change
+    }, [missingFilters, showMissingNameAndLicense]);
+
+    // Function to apply filters dynamically when data updates
     const applyMissingFilters = () => {
-        const { dlMissing, dlBackMissing, rcMissing, profileMissing, none } = missingFilters;
-    
+        const { dlMissing, dlBackMissing, rcMissing, profileMissing, rcBackMissing, none } = missingFilters;
+
         const filtered = data.filter((driver) => {
+            if (showMissingNameAndLicense) {
+                return !driver.name && !driver.licenseNumber;
+            }
+
             const isDlMissing = dlMissing && !driver.drivingLicense;
             const isDlBackMissing = dlBackMissing && !driver.drivingLicenseBack;
             const isRcMissing = rcMissing && !driver.registrationCertificate;
             const isProfileMissing = profileMissing && !driver.profileUrl;
-    
-            // Handle "none" filter: only include drivers with all documents present
+            const isRcBackMissing = rcBackMissing && !driver.registrationCertificateBack;
+
             if (none) {
-                return driver.drivingLicense && 
-                       driver.drivingLicenseBack && 
-                       driver.registrationCertificate && 
-                       driver.profileUrl; // All documents must be present
+                return driver.drivingLicense &&
+                    driver.drivingLicenseBack &&
+                    driver.registrationCertificate &&
+                    driver.profileUrl &&
+                    driver.registrationCertificateBack;
             }
-    
-            // If no filters are active, include all drivers
-            if (!dlMissing && !dlBackMissing && !rcMissing && !profileMissing) {
-                return true; // No filters applied, include all
-            }
-    
-            // Return true if any of the selected missing filters match
-            return (dlMissing && isDlMissing) || 
-                   (dlBackMissing && isDlBackMissing) ||
-                   (rcMissing && isRcMissing) ||
-                   (profileMissing && isProfileMissing);
+
+
+            return (!dlMissing && !dlBackMissing && !rcMissing && !profileMissing && !rcBackMissing) ||
+                isDlMissing || isDlBackMissing || isRcMissing || isProfileMissing || isRcBackMissing;
         });
-    
-        setFilteredData(filtered);
-    };    
+
+        setFilteredData(filtered); // Update filtered data dynamically
+    };
+
+    // const applyVerificationFilters = () => {
+    //     const filtered = data.filter((driver) => {
+    //         const isIncompleteRegistration = driver.isCompleteRegistration === false;
+    //         const isMissingNameOrLicense = !driver.licenseNumber || !driver.name;
+
+    //         if (verifyFilter === "verified") {
+    //             return !(isIncompleteRegistration || isMissingNameOrLicense);
+    //         }
+    //         if (verifyFilter === "unverified") {
+    //             return isIncompleteRegistration || isMissingNameOrLicense;
+    //         }
+
+    //         return true; // If "all" is selected, return all data.
+    //     });
+
+    //     setFilteredData(filtered);
+    // };
+
+
+    // useEffect(() => {
+    //     applyVerificationFilters();
+    // }, [verifyFilter, data]);
 
     // Handler for checkbox change
     const handleCheckboxChange = (filterKey) => {
@@ -112,31 +230,33 @@ export default function DriverTable() {
         }));
     };
 
+
     // Whenever the missing filter state changes, apply filters
     useEffect(() => {
         applyMissingFilters();
     }, [missingFilters, data]);
 
 
-     // Function to open the dialog with the selected driver ID
-     const openDeleteDialog = (driverId) => {
+    // Function to open the dialog with the selected driver ID
+    const openDeleteDialog = (driverId) => {
         setDriverToDelete(driverId);
         setIsDialogOpen(true);
     };
+
 
     const handleDelete = async () => {
         if (!driverToDelete) return;
 
         try {
-            const response = await axios.delete(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${driverToDelete}`);
+            const response = await axios.delete(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverToDelete}`);
             if (response.data.success) {
                 // Refetch data after deletion
-                const newResponse = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allDrivers');
+                const newResponse = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/allDrivers`);
                 if (newResponse.data.success) {
                     const updatedData = newResponse.data.data;
                     setData(updatedData);
-                    sessionStorage.setItem('myData', JSON.stringify(updatedData));
-                    sessionStorage.setItem('lastFetchTime', Date.now().toString());
+                    // sessionStorage.setItem('myData', JSON.stringify(updatedData));
+                    // sessionStorage.setItem('lastFetchTime', Date.now().toString());
 
                     alert('Driver deleted successfully');
                 }
@@ -153,7 +273,7 @@ export default function DriverTable() {
 
     const handleStatusUpdate = async (driverId, currentStatus) => {
         try {
-            await axios.post(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${driverId}/completeEdit`, {
+            await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverId}/completeEdit`, {
                 completeStatus: !currentStatus // Toggle the status
             });
 
@@ -168,23 +288,27 @@ export default function DriverTable() {
     };
 
 
-    const updateIncompleteDrivers = async () => {
-        setMessage('Updating, please wait...');
+    const handleStatusRejectUpdate = async (driverId, currentStatus) => {
         try {
-            const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/updateIncompleteDrivers');
-            
-            setMessage(`${response.data.message}`);
-            alert(`${response.data.message}`);
-        } catch (error) {
-            console.error("Error updating drivers:", error);
-            const errorMessage = error.response ? error.response.data.message : 'An error occurred';
-            setMessage(errorMessage);
-            alert(errorMessage);
-        }
-    };    
-    
+            currentStatus = currentStatus == "REJECTED" ? 'OFFLINE' : 'REJECTED'
+            await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverId}/completeEdit`, {
+                status: currentStatus // Toggle the status
+            });
 
-// Columns configuration
+            const updatedData = data.map(driver => driver._id === driverId ? { ...driver, status: currentStatus } : driver);
+            setData(updatedData);
+
+            alert(`Driver marked as ${currentStatus == "REJECTED" ? 'REJECTED' : 'OFFLINE'}`);
+
+        } catch (error) {
+            console.error("Error updating status:", error);
+            setError('Error updating status');
+        }
+    };
+
+
+
+    // Columns configuration
     const columns = [
         {
             id: "sno",
@@ -210,10 +334,10 @@ export default function DriverTable() {
                 const date = new Date(row.getValue("createdAt")); // Convert to Date object
                 const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
                 const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
-        
+
                 return <div>{formattedDate}</div>; // Render the formatted date
             },
-        },        
+        },
         {
             accessorKey: "phone",
             header: "Driver Phone",
@@ -237,14 +361,18 @@ export default function DriverTable() {
                     <span>{row.getValue("name")}</span>
                     {/* Display the status dot based on isCompleteRegistration */}
                     <span
-                        className={`w-3 h-3 rounded-full ${
-                            row.original.isCompleteRegistration ? 'bg-green-400' : 'bg-red-400'
-                        }`}
+                        className={`w-3 h-3 rounded-full ${row.original.status == "REJECTED" ? 'bg-yellow-500' : row.original.isCompleteRegistration ? 'bg-green-400' : 'bg-red-400'
+                            }`}
                         title={row.original.isCompleteRegistration ? "Registration Complete" : "Registration Incomplete"}
                     ></span>
                 </div>
             ),
-        },        
+        },
+        {
+            accessorKey: "verify",
+            header: "Verify",
+            cell: ({ row }) => <div>{row.getValue("verify")}</div>,
+        },
         {
             accessorKey: "vehicleNumber",
             header: "RC Number",
@@ -264,10 +392,27 @@ export default function DriverTable() {
                 if (!driver.drivingLicense) missingDocs.push("DL");
                 if (!driver.drivingLicenseBack) missingDocs.push("DLB");
                 if (!driver.registrationCertificate) missingDocs.push("RC");
+                if (!driver.registrationCertificateBack) missingDocs.push("RCB");
                 if (!driver.profileUrl) missingDocs.push("PF");
-    
+
                 return <div>{missingDocs.length > 0 ? missingDocs.join(", ") : "None"}</div>;
             },
+        },
+        {
+            accessorKey: "category",
+            header: "Category",
+            cell: ({ row }) => {
+                const driver = row.original
+                let ca = driver?.category
+                if (ca === "HATCHBACK") {
+                    ca = "CAB"
+                }
+                else if (ca === "SEDAN") {
+                    ca = "ELITE"
+                }
+
+                return <div>{ca}</div>
+            }
         },
         {
             accessorKey: "updatedAt",
@@ -284,10 +429,10 @@ export default function DriverTable() {
                 const date = new Date(row.getValue("updatedAt")); // Convert to Date object
                 const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
                 const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
-        
+
                 return <div>{formattedDate}</div>; // Render the formatted date
             },
-        }, 
+        },
         {
             id: "actions",
             enableHiding: false,
@@ -310,9 +455,12 @@ export default function DriverTable() {
                                     Copy Driver Phone
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => navigate(`/drivers/allDrivers/${driver._id}`)}>
+                                <DropdownMenuItem
+                                    onClick={() => window.open(`/drivers/allDrivers/${driver._id}`, "_blank", "noopener,noreferrer")}
+                                >
                                     View Driver Details
                                 </DropdownMenuItem>
+
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => openDeleteDialog(driver._id)}>
                                     Delete Driver
@@ -320,6 +468,10 @@ export default function DriverTable() {
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => handleStatusUpdate(driver._id, driver.isCompleteRegistration)}>
                                     Mark as {driver.isCompleteRegistration ? 'Incomplete' : 'Complete'}
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => handleStatusRejectUpdate(driver._id, driver.status)}>
+                                    Mark as {driver.status == "REJECTED" ? 'OFFLINE' : 'REJECTED'}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
@@ -350,39 +502,8 @@ export default function DriverTable() {
     ];
 
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allDrivers', {
-                    // withCredentials: true
-                });
-                if (response.data.success) {
-                    setData(response.data.data);
-                    sessionStorage.setItem('myData', JSON.stringify(response.data.data));
-                    sessionStorage.setItem('lastFetchTime', Date.now().toString());
-                } else {
-                    throw new Error(response.data.message || 'Failed to fetch data');
-                }
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
 
-        const storedData = sessionStorage.getItem('myData');
-        const lastFetchTime = sessionStorage.getItem('lastFetchTime');
-        const currentTime = Date.now();
-        const timeSinceLastFetch = currentTime - (lastFetchTime ? parseInt(lastFetchTime) : 0);
 
-        if (storedData && timeSinceLastFetch < 60000) { // 60000 ms = 1 minute
-            setData(JSON.parse(storedData));
-            setLoading(false);
-        } else {
-            fetchData();
-        }
-    }, []);
 
     const table = useReactTable({
         data,
@@ -406,6 +527,14 @@ export default function DriverTable() {
     });
 
     useEffect(() => {
+        if (verifyFilter && verifyFilter !== "all") {
+            table.getColumn("verify")?.setFilterValue(verifyFilter);
+        } else {
+            table.getColumn("verify")?.setFilterValue("");
+        }
+    }, [verifyFilter, table]);
+
+    useEffect(() => {
         if (statusFilter && statusFilter !== "all") {
             table.getColumn("status")?.setFilterValue(statusFilter);
         } else {
@@ -413,30 +542,40 @@ export default function DriverTable() {
         }
     }, [statusFilter, table]);
 
+    useEffect(() => {
+        if (categoryFilter && categoryFilter !== "all") {
+            table.getColumn("category")?.setFilterValue(categoryFilter);
+        } else {
+            table.getColumn("category")?.setFilterValue("");
+        }
+    }, [categoryFilter, table]);
+
+
     if (error) {
         return <div>Error: {error}</div>;
     }
 
-    // Get unique status values for the filter
     const statusOptions = [...new Set(data.map(item => item.status))];
+    const categoryOptions = [...new Set(data.map(item => item.category))]
+    const verifyOptions = [...new Set(data.map(item => item.verify))];
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">
-        <Oval
-            height={60}
-            width={60}
-            color="#4fa94d"
-            visible={true}
-            ariaLabel='oval-loading'
-            secondaryColor="#4fa94d"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-        />
-    </div>;
+            <Oval
+                height={60}
+                width={60}
+                color="#4fa94d"
+                visible={true}
+                ariaLabel='oval-loading'
+                secondaryColor="#4fa94d"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+            />
+        </div>;
     }
 
     return (
-        <div className="w-[85%] mx-20">
+        <div className="w-[90%] m-auto">
             <div className="flex items-center py-4">
                 <Input
                     placeholder="Search all columns..."
@@ -454,7 +593,41 @@ export default function DriverTable() {
                             <SelectItem key={status} value={status}>
                                 {status}
                             </SelectItem>
+
                         ))}
+
+                    </SelectContent>
+                </Select>
+
+                <Select onValueChange={setVerifyFilter} value={verifyFilter}>
+                    <SelectTrigger className="w-[180px] mr-2">
+                        <SelectValue placeholder="Filter by status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All verify status</SelectItem>
+                        {verifyOptions.map((verify) => (
+                            <SelectItem key={verify} value={verify}>
+                                {verify}
+                            </SelectItem>
+
+                        ))}
+
+                    </SelectContent>
+                </Select>
+
+                <Select onValueChange={setCategoryFilter} value={categoryFilter}>
+                    <SelectTrigger className="w-[180px] mr-2">
+                        <SelectValue placeholder="Filter by category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Category</SelectItem>
+                        {categoryOptions.map((c) => (
+                            <SelectItem key={c} value={c}>
+                                {c === "HATCHBACK" ? "CAB" : (c === "SEDAN" ? "ELITE" : c)}
+                            </SelectItem>
+
+                        ))}
+
                     </SelectContent>
                 </Select>
 
@@ -482,6 +655,10 @@ export default function DriverTable() {
                             RC Missing
                         </DropdownMenuCheckboxItem>
                         <DropdownMenuCheckboxItem
+                            checked={missingFilters.rcBackMissing}
+                            onCheckedChange={() => handleCheckboxChange("rcBackMissing")}
+                        >RC Back Missing</DropdownMenuCheckboxItem>
+                        <DropdownMenuCheckboxItem
                             checked={missingFilters.profileMissing}
                             onCheckedChange={() => handleCheckboxChange("profileMissing")}
                         >
@@ -496,7 +673,7 @@ export default function DriverTable() {
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <DropdownMenu>
+                {/* <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="ml-auto mr-2">
                             Columns <ChevronDown className="ml-2 h-4 w-4" />
@@ -517,64 +694,70 @@ export default function DriverTable() {
                                 </DropdownMenuCheckboxItem>
                             ))}
                     </DropdownMenuContent>
-                </DropdownMenu>
-                <Button onClick={updateIncompleteDrivers}>
-                    Upd. Inc
-                </Button>
+                </DropdownMenu> */}
             </div>
             <div className="rounded-md border">
-            <Table>
-                <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {filteredData.length ? (
-                        table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows
-                                .filter((row) => filteredData.includes(row.original)) // Filter rows based on filteredData
-                                .map((row) => (
-                                    <TableRow
-                                        key={row.id}
-                                        data-state={row.getIsSelected() && "selected"}
-                                    >
-                                        {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
-                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                            </TableCell>
-                                        ))}
-                                    </TableRow>
-                                ))
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                    </TableHead>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {filteredData.length ? (
+                            table.getRowModel().rows?.length ? (
+                                table.getRowModel().rows
+                                    .filter((row) => filteredData.includes(row.original))
+                                    .map((row) => [
+                                        <TableRow
+                                            key={`${row.id}-main`}
+                                            data-state={row.getIsSelected() && "selected"}
+                                            className="cursor-pointer hover:bg-gray-100"
+                                            onClick={() => handleRowClick(row.id)}
+                                        >
+                                            {row.getVisibleCells().map((cell) => (
+                                                <TableCell key={cell.id}>
+                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                </TableCell>
+                                            ))}
+                                        </TableRow>,
+                                        expandedRowId === row.id && (
+                                            <TableRow key={`${row.id}-detail`}>
+                                                <TableCell colSpan={columns.length} className="p-0">
+                                                    <div className="p-4 bg-gray-50">
+                                                        <DriverDetails data={row.original} />
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    ]).flat()
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                                        No results.
+                                    </TableCell>
+                                </TableRow>
+                            )
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
                                     No results.
                                 </TableCell>
                             </TableRow>
-                        )
-                    ) : (
-                        <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No results.
-                            </TableCell>
-                        </TableRow>
-                    )}
-
-                
-                </TableBody>
-            </Table>
+                        )}
+                    </TableBody>
+                </Table>
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
                 <div className="flex-1 text-sm text-muted-foreground">
@@ -612,7 +795,9 @@ export default function DriverTable() {
                     </Button>
                 </div>
             </div>
-
         </div>
+
+
+
     );
 }

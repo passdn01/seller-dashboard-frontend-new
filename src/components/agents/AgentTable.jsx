@@ -42,6 +42,7 @@ import { Oval } from 'react-loader-spinner';
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog';
 import AgentEdit from './AgentEdit';
 import AddAgent from './AddAgent';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 // Columns configuration
 const columns = [
@@ -90,7 +91,7 @@ const columns = [
         enableHiding: false,
         cell: ({ row }) => {
             const agent = row.original;
-            console.log("agent",agent);
+            console.log("agent", agent);
             const navigate = useNavigate();
 
             return (
@@ -134,7 +135,7 @@ export default function AgentTable() {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allAgents', {
+                const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/seller/allAgents`, {
                     // withCredentials: true
                 });
                 console.log(response.data.data);
@@ -196,17 +197,17 @@ export default function AgentTable() {
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">
-        <Oval
-            height={60}
-            width={60}
-            color="#4fa94d"
-            visible={true}
-            ariaLabel='oval-loading'
-            secondaryColor="#4fa94d"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-        />
-    </div>;
+            <Oval
+                height={60}
+                width={60}
+                color="#4fa94d"
+                visible={true}
+                ariaLabel='oval-loading'
+                secondaryColor="#4fa94d"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+            />
+        </div>;
     }
 
     if (error) {

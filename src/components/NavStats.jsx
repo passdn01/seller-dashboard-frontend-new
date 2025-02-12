@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './NavStats.css';
 import { io } from 'socket.io-client';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const NavStats = () => {
     const [allCompletedRides, setAllCompletedRides] = useState(0);
@@ -24,7 +25,7 @@ const NavStats = () => {
 
     const fetchTotalCompletedRides = async () => {
         try {
-            const response = await axios.post('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/totalStatsData', { period: 'all time' });
+            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/totalStatsData`, { period: 'all time' });
             const result = response.data;
 
             console.log(result); // Log the response to inspect the structure
@@ -49,36 +50,36 @@ const NavStats = () => {
 
 
     useEffect(() => {
-        const newSocket = io('https://55kqzrxn-2003.inc1.devtunnels.ms');
+        const newSocket = io(`${SELLER_URL_LOCAL}`);
         setSocket(newSocket);
 
         // Request online drivers once connected
         newSocket.on('connect', () => {
-        console.log('Connected to WebSocket server');
-        newSocket.emit('getOnlineDrivers');
+            console.log('Connected to WebSocket server');
+            newSocket.emit('getOnlineDrivers');
         });
 
         newSocket.on('onlineDrivers', (response) => {
-        if (response && response.drivers) {
-            const totalOnlineDrivers = response.drivers.length;
-            setOnlineDriversCount(totalOnlineDrivers);
-        }
+            if (response && response.drivers) {
+                const totalOnlineDrivers = response.drivers.length;
+                setOnlineDriversCount(totalOnlineDrivers);
+            }
         });
 
         newSocket.on('error', (err) => {
-        console.error(err);
-        setError('Failed to fetch online drivers');
+            console.error(err);
+            setError('Failed to fetch online drivers');
         });
 
         return () => {
-        newSocket.close();
+            newSocket.close();
         };
 
     }, []);
 
     const fetchOngoingRides = async () => {
         try {
-            const response = await axios.get('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/total-ongoing-rides');
+            const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/seller/total-ongoing-rides`);
             const totalOngoingRides = response.data.ongoingRides;
             console.log(totalOngoingRides);
             setOngoingRidesCount(totalOngoingRides);

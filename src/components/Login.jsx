@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Oval } from 'react-loader-spinner';
 import loginImage from '../assets/loginPassdn.png';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -12,25 +13,34 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
         try {
-            const response = await fetch('https://55kqzrxn-2003.inc1.devtunnels.ms/login', {
+            const response = await fetch(`${SELLER_URL_LOCAL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),
-                credentials: 'include'
+                credentials: "include" // Ensure cookies are included
             });
 
             if (response.ok) {
                 const result = await response.json();
-                document.cookie = `token=${result.token}; path=/; secure; SameSite=Strict`;
-                let mycookie = document.cookie;
-                console.log(mycookie, "cookie set");
-                console.log(result);
-                if (result.success === true) {
-                    alert("Logged in successfully");
-                    window.location.href = '/home';
+
+                // Use localStorage instead of cookies for debugging
+
+                console.log(result, "result")
+                if (result?.success) {
+                    console.log(result, "checking user")
+                    localStorage.setItem("token", result.token);
+                    localStorage.setItem("admin", result.admin);
+                    localStorage.setItem("role", result.role);
+                    localStorage.setItem("username", result.username);
+                    localStorage.setItem("userId", result.userId);
+
+                    console.log("Login successful:", result);
+                    alert("Welcome " + result.admin);
+                    window.location.href = '/home/dashboard';
                 } else {
-                    alert(result.message);
+                    alert(result?.message)
                 }
             } else {
                 alert("Login Failed");
@@ -42,6 +52,7 @@ const Login = () => {
             setLoading(false);
         }
     };
+
 
     if (loading) {
         return (
@@ -71,7 +82,7 @@ const Login = () => {
                         className="w-full h-full object-cover"
                     />
                 </div>
-                
+
                 {/* Login Form Section */}
                 <div className="w-full p-8 md:w-1/2">
                     <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Login</h2>

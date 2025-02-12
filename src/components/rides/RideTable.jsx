@@ -39,7 +39,9 @@ import {
     SelectValue,
 } from "../ui/select";
 import { Oval } from 'react-loader-spinner';
-
+import RideDetail from './RideDetail';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
+import { io } from 'socket.io-client';
 // Columns configuration
 const columns = [
     {
@@ -50,11 +52,6 @@ const columns = [
         enableSorting: false,
     },
     {
-        accessorKey: "_id",
-        header: "Ride Id",
-        cell: ({ row }) => <div>{row.getValue("_id")}</div>,
-    },
-    {
         accessorKey: "createdAt",
         header: ({ column }) => (
             <div className="flex items-center gap-2">
@@ -62,7 +59,7 @@ const columns = [
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
-                    Joining
+                    Created At
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                 </Button>
             </div>
@@ -71,9 +68,14 @@ const columns = [
             const date = new Date(row.getValue("createdAt")); // Convert to Date object
             const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
             const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
-    
+
             return <div>{formattedDate}</div>; // Render the formatted date
         },
+    },
+    {
+        accessorKey: "userInfo",
+        header: "User Name",
+        cell: ({ row }) => <div>{row.getValue("userInfo")?.name} </div>
     },
     {
         accessorKey: "fare",
@@ -81,17 +83,9 @@ const columns = [
         cell: ({ row }) => <div>{row.getValue("fare")}</div>,
     },
     {
-        accessorKey: "name",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-                Name
-                <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-        ),
-        cell: ({ row }) => <div>{row.getValue("name")}</div>,
+        accessorKey: "distance",
+        header: "Distance",
+        cell: ({ row }) => <div>{row.getValue("distance")}</div>,
     },
     {
         accessorKey: "status",
@@ -115,7 +109,7 @@ const columns = [
             const date = new Date(row.getValue("updatedAt")); // Convert to Date object
             const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
             const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
-    
+
             return <div>{formattedDate}</div>; // Render the formatted date
         },
     },
@@ -124,7 +118,7 @@ const columns = [
         enableHiding: false,
         cell: ({ row }) => {
             const ride = row.original;
-            console.log("ride",ride);
+
             const navigate = useNavigate();
 
             return (
@@ -143,7 +137,7 @@ const columns = [
                             Copy Driver Phone
                         </DropdownMenuItem> */}
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => navigate(`/rides/allRides/${ride._id}`)}>
+                        <DropdownMenuItem onClick={() => window.open(`/rides/allRides/${ride._id}`, "_blank", "noopener,noreferrer")}>
                             View Ride Details
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -154,53 +148,86 @@ const columns = [
 ];
 
 export default function RideTable() {
+    const [expandedRowId, setExpandedRowId] = useState(null);
+    const handleRowClick = (rowId) => {
+        setExpandedRowId(expandedRowId === rowId ? null : rowId);
+    };
     const [sorting, setSorting] = useState([]);
     const [rideColumnFilters, setRideColumnFilters] = useState([]);
     const [columnVisibility, setColumnVisibility] = useState({});
     const [rowSelection, setRowSelection] = useState({});
     const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("all");
     const [globalFilter, setGlobalFilter] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
     useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const response = await axios.get('https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/allRides', {
-                    // withCredentials: true
-                });
-                console.log(response.data.data);
-                if (response.data.success) {
-                    setData(response.data.data);
-                    sessionStorage.setItem('myRideData', JSON.stringify(response.data.data));
-                    sessionStorage.setItem('lastFetchTime', Date.now().toString());
-                } else {
-                    throw new Error(response.data.message || 'Failed to fetch data');
-                }
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
+        const socket = io(`${SELLER_URL_LOCAL}`); // Replace with your server URL
+
+        console.time("Socket API Response Time"); // Start measuring time
+
+        socket.on("connect", () => {
+            console.log("Connected to socket server");
+            // Request to get all drivers
+            socket.emit("getAllRides");
+        });
+
+        // Handle incoming driver data (batch-based)
+        socket.on("rideData", (data) => {
+            setData((prevDrivers) => [...prevDrivers, ...data]); // Add new data to state dynamically
+            setLoading(false);
+        });
+
+        // Handle the end of the data stream
+        socket.on("rideDataEnd", () => {
+            console.timeEnd("Socket API Response Time"); // End measuring time
+            setLoading(false); // Stop loading when all data is received
+        });
+
+        // Handle errors
+        socket.on("rideDataError", (error) => {
+            console.error("Error:", error.message);
+            setError(error.message); // Set error message
+            setLoading(false); // Stop loading in case of error
+        });
+
+        // Clean up the socket connection when the component unmounts
+        return () => {
+            socket.off("rideData");
+            socket.off("rideDataEnd");
+            socket.off("rideDataError");
+            socket.disconnect();
         };
 
-        const storedData = sessionStorage.getItem('myRideData');
-        const lastFetchTime = sessionStorage.getItem('lastFetchTime');
-        const currentTime = Date.now();
-        const timeSinceLastFetch = currentTime - (lastFetchTime ? parseInt(lastFetchTime) : 0);
-
-        if (storedData && timeSinceLastFetch < 60000) { // 60000 ms = 1 minute
-            setData(JSON.parse(storedData));
-            setLoading(false);
-        } else {
-            fetchData();
-        }
     }, []);
 
+    // Handle date range filtering
+    useEffect(() => {
+        let filtered = [...data];
+
+        if (startDate || endDate) {
+            filtered = filtered.filter(item => {
+                const itemDate = new Date(item.createdAt);
+                const start = startDate ? new Date(startDate) : new Date(0);
+                const end = endDate ? new Date(endDate) : new Date(8640000000000000);
+
+                // Set the time to midnight for accurate date comparison
+                start.setHours(0, 0, 0, 0);
+                end.setHours(23, 59, 59, 999);
+
+                return itemDate >= start && itemDate <= end;
+            });
+        }
+
+        setFilteredData(filtered);
+    }, [data, startDate, endDate]);
+
     const table = useReactTable({
-        data,
+        data: filteredData, // Use filteredData instead of data
         columns,
         onSortingChange: setSorting,
         onrideColumnFiltersChange: setRideColumnFilters,
@@ -230,35 +257,49 @@ export default function RideTable() {
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">
-        <Oval
-            height={60}
-            width={60}
-            color="#4fa94d"
-            visible={true}
-            ariaLabel='oval-loading'
-            secondaryColor="#4fa94d"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-        />
-    </div>;
+            <Oval
+                height={60}
+                width={60}
+                color="#4fa94d"
+                visible={true}
+                ariaLabel='oval-loading'
+                secondaryColor="#4fa94d"
+                strokeWidth={2}
+                strokeWidthSecondary={2}
+            />
+        </div>;
     }
 
     if (error) {
         return <div>Error: {error}</div>;
     }
 
-    // Get unique status values for the filter
     const statusOptions = [...new Set(data.map(item => item.status))];
 
     return (
         <div className="w-[80%] mx-24">
-            <div className="flex items-center py-4">
+            <div className="flex items-center py-4 space-x-4">
                 <Input
                     placeholder="Search all columns..."
                     value={globalFilter ?? ""}
                     onChange={(event) => setGlobalFilter(event.target.value)}
-                    className="max-w-sm mr-4"
+                    className="max-w-sm"
                 />
+                <div className="flex items-center space-x-2">
+                    <Input
+                        type="date"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="w-40"
+                    />
+                    <span>to</span>
+                    <Input
+                        type="date"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                        className="w-40"
+                    />
+                </div>
                 <Select onValueChange={setStatusFilter} value={statusFilter}>
                     <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Filter by status" />
@@ -295,6 +336,7 @@ export default function RideTable() {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
+            {/* Rest of the component remains the same... */}
             <div className="rounded-md border">
                 <Table>
                     <TableHeader>
@@ -315,18 +357,30 @@ export default function RideTable() {
                     </TableHeader>
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
+                            table.getRowModel().rows.map((row) => ([
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
+                                    className="cursor-pointer hover:bg-gray-100"
+                                    onClick={() => handleRowClick(row.id)}
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
-                                </TableRow>
-                            ))
+                                </TableRow>,
+                                expandedRowId === row.id && (
+                                    <TableRow key={`${row.id}-detail`}>
+                                        <TableCell colSpan={columns.length} className="p-0">
+                                            <div className="p-4 bg-gray-50">
+                                                <RideDetail transactionId={row.original.transaction_id} distance={row.original.distance} userInfo={row.original.userInfo}></RideDetail>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                )
+
+                            ]).flat())
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">

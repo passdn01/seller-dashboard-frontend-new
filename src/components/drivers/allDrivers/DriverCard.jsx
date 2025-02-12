@@ -23,36 +23,35 @@ const DriverCard = ({ data }) => {
                                         <AvatarFallback>{driverInfo?.name?.charAt(0) || 'NAN'}</AvatarFallback>
                                     </Avatar>
                                 </DialogTrigger>
-                                
+
                                 {/* Content of the dialog */}
                                 <DialogContent className='max-h-[80vh] overflow-auto'>
-                                        <DialogDescription>
-                                            <img src={driverInfo?.profileUrl} alt="Profile" />
-                                        </DialogDescription>
+                                    <DialogDescription>
+                                        <img src={driverInfo?.profileUrl} alt="Profile" />
+                                    </DialogDescription>
                                 </DialogContent>
                             </Dialog>
                             <div>
-                            <div className="flex items-center gap-2">
-                                <CardTitle>
-                                    {driverInfo?.name || ''}
-                                </CardTitle>
-                                {/* Green or Red Dot based on `isCompleteRegistration` */}
-                                <span
-                                    className={`w-3 h-3 rounded-full ${
-                                        driverInfo?.isCompleteRegistration ? 'bg-green-400' : 'bg-red-400'
-                                    }`}
-                                    title={driverInfo?.isCompleteRegistration ? "Registration Complete" : "Registration Incomplete"}
-                                ></span>
+                                <div className="flex items-center gap-2">
+                                    <CardTitle>
+                                        {driverInfo?.name || ''}
+                                    </CardTitle>
+                                    {/* Green or Red Dot based on `isCompleteRegistration` */}
+                                    <span
+                                        className={`w-3 h-3 rounded-full ${driverInfo?.isCompleteRegistration ? 'bg-green-400' : 'bg-red-400'
+                                            }`}
+                                        title={driverInfo?.isCompleteRegistration ? "Registration Complete" : "Registration Incomplete"}
+                                    ></span>
+                                </div>
+                                <CardDescription>
+                                    {driverInfo?.phone || ''} <br />
+                                    Joined: {driverInfo?.createdAt ? new Date(driverInfo.createdAt).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'long',
+                                        day: 'numeric'
+                                    }) : ''}
+                                </CardDescription>
                             </div>
-                            <CardDescription>
-                                {driverInfo?.phone || ''} <br />
-                                Joined: {driverInfo?.createdAt ? new Date(driverInfo.createdAt).toLocaleDateString('en-US', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                }) : ''}
-                            </CardDescription>
-                        </div>
 
                         </div>
                     </CardHeader>

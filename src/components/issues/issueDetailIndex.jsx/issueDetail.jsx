@@ -1,0 +1,177 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SELLER_URL_LOCAL } from "@/lib/utils";
+
+const IssueDetail = () => {
+  const [issue, setIssue] = useState(null);
+  const [ride, setRide] = useState(null);
+  const [error, setError] = useState(null);
+  const { id } = useParams();
+
+  useEffect(() => {
+    fetchIssueDetails();
+  }, [id]);
+
+  const fetchIssueDetails = async () => {
+    try {
+      const response = await axios.get(
+        `${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${id}`
+      );
+      setIssue(response.data);
+
+      if (response.data?.rideId) {
+        fetchRideDetails(response.data.rideId);
+      } else {
+        setRide(null);
+      }
+    } catch (error) {
+      console.error("Error fetching issue details:", error);
+      setError("Failed to fetch issue details");
+    }
+  };
+
+  const fetchRideDetails = async (rideId) => {
+    try {
+      const response = await axios.post(
+        `${SELLER_URL_LOCAL}/dashboard/api/seller/rideTransaction/${rideId}`
+      );
+      setRide(response.data.data.ride);
+    } catch (error) {
+      console.error("Error fetching ride details:", error);
+      setError("Failed to fetch ride details");
+    }
+  };
+
+  const markComplete = async (ticketId) => {
+    try {
+      await axios.put(
+        `${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`
+      );
+      fetchIssueDetails();
+    } catch (err) {
+      setError("Failed to mark the ticket as complete");
+    }
+  };
+
+  const markPending = async (ticketId) => {
+    try {
+      await axios.put(
+        `${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/pending`
+      );
+      fetchIssueDetails();
+    } catch (err) {
+      setError("Failed to mark the ticket as complete");
+    }
+  };
+
+  if (!issue) return <div className="text-center py-6 text-gray-600">Loading...</div>;
+
+  const user = issue?.userId || {};
+  const displayName = user?.firstName ? `${user.firstName} ${user.lastName}` : "Unknown User";
+
+  return (
+    <div className="container mx-auto p-6 space-y-6">
+      {error && <p className="text-red-500">{error}</p>}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="rounded-sm">
+          <CardHeader>
+            <CardTitle className="text-xl font-semibold">Issue Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p><strong>Transaction Id: </strong>{issue.rideId || "N/A"}</p>
+            <p><strong>Concern:</strong> {issue.concern || "N/A"}</p>
+            <p><strong>Status:</strong> {issue.status || "N/A"}</p>
+            <p><strong>User:</strong> {displayName}</p>
+            <div className="flex space-x-4 mt-4">
+              <button
+                onClick={() => markComplete(id)}
+                className="px-4 py-2 bg-green-600 text-white rounded-sm hover:bg-green-700"
+              >
+                Mark as Complete
+              </button>
+              <button
+                onClick={() => markPending(id)}
+                className="px-4 py-2 bg-yellow-600 text-white rounded-sm hover:bg-yellow-700"
+              >
+                Mark as Pending
+              </button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {ride && (
+          <Card className="rounded-sm">
+            <div className="flex justify-between items-center p-6">
+              <p className="text-xl font-semibold">Ride Information</p>
+              <p><strong>Status:</strong> {ride.status || "N/A"}</p>
+            </div>
+            <CardContent className="space-y-3">
+              <p><strong>Pickup:</strong> {ride.location?.fromLocation?.name || "N/A"}</p>
+              <p><strong>Drop:</strong> {ride.location?.toLocation?.name || "N/A"}</p>
+              <div className="grid grid-cols-2 gap-4">
+                <Card className="rounded-sm p-4 border">
+                  <p className="text-lg font-semibold">Fare</p>
+                  <p className="text-2xl">₹{ride.fare || "N/A"}</p>
+                </Card>
+                <Card className="rounded-sm p-4 border">
+                  <p className="text-lg font-semibold">Distance</p>
+                  <p className="text-2xl">{ride.distance || "N/A"} km</p>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      <Card className="rounded-sm">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">User Information</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p><strong>Name:</strong> {displayName}</p>
+          <p><strong>Phone:</strong> {issue.userInfo?.phone || "N/A"}</p>
+        </CardContent>
+      </Card>
+
+      <Card className="rounded-sm">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">Messages</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {issue?.messages?.length > 0 ? (
+            <div className="space-y-4">
+              {issue.messages.map((message) => (
+                <div
+                  key={message?._id || Math.random()}
+                  className={`p-4 rounded-lg shadow-sm max-w-[80%] ${message?.sender === "user"
+                    ? "bg-blue-100 self-start text-left"
+                    : "bg-gray-200 self-end text-right"
+                    }`}
+                >
+                  <div className="flex justify-between items-center">
+                    <strong className="text-gray-800 capitalize">
+                      {message?.sender || "Unknown"}
+                    </strong>
+                    <span className="text-sm text-gray-500">
+                      {message?.timestamp ? new Date(message.timestamp).toLocaleString() : "N/A"}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-gray-700 break-words">
+                    {message?.message || "No message content"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-500">No messages yet.</p>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default IssueDetail;

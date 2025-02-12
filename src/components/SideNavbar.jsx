@@ -26,20 +26,56 @@ import Logo from '../assets/NavIcons/Logo.svg';
 import OfferIcon from '../assets/NavIcons/Offer.svg';
 // import QuizDashboardIcon from '../assets/NavIcons/QuizDashboard.svg';
 import TechCostIcon from '../assets/NavIcons/TechCost.svg';
-// import WebsiteIcon from '../assets/NavIcons/Website.svg';
-// import IssueSolverIcon from '../assets/NavIcons/IssueSolver.svg';
-import { useNavigate } from 'react-router-dom';
+import WebsiteIcon from '../assets/NavIcons/Website.svg';
+import IssueSolverIcon from '../assets/NavIcons/IssueSolver.svg';
+import { useNavigate, useLocation } from 'react-router-dom';
+import roleRoutes from '../roles';
+import { getCookie, SELLER_URL_LOCAL } from '@/lib/utils';
 
 import { Link } from 'react-router-dom'
+import { User } from 'lucide-react';
 
 function SideNavbar() {
+    const [userRole, setUserRole] = React.useState(null);
+
+
+
+    React.useEffect(() => {
+        const fetchUserInfo = async () => {
+            const user = localStorage.getItem("role")
+
+            setUserRole(user)
+        }
+        fetchUserInfo()
+    }, [])
+
+    const handleDashboardClick = (e) => {
+        e.preventDefault();
+        window.location.href = '/home/dashboard';
+    };
+
     const menuList = [
         {
             id: "1",
             title: "Home",
-            link: "/home",
-            submenu: false,
+            link: "",
+            submenu: true,
             icon: HomeIcon,
+            subMenuList: [
+                {
+                    id: '1',
+                    title: 'Dashboard',
+                    link: '/home/dashboard',
+                    icon: '',
+                    onClick: handleDashboardClick
+                },
+                {
+                    id: '2',
+                    title: 'Map Data',
+                    link: '/home/mapData',
+                    icon: '',
+                }
+            ]
         },
         {
             id: "2",
@@ -50,12 +86,6 @@ function SideNavbar() {
             subMenuList: [
                 {
                     id: '1',
-                    title: 'Live Drivers',
-                    link: '/drivers/liveDrivers',
-                    icon: '',
-                },
-                {
-                    id: '2',
                     title: 'All Drivers',
                     link: '/drivers/allDrivers',
                     icon: '',
@@ -64,66 +94,77 @@ function SideNavbar() {
         },
         {
             id: "3",
-            title: "Rides",
-            link: '/rides/AllRides',
-            icon: DriverIcon,
+            title: "Users",
+            link: '/users',
+            icon: AgentIcon,
         },
         {
             id: "4",
-            title: "Agent",
-            link: '',
-            submenu: true,
-            icon: AgentIcon,
-            subMenuList: [
-                // {
-                //     id: '1',
-                //     title: 'Live Agents',
-                //     link: '/agents/live',
-                //     icon: '',
-                // },
-                {
-                    id: '2',
-                    title: 'All Agents',
-                    link: '/agents/allAgents',
-                    icon: '',
-                }
-            ]
+            title: "Rides",
+            link: '/rides/allRides',
+            icon: DriverIcon,
         },
         {
             id: "5",
-            title: "Issues",
-            link: "/issues",
+            title: "Issues Assigner",
+            link: "/issueAssigner",
             submenu: false,
             icon: OfferIcon,
         },
         {
             id: "6",
-            title: "Blogs",
-            link: "/blogs",
+            title: "Issue Solver",
+            link: '/issueSolver',
+            icon: IssueSolverIcon,
+        },
+        {
+            id: "7",
+            title: "I AM User",
+            link: "/admin",
             submenu: false,
-            icon: TechCostIcon,
+            icon: IAMAdminIcon,
         },
     ];
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const getAccessibleMenu = (menuList, allowedRoutes) => {
+        return menuList
+            .filter((menu) => {
+                return (
+                    (menu.link && allowedRoutes.some((route) => menu.link.startsWith(route))) ||
+                    (menu.subMenuList &&
+                        menu.subMenuList.some((subMenu) =>
+                            allowedRoutes.some((route) => subMenu.link.startsWith(route))
+                        ))
+                );
+            })
+            .map((menu) => ({
+                ...menu,
+                subMenuList: menu.subMenuList
+                    ? menu.subMenuList.filter((subMenu) =>
+                        allowedRoutes.some((route) => subMenu.link.startsWith(route))
+                    )
+                    : undefined,
+            }));
+    };
+
+    const accessibleMenu = getAccessibleMenu(menuList, roleRoutes[userRole] || []);
+
     const handleLogout = async () => {
         try {
-            console.log("logout called.")
-            const response = await fetch('https://55kqzrxn-2003.inc1.devtunnels.ms/logout', {
+            const response = await fetch(`${SELLER_URL_LOCAL}/logout`, {
                 method: 'POST',
                 credentials: 'include'
             });
 
             const data = await response.json();
             if (data.success) {
-
                 document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
-
-
                 console.log(data.message);
                 window.location.href = '/';
             } else {
-
                 console.error(data.message);
             }
         } catch (error) {
@@ -131,63 +172,71 @@ function SideNavbar() {
         }
     };
 
+    const isActive = (menuLink) => {
+        return location.pathname.startsWith(menuLink) ? "bg-blue-100" : "";
+    };
 
     return (
         <div className='fixed border-r min-w-[250px] z-50 min-h-screen bg-white h-full overflow-hidden'>
-            <Command className="rounded-lg  ">
+            <Command className="rounded-lg">
                 <div className='p-4 flex items-center gap-2 font-bold'>
                     <img src={Logo} alt="Logo" className="h-6 w-6" />
                     <span>Vayu Admin</span>
                 </div>
                 <CommandSeparator />
                 <CommandList>
-                    {menuList.map((el) => (
-                        <div key={el.id}>
-                            {el.submenu ? (
-                                <CommandItem><Accordion type="single" collapsible className="w-full">
-                                    <AccordionItem value={el.id}>
-                                        <AccordionTrigger className='flex items-center py-1 text-sm rounded-md w-full'>
-                                            <div className="flex items-center">
-                                                <img src={el.icon} alt="" className="h-5 w-5 mr-3" />
-                                                <span className='font-normal hover:no-underline'>{el.title}</span>
-                                            </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent>
-                                            <div className="pl-10">
-                                                {el.subMenuList.map((item) => (
-                                                    <Link to={item.link}><CommandItem key={item.id} className="py-2 text-sm hover:bg-blue-50 rounded-md">
-                                                        {item.title}
-                                                    </CommandItem></Link>
-                                                ))}
-                                            </div>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                </Accordion>
+                    {accessibleMenu.map((menu) => (
+                        <div key={menu.id}>
+                            {menu.submenu ? (
+                                <CommandItem>
+                                    <Accordion type="single" collapsible className="w-full">
+                                        <AccordionItem value={menu.id}>
+                                            <AccordionTrigger className="flex items-center py-1 text-sm rounded-md w-full">
+                                                <div className="flex items-center">
+                                                    <img src={menu.icon} alt="" className="h-5 w-5 mr-3" />
+                                                    <span className="font-normal hover:no-underline">{menu.title}</span>
+                                                </div>
+                                            </AccordionTrigger>
+                                            <AccordionContent>
+                                                <div className="pl-10">
+                                                    {menu.subMenuList.map((subMenu) => (
+                                                        <div key={subMenu.id}>
+                                                            <Link to={subMenu.link}>
+                                                                <CommandItem
+                                                                    className={`py-2 text-sm hover:bg-blue-200 rounded-md ${isActive(subMenu.link)}`}
+                                                                    onSelect={() => {
+                                                                        if (subMenu.onClick) {
+                                                                            console.log("ovsd")
+                                                                            window.location.href = '/home/dashboard';
+                                                                        } else {
+                                                                            navigate(subMenu.link);
+                                                                        }
+                                                                    }}
+                                                                >
+                                                                    {subMenu.title}
+                                                                </CommandItem>
+                                                            </Link>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </AccordionContent>
+                                        </AccordionItem>
+                                    </Accordion>
                                 </CommandItem>
                             ) : (
-                                <Link to={el.link}>
-                                    <CommandItem className='flex items-center p-2 text-sm hover:bg-blue-100 rounded-md w-full cursor-pointer bg-white' >
-                                        <img src={el.icon} alt="" className="h-5 w-5 mr-3" />
-                                        <span>{el.title}</span>
+                                <Link to={menu.link}>
+                                    <CommandItem className={`flex items-center p-2 text-sm hover:bg-blue-200 rounded-md w-full cursor-pointer bg-white ${isActive(menu.link)}`}>
+                                        <img src={menu.icon} alt="" className="h-5 w-5 mr-3" />
+                                        <span>{menu.title}</span>
                                     </CommandItem>
                                 </Link>
                             )}
-
                         </div>
-
                     ))}
-                    <Link onClick={handleLogout}>
-                        <CommandItem className='bottom-0 absolute items-center p-2 text-sm hover:bg-blue-100 rounded-md w-full cursor-pointer bg-white'>
-                            <img src={LogoutIcon} alt="" className="h-5 w-5 mr-3" />
-                            <span>Logout</span>
-                        </CommandItem>
-                    </Link>
-
-
                 </CommandList>
             </Command>
         </div>
-    )
+    );
 }
 
-export default SideNavbar
+export default SideNavbar;

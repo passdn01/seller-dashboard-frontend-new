@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 // import { useToast } from "@/hooks/use-toast"
 import { Textarea } from "@/components/ui/textarea";
 import PropTypes from 'prop-types';
+import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const DrivingLicenseForm = ({ data, id }) => {
     const { driverInfo } = data;
@@ -59,7 +60,7 @@ const DrivingLicenseForm = ({ data, id }) => {
         setSubmitStatus(null);
 
         try {
-            const response = await fetch(`https://55kqzrxn-2003.inc1.devtunnels.ms/dashboard/api/driver/${id}/edit`, {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -336,6 +337,7 @@ const DrivingLicenseForm = ({ data, id }) => {
                                     <SelectItem value="LOW_BALANCE">LOW_BALANCE</SelectItem>
                                     <SelectItem value="OFFLINE">OFFLINE</SelectItem>
                                     <SelectItem value="ACCEPTED">ACCEPTED</SelectItem>
+                                    <SelectItem value="REJECTED">REJECTED</SelectItem>
                                 </SelectContent>
                             </Select>
 
