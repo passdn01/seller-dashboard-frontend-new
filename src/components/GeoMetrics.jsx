@@ -73,6 +73,7 @@ HeatmapLegend.propTypes = {
 
 const GeoMetrics = () => {
     const [heatmapData, setHeatmapData] = useState([]);
+    const [circlemapData, setCirclemapData] = useState([]);
     const [drivers, setDrivers] = useState([]);
     const [viewMode, setViewMode] = useState('');
     const [analysis, setAnalysis] = useState('');
@@ -152,7 +153,7 @@ const GeoMetrics = () => {
                 center: [cluster.center.lat, cluster.center.lng],
                 count: cluster.numRides,
             }));
-            setHeatmapData(clusters);
+            setCirclemapData(clusters);
             setAnalysis(`Ride clustering for ${formattedDate}`);
         } catch (error) {
             console.error('Error fetching ride data:', error);
@@ -162,11 +163,6 @@ const GeoMetrics = () => {
         }
     };
 
-    useEffect(() => {
-        if (viewMode === 'ride24hrs' && selectedDate) {
-            fetchDateRides(selectedDate);
-        }
-    }, [viewMode, selectedDate, startTime, endTime, varient, type]);
 
     useEffect(() => {
         const newSocket = io(`${SELLER_URL_LOCAL}`);
@@ -195,18 +191,23 @@ const GeoMetrics = () => {
     ;
 
     useEffect(() => {
+
+        setOptionLoading(true);
+    
         if (viewMode === 'heatmap') {
-            setOptionLoading(true);
             if (rideType === 'completed') {
                 fetchRideDistribution();
             } else {
                 fetchCancelledRideDistribution();
             }
+        } else if (viewMode === 'ride24hrs' && selectedDate) {
+            fetchDateRides(selectedDate);
         } else if (viewMode === 'drivers') {
             setOptionLoading(false);
         }
-    }, [viewMode, rideType]);
-
+    
+    }, [viewMode, rideType, selectedDate, startTime, endTime, varient, type]);
+    
 
 
     return (
@@ -348,7 +349,7 @@ const GeoMetrics = () => {
                         {viewMode === 'ride24hrs' && (
                             <>
                                 {/* Render start circles if type is 'start' or 'all' */}
-                                {heatmapData.map((cluster, index) => {
+                                {circlemapData.map((cluster, index) => {
                                     if (type === 'start' || type === 'all') {
                                         return (
                                             <Circle
@@ -381,7 +382,7 @@ const GeoMetrics = () => {
                                 })}
 
                                 {/* Render end circles if type is 'end' or 'all' */}
-                                {heatmapData.map((cluster, index) => {
+                                {circlemapData.map((cluster, index) => {
                                     if (type === 'end' || type === 'all') {
                                         return (
                                             <Circle
