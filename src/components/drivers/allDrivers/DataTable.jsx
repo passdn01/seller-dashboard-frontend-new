@@ -736,7 +736,7 @@ export default function DriverTable() {
                                             <TableRow key={`${row.id}-detail`}>
                                                 <TableCell colSpan={columns.length} className="p-0">
                                                     <div className="p-4 bg-gray-50">
-                                                        <DriverDetails driver={row.original} />
+                                                        <DriverDetails data={row.original} />
                                                     </div>
                                                 </TableCell>
                                             </TableRow>

@@ -7,7 +7,7 @@ const ROLES = [
     "guest",
     "issueSolver",
     "issueAssigner",
-    "issueAssignerPro",
+    "issueAssignerAndVerifier",
     "verifier",
     "UserExplore"
 ];

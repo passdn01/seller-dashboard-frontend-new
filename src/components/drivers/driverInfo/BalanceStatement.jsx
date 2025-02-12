@@ -190,7 +190,7 @@ const DriverBalanceStatement = ({ data }) => {
     return (
         <div className="w-full p-4">
             <div className="text-xl font-semibold mb-4">Driver Balance Statement</div>
-            <div className="text-md mb-2">Current Balance: <strong>{balance.toFixed(2)}</strong></div>
+            <div className="text-md mb-2">Current Balance: <strong>{balance?.toFixed(2) || '0'}</strong></div>
 
             <div className="flex gap-x-4 w-full">
                 {/* Cash In Section */}

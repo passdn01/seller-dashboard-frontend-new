@@ -24,11 +24,13 @@ function UserLastRides({ userId, data }) {
 
     const fetchRides = async () => {
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboaard/api/buyer/getLastTenRides`, {
+            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/buyer/getLastTenRides`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: userId }),
             });
+
+            console.log(response, "respnose in fetchrides")
 
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
