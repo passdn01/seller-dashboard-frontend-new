@@ -19,7 +19,7 @@ import AgentIcon from '../assets/NavIcons/agent.svg';
 // import FarePriceIcon from '../assets/NavIcons/FarePrice.svg';
 // import FinancialMetricsIcon from '../assets/NavIcons/FinancialMetrics.svg';
 // import FinancialServicesIcon from '../assets/NavIcons/FinancialServices.svg';
-// import IAMAdminIcon from '../assets/NavIcons/IAMAdmin.svg';
+import IAMAdminIcon from '../assets/NavIcons/IAMAdmin.svg';
 import LogoutIcon from '../assets/NavIcons/Logout.svg';
 import Logo from '../assets/NavIcons/Logo.svg';
 // import LogsIcon from '../assets/NavIcons/logs.svg';
