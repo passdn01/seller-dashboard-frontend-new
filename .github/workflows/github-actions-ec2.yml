@@ -1,47 +1,58 @@
-name: Push-to-EC2 instance
+name: Push-to-EC2
 
-# Trigger deployment only on push to main branch 
 on:
   push:
     branches:
-      - master
+      - master  # or main, depending on your branch name
 
 jobs:
   deploy:
     name: Push to EC2
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v1
-
-      - name: Deploy to my EC2 instance
-        uses: easingthemes/ssh-deploy@v2.1.5
+        uses: actions/checkout@v3  # Updated to v3
+        
+      - name: Deploy to EC2
+        uses: easingthemes/ssh-deploy@main  # Updated to latest version
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          ARGS: "-rlgoDzvc -i"
           SOURCE: "./"
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
-
-      - name: Executing remote ssh commands using ssh key
+          
+      - name: Execute remote commands
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_DNS }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # Added error handling and checks
+            set -e
+            echo "Updating system..."
             sudo yum -y update
+            
+            echo "Installing httpd..."
             sudo yum install -y httpd
+            
+            echo "Starting httpd..."
             sudo systemctl start httpd
             sudo systemctl enable httpd
-            cd /home
-            ls
-            cd ec2-user
+            
+            echo "Installing Node.js and npm..."
             sudo yum install nodejs npm -y
+            
+            echo "Building application..."
+            cd ${{ secrets.TARGET_DIR }}
             npm install
             sudo npm run build
-            cd build
-            sudo mv * /var/www/html
-            sudo systemctl restart httpd
             
+            echo "Deploying to /var/www/html..."
+            cd build
+            sudo cp -r * /var/www/html/
+            
+            echo "Restarting httpd..."
+            sudo systemctl restart httpd
