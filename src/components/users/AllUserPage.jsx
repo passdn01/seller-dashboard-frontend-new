@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import SideNavbar from '../SideNavbar'
-import AllUserTable from './AllUserTable.jsx'
+import AllUserTable from './AllUserTable'
 import Header from '../drivers/allDrivers/Header'
 import axios from 'axios'
 function AllUserPage() {
