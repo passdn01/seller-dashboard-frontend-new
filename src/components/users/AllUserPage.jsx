@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import SideNavbar from '../SideNavbar'
-import AllUserTable from './AllUserTable'
 import Header from '../drivers/allDrivers/Header'
 import axios from 'axios'
+import UserTable from './UserTable'
 function AllUserPage() {
     return (
         <>
@@ -10,7 +10,7 @@ function AllUserPage() {
                 <SideNavbar />
                 <div className='pl-[250px] w-full'>
                     <Header title='Users'></Header>
-                    <AllUserTable />
+                    <UserTable />
                 </div>
             </div>
         </>
