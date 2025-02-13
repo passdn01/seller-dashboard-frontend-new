@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
-        
+      
       - name: Deploy to EC2
         uses: easingthemes/ssh-deploy@main
         env:
@@ -21,7 +21,7 @@ jobs:
           REMOTE_HOST: ${{ secrets.HOST_DNS }}
           REMOTE_USER: ${{ secrets.USERNAME }}
           TARGET: ${{ secrets.TARGET_DIR }}
-          
+      
       - name: Execute remote commands
         uses: appleboy/ssh-action@master
         with:
@@ -34,13 +34,6 @@ jobs:
             sudo apt update
             sudo apt upgrade -y
             
-            echo "Installing Apache..."
-            sudo apt install -y apache2
-            
-            echo "Starting Apache..."
-            sudo systemctl start apache2
-            sudo systemctl enable apache2
-            
             echo "Installing Node.js and npm..."
             curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
             sudo apt install -y nodejs
@@ -49,10 +42,3 @@ jobs:
             cd ${{ secrets.TARGET_DIR }}
             npm install
             sudo npm run build
-            
-            echo "Deploying to /var/www/html..."
-            cd build
-            sudo cp -r * /var/www/html/
-            
-            echo "Restarting Apache..."
-            sudo systemctl restart apache2
