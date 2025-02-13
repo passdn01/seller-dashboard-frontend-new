@@ -39,7 +39,7 @@ import UserEditCard from "./UserEditCard";
 import { SELLER_URL_LOCAL } from "@/lib/utils";
 import { io } from "socket.io-client";
 
-const UserManagementTable = () => {
+const AllUserTable = () => {
     const [expandedRowId, setExpandedRowId] = useState(null);
     const handleRowClick = (rowId) => {
         setExpandedRowId(expandedRowId === rowId ? null : rowId);
@@ -341,4 +341,4 @@ const UserManagementTable = () => {
     );
 };
 
-export default UserManagementTable;
+export default AllUserTable
