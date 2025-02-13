@@ -1,9 +1,8 @@
 name: Push-to-EC2
-
 on:
   push:
     branches:
-      - master  # or main, depending on your branch name
+      - master
 
 jobs:
   deploy:
@@ -11,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
-        uses: actions/checkout@v3  # Updated to v3
+        uses: actions/checkout@v3
         
       - name: Deploy to EC2
-        uses: easingthemes/ssh-deploy@main  # Updated to latest version
+        uses: easingthemes/ssh-deploy@main
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           ARGS: "-rlgoDzvc -i"
@@ -30,20 +29,21 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Added error handling and checks
             set -e
             echo "Updating system..."
-            sudo yum -y update
+            sudo apt update
+            sudo apt upgrade -y
             
-            echo "Installing httpd..."
-            sudo yum install -y httpd
+            echo "Installing Apache..."
+            sudo apt install -y apache2
             
-            echo "Starting httpd..."
-            sudo systemctl start httpd
-            sudo systemctl enable httpd
+            echo "Starting Apache..."
+            sudo systemctl start apache2
+            sudo systemctl enable apache2
             
             echo "Installing Node.js and npm..."
-            sudo yum install nodejs npm -y
+            curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+            sudo apt install -y nodejs
             
             echo "Building application..."
             cd ${{ secrets.TARGET_DIR }}
@@ -54,5 +54,5 @@ jobs:
             cd build
             sudo cp -r * /var/www/html/
             
-            echo "Restarting httpd..."
-            sudo systemctl restart httpd
+            echo "Restarting Apache..."
+            sudo systemctl restart apache2
