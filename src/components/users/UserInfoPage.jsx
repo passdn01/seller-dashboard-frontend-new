@@ -44,7 +44,7 @@ function UserInfoPage() {
 
     const fetchUserData = async () => {
         try {
-            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/buyer/users/${id}`);
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/users/${id}`);
             if (response.data.success) {
                 setData(response.data.data);
                 setCompleteStatus(response.data.data.isComplete || false);

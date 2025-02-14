@@ -42,7 +42,7 @@ const UserEditCard = ({ userData }) => {
     const handleSubmit = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/buyer/updateUser`, {
+            const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/updateUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

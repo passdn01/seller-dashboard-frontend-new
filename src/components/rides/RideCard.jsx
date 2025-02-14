@@ -14,7 +14,7 @@ const RideCard = ({ data }) => {
 
     const getAddressFromBackend = async (lat, lon, setAddress) => {
         try {
-            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/gpsToAddress`, { lat, lon });
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/gpsToAddress`, { lat, lon });
             const address = response.data.address || 'Unknown Location';
             setAddress(address);
         } catch (error) {

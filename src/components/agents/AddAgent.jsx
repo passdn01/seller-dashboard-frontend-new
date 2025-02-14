@@ -26,7 +26,7 @@ const AddAgent = () => {
         setError('');
         try {
             const response = await axios.post(
-                `${SELLER_URL_LOCAL}/dashboard/api/seller/agent/add`, // Adjusted endpoint for adding a new agent
+                `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/agent/add`, // Adjusted endpoint for adding a new agent
                 formData
             );
             if (response.data.success) {

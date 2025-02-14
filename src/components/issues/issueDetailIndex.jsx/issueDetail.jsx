@@ -17,7 +17,7 @@ const IssueDetail = () => {
   const fetchIssueDetails = async () => {
     try {
       const response = await axios.get(
-        `${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${id}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${id}`
       );
       setIssue(response.data);
 
@@ -35,7 +35,7 @@ const IssueDetail = () => {
   const fetchRideDetails = async (rideId) => {
     try {
       const response = await axios.post(
-        `${SELLER_URL_LOCAL}/dashboard/api/seller/rideTransaction/${rideId}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/rideTransaction/${rideId}`
       );
       setRide(response.data.data.ride);
     } catch (error) {
@@ -47,7 +47,7 @@ const IssueDetail = () => {
   const markComplete = async (ticketId) => {
     try {
       await axios.put(
-        `${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`
       );
       fetchIssueDetails();
     } catch (err) {
@@ -58,7 +58,7 @@ const IssueDetail = () => {
   const markPending = async (ticketId) => {
     try {
       await axios.put(
-        `${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/pending`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/pending`
       );
       fetchIssueDetails();
     } catch (err) {

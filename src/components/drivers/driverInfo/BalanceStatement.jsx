@@ -149,8 +149,8 @@ const DriverBalanceStatement = ({ data }) => {
         try {
             console.log("adfa")
             console.log(data?.driverInfo?._id)
-            console.log(`${SELLER_URL_LOCAL}/dashboard/api/seller/balance?type=${dialogType === "add" ? "add" : "cut"}`)
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/balance?type=${dialogType === "add" ? "add" : "cut"}`, {
+            console.log(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/balance?type=${dialogType === "add" ? "add" : "cut"}`)
+            const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/balance?type=${dialogType === "add" ? "add" : "cut"}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

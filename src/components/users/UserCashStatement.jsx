@@ -20,7 +20,7 @@ const UserCashStatement = ({ userId }) => {
     const [title, setTitle] = useState('');
     const fetchCoinStatement = async () => {
         try {
-            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/buyer/getUserCoinStatement`, { userId });
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/getUserCoinStatement`, { userId });
             setCoinTransactions(response.data.coinTransactions || []);
             setLoading(false);
         } catch (err) {
@@ -40,7 +40,7 @@ const UserCashStatement = ({ userId }) => {
         const isDebit = coinAction === 'cut';
 
         try {
-            const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/buyer/modifyCoinBalance`, {
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/modifyCoinBalance`, {
                 userId,
                 title,
                 coins,

@@ -2,7 +2,7 @@
 // import { SELLER_URL_LOCAL } from './lib/utils';
 
 // // Create and export a single instance of the buyer socket
-// const sellerSocket = io(`${SELLER_URL_LOCAL}`);
+// const sellerSocket = io(`${import.meta.env.VITE_SELLER_URL_LOCAL}`);
 
 // // Utility function to clean up all listeners
 // const cleanUpsellerSocket = () => {

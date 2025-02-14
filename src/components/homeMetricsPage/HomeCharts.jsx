@@ -19,8 +19,8 @@ const HomeCharts = () => {
 
             try {
                 const [rideResponse, buyerResponse] = await Promise.all([
-                    fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/homeCharts?type=${type}`),
-                    fetch(`${SELLER_URL_LOCAL}/dashboard/api/buyer/homeCharts?type=${type}`)
+                    fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/homeCharts?type=${type}`),
+                    fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/homeCharts?type=${type}`)
                 ]);
 
                 if (!rideResponse.ok || !buyerResponse.ok) {

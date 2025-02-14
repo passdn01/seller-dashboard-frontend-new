@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 import { SELLER_URL_LOCAL } from './lib/utils';
 
-const sellerSocket = io(`${SELLER_URL_LOCAL}`);
+const sellerSocket = io(`${import.meta.env.VITE_SELLER_URL_LOCAL}`);
 
 
 const cleanUpSellerSocket = () => {

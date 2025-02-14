@@ -166,7 +166,7 @@ export default function RideTable() {
     const [endDate, setEndDate] = useState("");
 
     useEffect(() => {
-        const socket = io(`${SELLER_URL_LOCAL}`); // Replace with your server URL
+        const socket = io(`${import.meta.env.VITE_SELLER_URL_LOCAL}`); // Replace with your server URL
 
         console.time("Socket API Response Time"); // Start measuring time
 

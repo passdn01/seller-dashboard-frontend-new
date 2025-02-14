@@ -67,7 +67,7 @@ const DriverDetails = ({ data }) => {
 
             setIsLoading(true);
             try {
-                const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/driverDetail`, {
+                const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverDetail`, {
                     id: driverId
                 });
 
@@ -146,7 +146,7 @@ const DriverDetails = ({ data }) => {
 
     const handleSave = async () => {
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/driverTableEdit`, {
+            const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverTableEdit`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

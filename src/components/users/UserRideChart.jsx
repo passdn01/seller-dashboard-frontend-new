@@ -53,7 +53,7 @@ function UserRideChart({ userId }) {
 
     const fetchRides = async () => {
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/buyer/getUserRideChart`, {
+            const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/getUserRideChart`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: userId }),
