@@ -15,7 +15,7 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/login`, {
+            const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password }),

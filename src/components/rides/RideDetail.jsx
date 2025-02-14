@@ -15,7 +15,7 @@ function RideDetail({ transactionId, distance, userInfo }) {
         if (!transactionId) return;
 
         setIsLoading(true);
-        axios.post(`${SELLER_URL_LOCAL}/dashboard/api/buyer/rideDetail`, { transactionId })
+        axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideDetail`, { transactionId })
             .then(response => {
                 setIsLoading(false);
                 if (response.data.success) {
@@ -37,8 +37,8 @@ function RideDetail({ transactionId, distance, userInfo }) {
         try {
             // Make both requests simultaneously
             const [response1, response2] = await Promise.all([
-                axios.post(`${SELLER_URL_LOCAL}/dashboard/api/buyer/rideStatusUpdate`, { transactionId, status }),
-                axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/rideStatusUpdate`, { transactionId, status }) // Assuming a second endpoint
+                axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideStatusUpdate`, { transactionId, status }),
+                axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/rideStatusUpdate`, { transactionId, status }) // Assuming a second endpoint
             ]);
 
             if (response1.data.success && response2.data.success) {

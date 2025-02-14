@@ -21,7 +21,7 @@ const DriverInfoCharts = ({ data }) => {
             setError(null);
 
             try {
-                const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/seller/driverInfoCharts`, {
+                const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverInfoCharts`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -54,7 +54,7 @@ const IssueSolver = () => {
     // Fetch all assigned tickets
     const fetchTickets = async () => {
         try {
-            const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/assigned/${userId}`);
+            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/assigned/${userId}`);
             setTickets(response.data);
         } catch (err) {
             setError("Failed to load tickets");
@@ -67,7 +67,7 @@ const IssueSolver = () => {
     // mark issue as complete
     const markComplete = async (ticketId) => {
         try {
-            await axios.put(`${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`);
+            await axios.put(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`);
             // Refresh issue details after marking as complete
             fetchTickets();
         } catch (err) {

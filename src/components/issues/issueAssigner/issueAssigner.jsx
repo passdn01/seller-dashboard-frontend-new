@@ -55,7 +55,7 @@ const IssueAssigner = () => {
     useEffect(() => {
         const fetchTickets = async () => {
             try {
-                const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets`);
+                const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets`);
                 setTickets(response.data);
             } catch (err) {
                 setError("Failed to load tickets");
@@ -68,7 +68,7 @@ const IssueAssigner = () => {
     useEffect(() => {
         const fetchSolvers = async () => {
             try {
-                const response = await axios.get(`${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/solvers`);
+                const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/solvers`);
                 setSolvers(response.data);
             } catch (err) {
                 setError("Failed to load solvers");
@@ -88,7 +88,7 @@ const IssueAssigner = () => {
 
         try {
             setLoading(true);
-            await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/assign`, {
+            await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/assign`, {
                 assignerId: userId,
                 ticketId,
                 solverId

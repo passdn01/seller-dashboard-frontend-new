@@ -15,7 +15,7 @@ const DriverChart = () => {
     useEffect(() => {
         const fetchRides = async () => {
             try {
-                const response = await axios.post(`${SELLER_URL_LOCAL}/dashboard/api/seller/rides-by-driver`, { driverId });
+                const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/rides-by-driver`, { driverId });
                 const { data } = response.data;
 
                 setWeeks(data);

@@ -24,7 +24,7 @@ function UserLastRides({ userId, data }) {
 
     const fetchRides = async () => {
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/buyer/getLastTenRides`, {
+            const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/getLastTenRides`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id: userId }),

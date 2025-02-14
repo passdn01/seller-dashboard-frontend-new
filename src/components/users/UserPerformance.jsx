@@ -23,7 +23,7 @@ const UserPerformance = ({ userData }) => {
 
     const fetchPerformance = async () => {
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/dashboard/api/buyer/coinTransactionNumber`, {
+            const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/coinTransactionNumber`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

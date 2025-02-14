@@ -154,7 +154,7 @@ function SideNavbar() {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch(`${SELLER_URL_LOCAL}/logout`, {
+            const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/logout`, {
                 method: 'POST',
                 credentials: 'include'
             });
