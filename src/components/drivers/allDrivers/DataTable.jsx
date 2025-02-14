@@ -100,8 +100,8 @@ export default function DriverTable() {
 
 
     useEffect(() => {
-        const socket = io(`${SELLER_URL_LOCAL}`); // Replace with your server URL
-
+        const socket = io(`${SELLER_URL_LOCAL}`);
+        
         console.time("Socket API Response Time"); // Start measuring time
 
         socket.on("connect", () => {
@@ -109,40 +109,49 @@ export default function DriverTable() {
             // Request to get all drivers
             socket.emit("getAllDrivers");
         });
-
+    
         // Handle incoming driver data (batch-based)
         socket.on("driverData", (data) => {
-            // Process data to add 'verify' field before updating state
             const processedData = data.map(driver => {
                 const isIncompleteRegistration = driver.isCompleteRegistration === false;
-                const isMissingNameOrLicense = driver.licenseNumber || driver.name;
+                // const completeRegistration = driver.isCompleteRegistration === true;
+                const isMissingNameOrLicense = driver.licenseNumber || driver.name && driver.name !== "null";
+    
+                let verificationStatus = "";
 
-                let verificationStatus = "Verified"; // Default to verified
-
-                if (isIncompleteRegistration || !isMissingNameOrLicense) {
-                    verificationStatus = "Unverified";
+                if (driver.isCompleteRegistration === true) {
+                    verificationStatus = "Verified";
                 }
-
+    
+                if (isIncompleteRegistration && !isMissingNameOrLicense) {
+                    verificationStatus = "Not";
+                }
+    
+                if (isIncompleteRegistration && isMissingNameOrLicense) { 
+                    verificationStatus = "Pending";
+                }
+    
                 return { ...driver, verify: verificationStatus };
             });
-
-            setData((prevDrivers) => [...prevDrivers, ...processedData]); // Add new data to state dynamically
+    
+            setData((prevDrivers) => [...prevDrivers, ...processedData]);
             setLoading(false);
         });
-
+    
         // Handle the end of the data stream
         socket.on("driverDataEnd", () => {
-            console.timeEnd("Socket API Response Time"); // End measuring time
-            setLoading(false); // Stop loading when all data is received
+            console.timeEnd("Socket API Response Time");
+            setLoading(false);
         });
-
+    
         // Handle errors
         socket.on("driverDataError", (error) => {
             console.error("Error:", error.message);
-            setError(error.message); // Set error message
-            setLoading(false); // Stop loading in case of error
+            setError(error.message);
+            setLoading(false);
         });
 
+    
         // Clean up the socket connection when the component unmounts
         return () => {
             socket.off("driverData");
@@ -150,7 +159,6 @@ export default function DriverTable() {
             socket.off("driverDataError");
             socket.disconnect();
         };
-
     }, []);
 
     useEffect(() => {

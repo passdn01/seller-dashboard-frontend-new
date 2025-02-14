@@ -12,5 +12,5 @@ export const getCookie = (name) => {
   return cookie ? cookie.split('=')[1] : null;
 };
 
-export const SELLER_URL_LOCAL = "https://suuper.in"
+export const SELLER_URL_LOCAL = "https://55kqzrxn-5000.inc1.devtunnels.ms"
 
