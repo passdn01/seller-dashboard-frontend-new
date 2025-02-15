@@ -45,6 +45,7 @@ const HomeCharts = () => {
         fetchData();
     }, [type]);
 
+    console.log(buyerData, "buyerData")
 
     const formatData = (data) => {
         return data.map(item => ({

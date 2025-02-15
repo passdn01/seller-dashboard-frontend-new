@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from 'react';
+import { React, useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import {
     Dialog,
@@ -16,7 +16,6 @@ import {
 import { Label } from '@/components/ui/label';
 import UploadDocuments from './UploadDocuments';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 const DriverDetails = ({ data }) => {
     const driverId = data?._id;
@@ -25,6 +24,7 @@ const DriverDetails = ({ data }) => {
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isImagesFetched, setIsImagesFetched] = useState(false);
 
     const initialFormState = {
         licenseNumber: "",
@@ -61,6 +61,33 @@ const DriverDetails = ({ data }) => {
         setIsDialogOpen(true);
     };
 
+    // Fetch signed URLs for images
+    const fetchSignedUrls = useCallback(async (urls) => {
+        // if (!urls || isImagesFetched) return urls;
+
+        const updatedUrls = { ...urls };
+        const fetchPromises = Object.entries(urls)
+            .filter(([_, url]) => url) // Only process non-empty URLs
+            .map(async ([key, url]) => {
+                try {
+
+                    const response = await axios.post("http://13.126.106.41:2011/api/getImage", {
+                        unsignedUrl: url,
+                    });
+                    updatedUrls[key] = response.data.publicUrl || url;
+
+                } catch (err) {
+                    console.error(`Failed to fetch ${key}`, err);
+                    updatedUrls[key] = url; // Keep original URL on error
+                }
+            });
+
+        await Promise.all(fetchPromises);
+        setIsImagesFetched(true);
+        return updatedUrls;
+    }, [isImagesFetched]);
+
+    // Fetch driver details
     useEffect(() => {
         const fetchDriverDetails = async () => {
             if (!driverId) return;
@@ -73,6 +100,7 @@ const DriverDetails = ({ data }) => {
 
                 if (response.data) {
                     const driver = response.data;
+
                     setFormData({
                         licenseNumber: driver.licenseNumber || "",
                         name: driver.name || "",
@@ -92,13 +120,20 @@ const DriverDetails = ({ data }) => {
                         rejectReason: driver.rejectReason || "NA"
                     });
 
-                    setImageUrls({
+                    const initialUrls = {
                         profileUrl: driver.profileUrl || "",
                         drivingLicense: driver.drivingLicense || "",
                         drivingLicenseBack: driver.drivingLicenseBack || "",
                         registrationCertificate: driver.registrationCertificate || "",
                         registrationCertificateBack: driver.registrationCertificateBack || "",
-                    });
+                    };
+
+                    console.log("initial urls", initialUrls)
+
+                    // Fetch signed URLs immediately after getting initial data
+                    const signedUrls = await fetchSignedUrls(initialUrls);
+                    console.log("signed urls", signedUrls)
+                    setImageUrls(signedUrls);
                 }
             } catch (err) {
                 setError("Error fetching driver details");
@@ -109,33 +144,7 @@ const DriverDetails = ({ data }) => {
         };
 
         fetchDriverDetails();
-    }, [driverId]);
-
-    useEffect(() => {
-        const fetchImageUrls = async () => {
-            const updatedUrls = {};
-            for (const [key, url] of Object.entries(imageUrls)) {
-                // if (!url) {
-                //     updatedUrls[key] = "";
-                //     continue;
-                // }
-
-                try {
-                    const response = await axios.post("http://13.126.106.41:2011/api/getImage", {
-                        unsignedUrl: url,
-                    });
-                    updatedUrls[key] = response.data.publicUrl;
-                    console.log(response.data.publicUrl, "url image")
-                } catch (err) {
-                    console.error(`Failed to fetch ${key}`, err);
-                    updatedUrls[key] = url;
-                }
-            }
-            setImageUrls(updatedUrls);
-        };
-
-        fetchImageUrls();
-    }, []);
+    }, [driverId, fetchSignedUrls]);
 
     const handleChange = (field, value) => {
         setFormData(prev => ({
@@ -159,7 +168,7 @@ const DriverDetails = ({ data }) => {
             });
 
             if (response.ok) {
-                const result = await response.json();
+                await response.json();
                 window.alert("Data saved successfully");
             } else {
                 throw new Error(response.statusText);
@@ -181,6 +190,8 @@ const DriverDetails = ({ data }) => {
     if (error) {
         return <div className="p-4 text-red-500">{error}</div>;
     }
+
+    console.log("Image urls", imageUrls)
 
     return (
         <div className="w-full max-w-5xl mx-auto p-4">
@@ -206,6 +217,7 @@ const DriverDetails = ({ data }) => {
                         .filter(([key]) => key !== 'profileUrl')
                         .map(([key, url]) => (
                             <div key={key} className="relative">
+
                                 <img
                                     src={url || '/placeholder-image.jpg'}
                                     alt={key.replace(/([A-Z])/g, " $1").trim()}
@@ -220,7 +232,6 @@ const DriverDetails = ({ data }) => {
                 </div>
 
                 <div className="col-span-2 grid grid-cols-2 gap-4">
-                    {/* Form fields remain the same */}
                     <div className="space-y-4">
                         <LabelField label="License Number" value={formData.licenseNumber} onChange={(val) => handleChange("licenseNumber", val)} />
                         <LabelField label="DOB" type="date" value={formData.dob} onChange={(val) => handleChange("dob", val)} />
@@ -320,7 +331,6 @@ const DriverDetails = ({ data }) => {
                 <UploadDocuments id={driverId} />
             </div>
 
-            {/* Image Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
                     {selectedImage && (
