@@ -113,15 +113,15 @@ function CardGrid() {
         },
         {
             icon: driverearning,
-            number: formatNumber(todayMetrics.driversEarnings || 0),
+            number: `₹${formatNumber(todayMetrics.driversEarnings || 0)}`,
             title: "Driver's Earnings",
-            increase: lastHourMetrics.driversEarnings,
+            increase: `₹${formatNumber(lastHourMetrics.driversEarnings)}`,
         },
         {
             icon: savecommission,
-            number: formatNumber(calculateCommission(todayMetrics.driversEarnings) || 0),
+            number: `₹${formatNumber(calculateCommission(todayMetrics.driversEarnings) || 0)}`,
             title: "Save Commission",
-            increase: calculateCommission(lastHourMetrics.driversEarnings),
+            increase: `₹${formatNumber(calculateCommission(lastHourMetrics.driversEarnings))}`,
         },
         {
             icon: user,
@@ -137,9 +137,9 @@ function CardGrid() {
         },
         {
             icon: driverwalletadd,
-            number: formatNumber(todayMetrics.walletCredits || 0),
+            number: `₹${formatNumber(todayMetrics.walletCredits || 0)}`,
             title: "Driver Wallet Add",
-            increase: lastHourMetrics.walletCredits,
+            increase: `₹${formatNumber(lastHourMetrics.walletCredits)}`,
         },
         {
             icon: subscriptiontrans,
@@ -149,9 +149,9 @@ function CardGrid() {
         },
         {
             icon: totalsubscription,
-            number: formatNumber(todayMetrics.subscriptionAmount || 0),
+            number: `₹${formatNumber(todayMetrics.subscriptionAmount || 0)}`,
             title: "Total Subscription Amount",
-            increase: lastHourMetrics.subscriptionAmount,
+            increase: `₹${formatNumber(lastHourMetrics.subscriptionAmount)}`,
         },
         {
             icon: coinsdistributed,
@@ -161,55 +161,49 @@ function CardGrid() {
         },
         {
             icon: userredeem,
-            number: formatNumber(todayMetrics.userRedeemMoney || 0),
+            number: `₹${formatNumber(todayMetrics.userRedeemMoney || 0)}`,
             title: "User Redeem Money",
-            increase: lastHourMetrics.userRedeemMoney,
+            increase: `₹${formatNumber(lastHourMetrics.userRedeemMoney)}`,
         },
         {
             icon: kms,
-
             number: formatNumber(todayMetrics.kmServed || 0),
             title: "KM We Serve",
             increase: lastHourMetrics.kmServed,
         },
         {
             icon: bike,
-
             number: formatNumber(todayMetrics.BikeRides || 0),
             title: "Bike Taxi",
             // increase: lastHourMetrics.BikeRides,
-            increase: 0
-
+            increase: 0,
         },
         {
             icon: auto,
-
             number: formatNumber(todayMetrics.totalVerifiedAuto || 0),
             title: "Auto Rickshaw",
             increase: lastHourMetrics.totalVerifiedAuto,
         },
         {
             icon: cab,
-
             number: formatNumber(todayMetrics.totalVerifiedCab || 0),
             title: "Cab",
             increase: lastHourMetrics.totalVerifiedCab,
         },
         {
             icon: fake,
-
             number: formatNumber(todayMetrics.FakeRides || 0),
             title: "Fake Rides",
             increase: lastHourMetrics.FakeRides,
         },
         {
             icon: cancel,
-
             number: formatNumber(todayMetrics.cancelledRides || 0),
             title: "Cancel Rides",
             increase: lastHourMetrics.cancelledRides,
         },
     ];
+    
 
 
     const allTimeTabData = [
@@ -243,29 +237,29 @@ function CardGrid() {
         },
         {
             icon: driverearning,
-            number: formatNumber(allTimeMetrics.driversEarnings || 0),
+            number: `₹${formatNumber(allTimeMetrics.driversEarnings || 0)}`,
             title: "Driver's Earnings",
-            increase: todayMetrics.driversEarnings,
+            increase: `₹${formatNumber(todayMetrics.driversEarnings)}`,
             hover: true,
             hoverData: {
                 title: "Driver's Earnings",
-                todayNumber: todayMetrics.driversEarnings,
+                todayNumber: `₹${formatNumber(todayMetrics.driversEarnings)}`,
                 todayNumberLine: "Today's Earnings",
-                lastHourNumber: lastHourMetrics.driversEarnings,
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.driversEarnings)}`,
                 lastHourNumberLine: "Last hour's Earnings",
             },
         },
         {
             icon: savecommission,
-            number: formatNumber(calculateCommission(allTimeMetrics.driversEarnings) || 0),
+            number: `₹${formatNumber(calculateCommission(allTimeMetrics.driversEarnings) || 0)}`,
             title: "Save Commission",
-            increase: calculateCommission(todayMetrics.driversEarnings),
+            increase: `₹${formatNumber(calculateCommission(todayMetrics.driversEarnings))}`,
             hover: true,
             hoverData: {
                 title: "Saved Commissions",
-                todayNumber: calculateCommission(todayMetrics.driversEarnings),
+                todayNumber: `₹${formatNumber(calculateCommission(todayMetrics.driversEarnings))}`,
                 todayNumberLine: "Today's Saved Commission",
-                lastHourNumber: calculateCommission(lastHourMetrics.driversEarnings),
+                lastHourNumber: `₹${formatNumber(calculateCommission(lastHourMetrics.driversEarnings))}`,
                 lastHourNumberLine: "Last hour's Saved Commission",
             },
         },
@@ -299,15 +293,15 @@ function CardGrid() {
         },
         {
             icon: driverwalletadd,
-            number: formatNumber(allTimeMetrics.walletCredits || 0),
+            number: `₹${formatNumber(allTimeMetrics.walletCredits || 0)}`,
             title: "Driver Wallet Add",
-            increase: todayMetrics.walletCredits,
+            increase: `₹${formatNumber(todayMetrics.walletCredits)}`,
             hover: true,
             hoverData: {
                 title: "Driver Wallet Additions",
-                todayNumber: todayMetrics.walletCredits,
+                todayNumber: `₹${formatNumber(todayMetrics.walletCredits)}`,
                 todayNumberLine: "Today's Wallet Additions",
-                lastHourNumber: lastHourMetrics.walletCredits,
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.walletCredits)}`,
                 lastHourNumberLine: "Last hour's Wallet Additions",
             },
         },
@@ -327,15 +321,15 @@ function CardGrid() {
         },
         {
             icon: totalsubscription,
-            number: formatNumber(allTimeMetrics.subscriptionAmount || 0),
+            number: `₹${formatNumber(allTimeMetrics.subscriptionAmount || 0)}`,
             title: "Total Subscription Amount",
-            increase: todayMetrics.subscriptionAmount,
+            increase: `₹${formatNumber(todayMetrics.subscriptionAmount)}`,
             hover: true,
             hoverData: {
                 title: "Total Subscription Amount",
-                todayNumber: todayMetrics.subscriptionAmount,
+                todayNumber: `₹${formatNumber(todayMetrics.subscriptionAmount)}`,
                 todayNumberLine: "Today's Subscription Amount",
-                lastHourNumber: lastHourMetrics.subscriptionAmount,
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.subscriptionAmount)}`,
                 lastHourNumberLine: "Last hour's Subscription Amount",
             },
         },
@@ -355,15 +349,15 @@ function CardGrid() {
         },
         {
             icon: userredeem,
-            number: formatNumber(allTimeMetrics.userRedeemMoney || 0),
+            number: `₹${formatNumber(allTimeMetrics.userRedeemMoney || 0)}`,
             title: "User Redeem Money",
-            increase: todayMetrics.userRedeemMoney,
+            increase: `₹${formatNumber(todayMetrics.userRedeemMoney)}`,
             hover: true,
             hoverData: {
                 title: "User Redeemed Money",
-                todayNumber: todayMetrics.userRedeemMoney,
+                todayNumber: `₹${formatNumber(todayMetrics.userRedeemMoney)}`,
                 todayNumberLine: "Today's Redeemed Money",
-                lastHourNumber: lastHourMetrics.userRedeemMoney,
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.userRedeemMoney)}`,
                 lastHourNumberLine: "Last hour's Redeemed Money",
             },
         },
