@@ -35,28 +35,34 @@ const UploadDocuments = ({ id }) => {
     }
     const uploadProfileImage = async () => {
         if (!profileUrl) {
-            alert("Please select a Driving License file to upload.");
+            alert("Please select a file to upload.");
             return;
         }
 
         const formData = new FormData();
-        formData.append('file', profileUrl);
+        formData.append('file', profileUrl); // Attach the file
 
         try {
-            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/profile-image`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            const response = await axios.post(
+                `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/profile-image`,
+                formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                }
+            );
+
             alert(response.data.message); // Alert on success
         } catch (error) {
             console.error("Error uploading Profile Image:", error);
             alert(error.response?.data?.message || "Error uploading Profile Image"); // Alert on error
         } finally {
             // Reset the state after upload
-            setDrivingLicense(null);
+            setProfileUrl(null);
         }
     };
+
 
     const uploadDrivingLicense = async () => {
         if (!drivingLicense) {
