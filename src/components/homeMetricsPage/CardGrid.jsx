@@ -115,13 +115,13 @@ function CardGrid() {
             icon: driverearning,
             number: `₹${formatNumber(todayMetrics.driversEarnings || 0)}`,
             title: "Driver's Earnings",
-            increase: `₹${formatNumber(lastHourMetrics.driversEarnings)}`,
+            increase: formatNumber(lastHourMetrics.driversEarnings),
         },
         {
             icon: savecommission,
             number: `₹${formatNumber(calculateCommission(todayMetrics.driversEarnings) || 0)}`,
             title: "Save Commission",
-            increase: `₹${formatNumber(calculateCommission(lastHourMetrics.driversEarnings))}`,
+            increase: formatNumber(calculateCommission(lastHourMetrics.driversEarnings)),
         },
         {
             icon: user,
@@ -139,7 +139,7 @@ function CardGrid() {
             icon: driverwalletadd,
             number: `₹${formatNumber(todayMetrics.walletCredits || 0)}`,
             title: "Driver Wallet Add",
-            increase: `₹${formatNumber(lastHourMetrics.walletCredits)}`,
+            increase: formatNumber(lastHourMetrics.walletCredits),
         },
         {
             icon: subscriptiontrans,
@@ -151,7 +151,7 @@ function CardGrid() {
             icon: totalsubscription,
             number: `₹${formatNumber(todayMetrics.subscriptionAmount || 0)}`,
             title: "Total Subscription Amount",
-            increase: `₹${formatNumber(lastHourMetrics.subscriptionAmount)}`,
+            increase: formatNumber(lastHourMetrics.subscriptionAmount),
         },
         {
             icon: coinsdistributed,
@@ -163,7 +163,7 @@ function CardGrid() {
             icon: userredeem,
             number: `₹${formatNumber(todayMetrics.userRedeemMoney || 0)}`,
             title: "User Redeem Money",
-            increase: `₹${formatNumber(lastHourMetrics.userRedeemMoney)}`,
+            increase: formatNumber(lastHourMetrics.userRedeemMoney),
         },
         {
             icon: kms,
@@ -239,7 +239,7 @@ function CardGrid() {
             icon: driverearning,
             number: `₹${formatNumber(allTimeMetrics.driversEarnings || 0)}`,
             title: "Driver's Earnings",
-            increase: `₹${formatNumber(todayMetrics.driversEarnings)}`,
+            increase: formatNumber(todayMetrics.driversEarnings),
             hover: true,
             hoverData: {
                 title: "Driver's Earnings",
@@ -253,7 +253,7 @@ function CardGrid() {
             icon: savecommission,
             number: `₹${formatNumber(calculateCommission(allTimeMetrics.driversEarnings) || 0)}`,
             title: "Save Commission",
-            increase: `₹${formatNumber(calculateCommission(todayMetrics.driversEarnings))}`,
+            increase: formatNumber(calculateCommission(todayMetrics.driversEarnings)),
             hover: true,
             hoverData: {
                 title: "Saved Commissions",
@@ -295,7 +295,7 @@ function CardGrid() {
             icon: driverwalletadd,
             number: `₹${formatNumber(allTimeMetrics.walletCredits || 0)}`,
             title: "Driver Wallet Add",
-            increase: `₹${formatNumber(todayMetrics.walletCredits)}`,
+            increase: formatNumber(todayMetrics.walletCredits),
             hover: true,
             hoverData: {
                 title: "Driver Wallet Additions",
@@ -323,7 +323,7 @@ function CardGrid() {
             icon: totalsubscription,
             number: `₹${formatNumber(allTimeMetrics.subscriptionAmount || 0)}`,
             title: "Total Subscription Amount",
-            increase: `₹${formatNumber(todayMetrics.subscriptionAmount)}`,
+            increase: formatNumber(todayMetrics.subscriptionAmount),
             hover: true,
             hoverData: {
                 title: "Total Subscription Amount",
@@ -351,7 +351,7 @@ function CardGrid() {
             icon: userredeem,
             number: `₹${formatNumber(allTimeMetrics.userRedeemMoney || 0)}`,
             title: "User Redeem Money",
-            increase: `₹${formatNumber(todayMetrics.userRedeemMoney)}`,
+            increase: formatNumber(todayMetrics.userRedeemMoney),
             hover: true,
             hoverData: {
                 title: "User Redeemed Money",
