@@ -7,7 +7,7 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
+    // DialogTrigger,
 } from "@/components/ui/dialog";
 
 import { Button } from "../../ui/button";
@@ -30,7 +30,7 @@ import {
 } from "../../ui/select";
 import { Oval } from 'react-loader-spinner';
 
-import { Card, CardContent } from "@/components/ui/card";
+// import { Card, CardContent } from "@/components/ui/card";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -52,11 +52,11 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+// import { Label } from '@/components/ui/label';
+// import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+// import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 
 
@@ -77,11 +77,12 @@ export default function DriverTable() {
     const [columnVisibility, setColumnVisibility] = useState({});
     const [rowSelection, setRowSelection] = useState({});
     const [data, setData] = useState([]);
-    const [message, setMessage] = useState('');
+    // const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [statusFilter, setStatusFilter] = useState("all");
     const [verifyFilter, setVerifyFilter] = useState("all");
+    const [rcFilter, setRcFilter] = useState("all");
     const [categoryFilter, setCategoryFilter] = useState("all");
     const [globalFilter, setGlobalFilter] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -130,6 +131,7 @@ export default function DriverTable() {
                 if (isIncompleteRegistration && isMissingNameOrLicense) { 
                     verificationStatus = "Pending";
                 }
+
     
                 return { ...driver, verify: verificationStatus };
             });
@@ -161,6 +163,8 @@ export default function DriverTable() {
         };
     }, []);
 
+    const [showEmptyRC, setShowEmptyRC] = useState(false);
+
     useEffect(() => {
         // Filter the data dynamically if necessary
         setFilteredData(data);
@@ -174,61 +178,46 @@ export default function DriverTable() {
 
     useEffect(() => {
         applyMissingFilters(); // Reapply filters when filters change
-    }, [missingFilters, showMissingNameAndLicense]);
+    }, [missingFilters, showMissingNameAndLicense]); // Added showEmptyRC dependency
 
-    // Function to apply filters dynamically when data updates
+    // Updated function to apply filters dynamically when data updates
     const applyMissingFilters = () => {
-        const { dlMissing, dlBackMissing, rcMissing, profileMissing, rcBackMissing, none } = missingFilters;
+        const { rcNumberMissing ,dlMissing, dlBackMissing, rcMissing, profileMissing, rcBackMissing, none } = missingFilters;
 
         const filtered = data.filter((driver) => {
+
+            // Check for missing name and license
             if (showMissingNameAndLicense) {
                 return !driver.name && !driver.licenseNumber;
             }
 
+            const isRcNumberMissing = rcNumberMissing && driver.vehicleNumber;
             const isDlMissing = dlMissing && !driver.drivingLicense;
             const isDlBackMissing = dlBackMissing && !driver.drivingLicenseBack;
             const isRcMissing = rcMissing && !driver.registrationCertificate;
             const isProfileMissing = profileMissing && !driver.profileUrl;
             const isRcBackMissing = rcBackMissing && !driver.registrationCertificateBack;
 
+            // Check for none missing documents
             if (none) {
-                return driver.drivingLicense &&
+                return  driver.vehicleNumber &&
+                    driver.drivingLicense &&
                     driver.drivingLicenseBack &&
                     driver.registrationCertificate &&
                     driver.profileUrl &&
                     driver.registrationCertificateBack;
             }
 
+            if (!dlMissing && !dlBackMissing && !rcMissing && !profileMissing && !rcBackMissing && !rcNumberMissing) {
+                return true;
+            }
 
-            return (!dlMissing && !dlBackMissing && !rcMissing && !profileMissing && !rcBackMissing) ||
-                isDlMissing || isDlBackMissing || isRcMissing || isProfileMissing || isRcBackMissing;
+            // Apply document missing filters
+            return isDlMissing || isDlBackMissing || isRcMissing || isProfileMissing || isRcBackMissing || isRcNumberMissing;
         });
 
         setFilteredData(filtered); // Update filtered data dynamically
     };
-
-    // const applyVerificationFilters = () => {
-    //     const filtered = data.filter((driver) => {
-    //         const isIncompleteRegistration = driver.isCompleteRegistration === false;
-    //         const isMissingNameOrLicense = !driver.licenseNumber || !driver.name;
-
-    //         if (verifyFilter === "verified") {
-    //             return !(isIncompleteRegistration || isMissingNameOrLicense);
-    //         }
-    //         if (verifyFilter === "unverified") {
-    //             return isIncompleteRegistration || isMissingNameOrLicense;
-    //         }
-
-    //         return true; // If "all" is selected, return all data.
-    //     });
-
-    //     setFilteredData(filtered);
-    // };
-
-
-    // useEffect(() => {
-    //     applyVerificationFilters();
-    // }, [verifyFilter, data]);
 
     // Handler for checkbox change
     const handleCheckboxChange = (filterKey) => {
@@ -640,10 +629,30 @@ export default function DriverTable() {
                 </Select>
 
                 <DropdownMenu>
+                    <DropdownMenuTrigger asChild className="mr-2">
+                        <Button variant="outline">Present Docs</Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                    <DropdownMenuCheckboxItem
+                            checked={missingFilters.rcNumberMissing}
+                            onCheckedChange={() => handleCheckboxChange("rcNumberMissing")}
+                    >
+                            RC Number Present
+                    </DropdownMenuCheckboxItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+
+                <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline">Select Missing Documents</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
+                    <DropdownMenuCheckboxItem
+                            checked={missingFilters.rcNumberMissing}
+                            onCheckedChange={() => handleCheckboxChange("rcNumberMissing")}
+                        >
+                            RC Number Present
+                        </DropdownMenuCheckboxItem>
                         <DropdownMenuCheckboxItem
                             checked={missingFilters.dlMissing}
                             onCheckedChange={() => handleCheckboxChange("dlMissing")}
