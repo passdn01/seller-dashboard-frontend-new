@@ -61,90 +61,56 @@ const DriverDetails = ({ data }) => {
         setIsDialogOpen(true);
     };
 
-    // Fetch signed URLs for images
-    const fetchSignedUrls = useCallback(async (urls) => {
-        // if (!urls || isImagesFetched) return urls;
+    const fetchDriverDetails = useCallback(async () => {
+        if (!driverId) return;
 
-        const updatedUrls = { ...urls };
-        const fetchPromises = Object.entries(urls)
-            .filter(([_, url]) => url) // Only process non-empty URLs
-            .map(async ([key, url]) => {
-                try {
-
-                    const response = await axios.post("http://13.126.106.41:2011/api/getImage", {
-                        unsignedUrl: url,
-                    });
-                    updatedUrls[key] = response.data.publicUrl || url;
-
-                } catch (err) {
-                    console.error(`Failed to fetch ${key}`, err);
-                    updatedUrls[key] = url; // Keep original URL on error
-                }
+        setIsLoading(true);
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverDetail`, {
+                id: driverId
             });
 
-        await Promise.all(fetchPromises);
-        setIsImagesFetched(true);
-        return updatedUrls;
-    }, [isImagesFetched]);
+            if (response.data) {
+                const driver = response.data;
 
-    // Fetch driver details
-    useEffect(() => {
-        const fetchDriverDetails = async () => {
-            if (!driverId) return;
-
-            setIsLoading(true);
-            try {
-                const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverDetail`, {
-                    id: driverId
+                setFormData({
+                    licenseNumber: driver.licenseNumber || "",
+                    name: driver.name || "",
+                    dob: driver.dob || "",
+                    gender: driver.gender || "Male",
+                    address: driver.driverAddress || "",
+                    licenseType: driver.drivingLicenseCategory || "",
+                    licenseValidUpTo: driver.drivingLicenseValidUpto || "",
+                    vehicleNumber: driver.vehicleNumber || "",
+                    rcValidUpTo: driver.rcValidUpto || "",
+                    category: driver.category || "",
+                    vehicleModel: driver.vehicleMakerModel || "",
+                    fuelType: driver.vehicleFuelType || "",
+                    upiId: driver.upiID || "",
+                    balance: driver.balance || "",
+                    status: driver.status || "",
+                    rejectReason: driver.rejectReason || "NA"
                 });
 
-                if (response.data) {
-                    const driver = response.data;
-
-                    setFormData({
-                        licenseNumber: driver.licenseNumber || "",
-                        name: driver.name || "",
-                        dob: driver.dob || "",
-                        gender: driver.gender || "Male",
-                        address: driver.driverAddress || "",
-                        licenseType: driver.drivingLicenseCategory || "",
-                        licenseValidUpTo: driver.drivingLicenseValidUpto || "",
-                        vehicleNumber: driver.vehicleNumber || "",
-                        rcValidUpTo: driver.rcValidUpto || "",
-                        category: driver.category || "",
-                        vehicleModel: driver.vehicleMakerModel || "",
-                        fuelType: driver.vehicleFuelType || "",
-                        upiId: driver.upiID || "",
-                        balance: driver.balance || "",
-                        status: driver.status || "",
-                        rejectReason: driver.rejectReason || "NA"
-                    });
-
-                    const initialUrls = {
-                        profileUrl: driver.profileUrl || "",
-                        drivingLicense: driver.drivingLicense || "",
-                        drivingLicenseBack: driver.drivingLicenseBack || "",
-                        registrationCertificate: driver.registrationCertificate || "",
-                        registrationCertificateBack: driver.registrationCertificateBack || "",
-                    };
-
-                    console.log("initial urls", initialUrls)
-
-                    // Fetch signed URLs immediately after getting initial data
-                    const signedUrls = await fetchSignedUrls(initialUrls);
-                    console.log("signed urls", signedUrls)
-                    setImageUrls(signedUrls);
-                }
-            } catch (err) {
-                setError("Error fetching driver details");
-                console.error("Error fetching driver details:", err);
-            } finally {
-                setIsLoading(false);
+                setImageUrls({
+                    profileUrl: driver.profileUrl || "",
+                    drivingLicense: driver.drivingLicense || "",
+                    drivingLicenseBack: driver.drivingLicenseBack || "",
+                    registrationCertificate: driver.registrationCertificate || "",
+                    registrationCertificateBack: driver.registrationCertificateBack || "",
+                });
             }
-        };
+        } catch (err) {
+            setError("Error fetching driver details");
+            console.error("Error fetching driver details:", err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [driverId]);
 
+    useEffect(() => {
         fetchDriverDetails();
-    }, [driverId, fetchSignedUrls]);
+    }, [fetchDriverDetails]);
 
     const handleChange = (field, value) => {
         setFormData(prev => ({
@@ -191,13 +157,15 @@ const DriverDetails = ({ data }) => {
         return <div className="p-4 text-red-500">{error}</div>;
     }
 
-    console.log("Image urls", imageUrls)
-
     return (
         <div className="w-full max-w-5xl mx-auto p-4">
+
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Driver Details</h2>
-                <Button onClick={handleSave}>Save</Button>
+                <div className="space-x-2">
+                    <Button onClick={handleSave}>Save</Button>
+                    <Button variant="outline" onClick={fetchDriverDetails}>Refresh</Button>
+                </div>
             </div>
 
             <div className="grid grid-cols-3 gap-6">
@@ -205,7 +173,7 @@ const DriverDetails = ({ data }) => {
                     <div className="flex justify-center mb-6">
                         <Avatar className="w-32 h-32">
                             <AvatarImage
-                                src={imageUrls.profileUrl}
+                                src={imageUrls?.profileUrl}
                                 alt="Profile"
                                 onClick={() => handleImageClick(imageUrls.profileUrl)}
                                 className="cursor-pointer"
