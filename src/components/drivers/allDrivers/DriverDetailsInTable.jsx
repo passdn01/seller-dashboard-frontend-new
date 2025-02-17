@@ -42,7 +42,8 @@ const DriverDetails = ({ data }) => {
         upiId: "",
         balance: "",
         status: "",
-        rejectReason: "NA"
+        rejectReason: "NA",
+        isCompleteRegistration: false,
     };
 
     const initialImageState = {
@@ -89,7 +90,8 @@ const DriverDetails = ({ data }) => {
                     upiId: driver.upiID || "",
                     balance: driver.balance || "",
                     status: driver.status || "",
-                    rejectReason: driver.rejectReason || "NA"
+                    rejectReason: driver.rejectReason || "NA",
+                    isCompleteRegistration: driver.isCompleteRegistration || false
                 });
 
                 setImageUrls({
@@ -162,10 +164,7 @@ const DriverDetails = ({ data }) => {
 
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Driver Details</h2>
-                <div className="space-x-2">
-                    <Button onClick={handleSave}>Save</Button>
-                    <Button variant="outline" onClick={fetchDriverDetails}>Refresh</Button>
-                </div>
+
             </div>
 
             <div className="grid grid-cols-3 gap-6">
@@ -203,6 +202,12 @@ const DriverDetails = ({ data }) => {
                     <div className="space-y-4">
                         <LabelField label="License Number" value={formData.licenseNumber} onChange={(val) => handleChange("licenseNumber", val)} />
                         <LabelField label="DOB" type="date" value={formData.dob} onChange={(val) => handleChange("dob", val)} />
+                        <LabelField
+                            label="License Valid Upto"
+                            type="date"
+                            value={formData.licenseValidUpTo}
+                            onChange={(val) => handleChange("licenseValidUpTo", val)}
+                        />
                         <LabelField label="Address" value={formData.address} onChange={(val) => handleChange("address", val)} />
                         <LabelField label="Vehicle Number" value={formData.vehicleNumber} onChange={(val) => handleChange("vehicleNumber", val)} />
                         <LabelField label="RC Valid Upto" type="date" value={formData.rcValidUpTo} onChange={(val) => handleChange("rcValidUpTo", val)} />
@@ -221,6 +226,7 @@ const DriverDetails = ({ data }) => {
                             ]}
                             onChange={(val) => handleChange("status", val)}
                         />
+
                     </div>
 
                     <div className="space-y-4">
@@ -245,12 +251,7 @@ const DriverDetails = ({ data }) => {
                             ]}
                             onChange={(val) => handleChange("licenseType", val)}
                         />
-                        <LabelField
-                            label="License Valid Upto"
-                            type="date"
-                            value={formData.licenseValidUpTo}
-                            onChange={(val) => handleChange("licenseValidUpTo", val)}
-                        />
+
                         <DropdownField
                             label="Category"
                             value={formData.category}
@@ -266,6 +267,19 @@ const DriverDetails = ({ data }) => {
                             value={formData.vehicleModel}
                             onChange={(val) => handleChange("vehicleModel", val)}
                         />
+
+                        <DropdownField
+                            label="Fuel Type"
+                            value={formData.fuelType}
+                            options={[
+                                { label: "CNG", value: "CNG" },
+                                { label: "Petrol", value: "PETROL" },
+                                { label: "Diesel", value: "DIESEL" },
+                                { label: "Electric", value: "ELECTRIC" }
+                            ]}
+                            onChange={(val) => handleChange("fuelType", val)}
+                        />
+
                         <DropdownField
                             label="Reject Reason"
                             value={formData.rejectReason}
@@ -280,20 +294,22 @@ const DriverDetails = ({ data }) => {
                             ]}
                             onChange={(val) => handleChange("rejectReason", val)}
                         />
-                        <DropdownField
-                            label="Fuel Type"
-                            value={formData.fuelType}
-                            options={[
-                                { label: "CNG", value: "CNG" },
-                                { label: "Petrol", value: "PETROL" },
-                                { label: "Diesel", value: "DIESEL" },
-                                { label: "Electric", value: "ELECTRIC" }
-                            ]}
-                            onChange={(val) => handleChange("fuelType", val)}
+
+                        <CheckboxField
+                            label="Complete Registration"
+                            checked={formData.isCompleteRegistration}
+                            onChange={(checked) => handleChange("isCompleteRegistration", checked)}
                         />
+
+                        <div className="space-x-2 flex justify-end mb-4">
+                            <Button onClick={handleSave}>Save</Button>
+                            <Button variant="outline" onClick={fetchDriverDetails}>Refresh</Button>
+                        </div>
                     </div>
                 </div>
+
             </div>
+
 
             <div className="w-full border-t-2 border-gray-200 my-2 p-2">
                 <UploadDocuments id={driverId} />
@@ -343,5 +359,18 @@ const DropdownField = ({ label, value, options, onChange }) => (
         </Select>
     </div>
 );
+
+const CheckboxField = ({ label, checked, onChange }) => (
+    <div className="flex items-center space-x-2 py-2">
+        <input
+            type="checkbox"
+            checked={checked}
+            onChange={(e) => onChange(e.target.checked)}
+            className="h-4 w-4"
+        />
+        <Label>{label}</Label>
+    </div>
+);
+
 
 export default DriverDetails;
