@@ -216,7 +216,7 @@ function SideNavbar() {
                                                         <div key={subMenu.id}>
                                                             <Link to={subMenu.link}>
                                                                 <CommandItem
-                                                                    className={`py-2 text-sm hover:bg-gray-100 rounded-md ${isActive(subMenu.link)}`}
+                                                                    className={`py-2 text-sm hover:bg-blue-50 rounded-md ${isActive(subMenu.link)}`}
                                                                     onSelect={() => {
                                                                         if (subMenu.onClick) {
                                                                             console.log("ovsd")
