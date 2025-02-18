@@ -318,23 +318,41 @@ const UserTable = () => {
                 </Table>
 
                 {/* Pagination */}
-                <div className="flex justify-between mt-4">
-                    <Button
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        Previous
-                    </Button>
-                    <span>
-                        Page {table.getState().pagination.pageIndex + 1} of{" "}
-                        {table.getPageCount()}
-                    </span>
-                    <Button
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        Next
-                    </Button>
+                <div className="flex items-center justify-end space-x-2 py-4">
+                    <div className="flex-1 text-sm text-muted-foreground">
+                        Total {table.getFilteredRowModel().rows.length} row(s) available.
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            Previous
+                        </Button>
+                        <input
+                            type="number"
+                            min="1"
+                            max={table.getFilteredRowModel().rows.length}
+                            placeholder="Go to row..."
+                            className="w-60 border rounded px-2 py-2 text-sm"
+                            onChange={(e) => {
+                                const rowNumber = Number(e.target.value);
+                                if (rowNumber > 0 && rowNumber <= table.getFilteredRowModel().rows.length) {
+                                    table.setPageIndex(Math.floor((rowNumber - 1) / table.getState().pagination.pageSize));
+                                }
+                            }}
+                        />
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            Next
+                        </Button>
+                    </div>
                 </div>
             </CardContent>
         </Card>
