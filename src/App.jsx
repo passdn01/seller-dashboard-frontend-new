@@ -24,6 +24,7 @@ import IssueDetailIndex from './components/issues/issueDetailIndex.jsx/issueDeta
 import IssueSolverIndex from './components/issues/issueSolver/issueSolverIndex.jsx'
 import RideInfo from './components/rides/RideInfo.jsx'
 import IAMUserPage from './components/admin/IAMUserPage.jsx'
+import ImageComponent from './components/Img.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -80,6 +81,8 @@ function App() {
           <Route path='/users' element={<ProtectedRoute element={< AllUserPage />} />} />
           <Route path='/users/:id' element={<ProtectedRoute element={< UserInfoPage />} />} />
           <Route path='/admin' element={<ProtectedRoute element={< IAMUserPage />} />} />
+
+          <Route path='/home/dashboard/img' element={<ProtectedRoute element={< ImageComponent />} />} />
 
 
 
