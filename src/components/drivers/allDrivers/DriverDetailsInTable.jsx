@@ -16,6 +16,7 @@ import {
 import { Label } from '@/components/ui/label';
 import UploadDocuments from './UploadDocuments';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Textarea } from '@/components/ui/textarea';
 
 const DriverDetails = ({ data }) => {
     const driverId = data?._id;
@@ -208,7 +209,15 @@ const DriverDetails = ({ data }) => {
                             value={formData.licenseValidUpTo}
                             onChange={(val) => handleChange("licenseValidUpTo", val)}
                         />
-                        <LabelField label="Address" value={formData.address} onChange={(val) => handleChange("address", val)} />
+                        {/* <LabelField type='text-area' label="Address" value={formData.address} onChange={(val) => handleChange("address", val)} /> */}
+                        <div>
+                            <Label>Address</Label>
+                            <Textarea
+                                value={formData.address}
+                                onChange={(e) => handleChange("address", e.target.value)}
+                                className="mt-1"
+                            />
+                        </div>
                         <LabelField label="Vehicle Number" value={formData.vehicleNumber} onChange={(val) => handleChange("vehicleNumber", val)} />
                         <LabelField label="RC Valid Upto" type="date" value={formData.rcValidUpTo} onChange={(val) => handleChange("rcValidUpTo", val)} />
                         <LabelField label="UPI ID" value={formData.upiId} onChange={(val) => handleChange("upiId", val)} />

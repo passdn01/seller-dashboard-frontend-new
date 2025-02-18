@@ -1,4 +1,5 @@
 import React from 'react'
+import { useState } from 'react';
 import {
     Command,
     CommandSeparator,
@@ -36,6 +37,7 @@ import { Link } from 'react-router-dom'
 import { User } from 'lucide-react';
 
 function SideNavbar() {
+    const [hoveredItem, setHoveredItem] = useState(null);
     const [userRole, setUserRole] = React.useState(null);
 
 
@@ -186,7 +188,9 @@ function SideNavbar() {
                 <CommandSeparator />
                 <CommandList>
                     {accessibleMenu.map((menu) => (
-                        <div key={menu.id}>
+                        <div key={menu.id} className={`
+                            ${hoveredItem === menu.id ? 'bg-blue-200' : 'bg-white'}`} onMouseEnter={() => setHoveredItem(menu.id)}
+                            onMouseLeave={() => setHoveredItem(null)}>
                             {menu.submenu ? (
                                 <CommandItem>
                                     <Accordion type="single" collapsible className="w-full">
@@ -194,7 +198,7 @@ function SideNavbar() {
                                             <AccordionTrigger className="flex items-center py-1 text-sm rounded-md w-full">
                                                 <div className="flex items-center">
                                                     <img src={menu.icon} alt="" className="h-5 w-5 mr-3" />
-                                                    <span className="font-normal hover:no-underline">{menu.title}</span>
+                                                    <span className="font-normal">{menu.title}</span>
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent>
@@ -203,7 +207,7 @@ function SideNavbar() {
                                                         <div key={subMenu.id}>
                                                             <Link to={subMenu.link}>
                                                                 <CommandItem
-                                                                    className={`py-2 text-sm hover:bg-blue-200 rounded-md ${isActive(subMenu.link)}`}
+                                                                    className={`py-2 text-sm hover:bg-gray-100 rounded-md ${isActive(subMenu.link)}`}
                                                                     onSelect={() => {
                                                                         if (subMenu.onClick) {
                                                                             console.log("ovsd")

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+import { Icon } from 'leaflet'
 import "leaflet/dist/leaflet.css";
 import { MapPin } from "lucide-react";
 import { SELLER_URL_LOCAL } from "@/lib/utils";
@@ -80,7 +82,7 @@ function RideDetail({ transactionId, distance, userInfo }) {
                             </Marker>
                         )}
                         {endLocation && (
-                            <Marker position={endCoords}>
+                            <Marker position={endCoords} icon={new Icon({ iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41] })}>
                                 <Popup>{endLocation.address}</Popup>
                             </Marker>
                         )}
@@ -96,10 +98,10 @@ function RideDetail({ transactionId, distance, userInfo }) {
                             <span className="font-semibold">Transaction Id:</span>
                             <span className="text-gray-600">{rideData.transaction_id}</span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        {driver?.vehicleDetail?.make && (<div className="flex items-center gap-2">
                             <span className="font-semibold">Vehicle Type:</span>
                             <span>{driver?.vehicleDetail?.make || "N/A"}</span>
-                        </div>
+                        </div>)}
                     </div>
 
                     {/* Locations */}
@@ -159,7 +161,7 @@ function RideDetail({ transactionId, distance, userInfo }) {
                     </div>
 
                     {/* Driver Details */}
-                    <div className="grid grid-cols-2 gap-4">
+                    {driver?.name && (<div className="grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-sm font-semibold">Driver Name:</p>
                             <p>{driver?.name || "N/A"}</p>
@@ -172,7 +174,7 @@ function RideDetail({ transactionId, distance, userInfo }) {
                             <p className="text-sm font-semibold mt-2">Vehicle Number:</p>
                             <p>{driver?.vehicleDetail?.registration || "N/A"}</p>
                         </div>
-                    </div>
+                    </div>)}
                 </div>
             </div>
         </div>
