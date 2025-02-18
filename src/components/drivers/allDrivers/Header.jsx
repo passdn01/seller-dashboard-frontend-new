@@ -27,7 +27,7 @@ function Header({ title }) {
     const username = localStorage.getItem("username")
 
     return (
-        <div className="flex justify-between px-8 py-4 items-center border-b-2 shadow-1">
+        <div className="flex justify-between px-8 py-2 items-center border-b-2 shadow-1">
             <div className="text-xl font-bold">{title}</div>
 
             <DropdownMenu>

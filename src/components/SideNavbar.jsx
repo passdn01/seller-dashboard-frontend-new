@@ -22,7 +22,7 @@ import AgentIcon from '../assets/NavIcons/agent.svg';
 // import FinancialServicesIcon from '../assets/NavIcons/FinancialServices.svg';
 import IAMAdminIcon from '../assets/NavIcons/IAMAdmin.svg';
 import LogoutIcon from '../assets/NavIcons/Logout.svg';
-import Logo from '../assets/NavIcons/Logo.svg';
+import Logo from '../assets/vayu.png';
 // import LogsIcon from '../assets/NavIcons/logs.svg';
 import OfferIcon from '../assets/NavIcons/Offer.svg';
 // import QuizDashboardIcon from '../assets/NavIcons/QuizDashboard.svg';
@@ -190,9 +190,9 @@ function SideNavbar() {
     return (
         <div className='fixed border-r min-w-[250px] z-50 min-h-screen bg-white h-full overflow-hidden'>
             <Command className="rounded-lg">
-                <div className='p-4 flex items-center gap-2 font-bold'>
-                    <img src={Logo} alt="Logo" className="h-6 w-6" />
-                    <span>Vayu Admin</span>
+                <div className='py-[7px] flex items-center font-bold justify-center pr-6'>
+                    <img src={Logo} alt="Logo" />
+
                 </div>
                 <CommandSeparator />
                 <CommandList>
