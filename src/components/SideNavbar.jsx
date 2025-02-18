@@ -1,4 +1,5 @@
 import React from 'react'
+import { useState } from 'react';
 import {
     Command,
     CommandSeparator,
@@ -21,7 +22,7 @@ import AgentIcon from '../assets/NavIcons/agent.svg';
 // import FinancialServicesIcon from '../assets/NavIcons/FinancialServices.svg';
 import IAMAdminIcon from '../assets/NavIcons/IAMAdmin.svg';
 import LogoutIcon from '../assets/NavIcons/Logout.svg';
-import Logo from '../assets/NavIcons/Logo.svg';
+import Logo from '../assets/vayu.png';
 // import LogsIcon from '../assets/NavIcons/logs.svg';
 import OfferIcon from '../assets/NavIcons/Offer.svg';
 // import QuizDashboardIcon from '../assets/NavIcons/QuizDashboard.svg';
@@ -36,6 +37,7 @@ import { Link } from 'react-router-dom'
 import { User } from 'lucide-react';
 
 function SideNavbar() {
+    const [hoveredItem, setHoveredItem] = useState(null);
     const [userRole, setUserRole] = React.useState(null);
 
 
@@ -124,7 +126,16 @@ function SideNavbar() {
             submenu: false,
             icon: IAMAdminIcon,
         },
+        {
+            id: "8",
+            title: "Image Viewer",
+            link: "/home/dashboard/img",
+            submenu: false,
+            icon: IAMAdminIcon,
+        },
     ];
+
+    console.log(menuList)
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -179,14 +190,16 @@ function SideNavbar() {
     return (
         <div className='fixed border-r min-w-[250px] z-50 min-h-screen bg-white h-full overflow-hidden'>
             <Command className="rounded-lg">
-                <div className='p-4 flex items-center gap-2 font-bold'>
-                    <img src={Logo} alt="Logo" className="h-6 w-6" />
-                    <span>Vayu Admin</span>
+                <div className='py-[7px] flex items-center font-bold justify-center pr-6'>
+                    <img src={Logo} alt="Logo" />
+
                 </div>
                 <CommandSeparator />
                 <CommandList>
                     {accessibleMenu.map((menu) => (
-                        <div key={menu.id}>
+                        <div key={menu.id} className={`
+                            ${hoveredItem === menu.id ? 'bg-blue-200' : 'bg-white'}`} onMouseEnter={() => setHoveredItem(menu.id)}
+                            onMouseLeave={() => setHoveredItem(null)}>
                             {menu.submenu ? (
                                 <CommandItem>
                                     <Accordion type="single" collapsible className="w-full">
@@ -194,7 +207,7 @@ function SideNavbar() {
                                             <AccordionTrigger className="flex items-center py-1 text-sm rounded-md w-full">
                                                 <div className="flex items-center">
                                                     <img src={menu.icon} alt="" className="h-5 w-5 mr-3" />
-                                                    <span className="font-normal hover:no-underline">{menu.title}</span>
+                                                    <span className="font-normal">{menu.title}</span>
                                                 </div>
                                             </AccordionTrigger>
                                             <AccordionContent>
@@ -203,7 +216,7 @@ function SideNavbar() {
                                                         <div key={subMenu.id}>
                                                             <Link to={subMenu.link}>
                                                                 <CommandItem
-                                                                    className={`py-2 text-sm hover:bg-blue-200 rounded-md ${isActive(subMenu.link)}`}
+                                                                    className={`py-2 text-sm hover:bg-blue-50 rounded-md ${isActive(subMenu.link)}`}
                                                                     onSelect={() => {
                                                                         if (subMenu.onClick) {
                                                                             console.log("ovsd")
@@ -224,7 +237,7 @@ function SideNavbar() {
                                     </Accordion>
                                 </CommandItem>
                             ) : (
-                                <Link to={menu.link}>
+                                <Link target='_blank' to={menu.link}>
                                     <CommandItem className={`flex items-center p-2 text-sm hover:bg-blue-200 rounded-md w-full cursor-pointer bg-white ${isActive(menu.link)}`}>
                                         <img src={menu.icon} alt="" className="h-5 w-5 mr-3" />
                                         <span>{menu.title}</span>
