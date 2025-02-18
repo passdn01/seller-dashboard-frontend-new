@@ -126,7 +126,16 @@ function SideNavbar() {
             submenu: false,
             icon: IAMAdminIcon,
         },
+        {
+            id: "8",
+            title: "Image Viewer",
+            link: "/home/dashboard/img",
+            submenu: false,
+            icon: IAMAdminIcon,
+        },
     ];
+
+    console.log(menuList)
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -228,7 +237,7 @@ function SideNavbar() {
                                     </Accordion>
                                 </CommandItem>
                             ) : (
-                                <Link to={menu.link}>
+                                <Link target='_blank' to={menu.link}>
                                     <CommandItem className={`flex items-center p-2 text-sm hover:bg-blue-200 rounded-md w-full cursor-pointer bg-white ${isActive(menu.link)}`}>
                                         <img src={menu.icon} alt="" className="h-5 w-5 mr-3" />
                                         <span>{menu.title}</span>
