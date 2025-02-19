@@ -25,6 +25,7 @@ import IssueSolverIndex from './components/issues/issueSolver/issueSolverIndex.j
 import RideInfo from './components/rides/RideInfo.jsx'
 import IAMUserPage from './components/admin/IAMUserPage.jsx'
 import ImageComponent from './components/Img.jsx'
+import RideJourneyIndex from './components/rideJourney/RideJourneyIndex.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -59,6 +60,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/home/mapData" element={<ProtectedRoute element={<Home />} />} />
+          <Route path="/home/rideJourney" element={<ProtectedRoute element={<RideJourneyIndex />} />} />
           <Route path="/home/dashboard" element={<ProtectedRoute element={<HomeMetricPage />} />} />
           <Route path='/' element={<Login />}></Route>
           <Route path='/drivers/allDrivers' element={<ProtectedRoute element={<AllDrivers />} />} />
