@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { MapContainer, TileLayer, ZoomControl, Marker, Popup, useMap, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -9,29 +9,12 @@ import PropTypes from 'prop-types';
 import { io } from 'socket.io-client';
 import { SELLER_URL_LOCAL } from '@/lib/utils';
 
-// Custom HeatmapLayer Component
-const HeatmapLayer = ({ data }) => {
-    const map = useMap();
+// Create axios instance with default config
+const api = axios.create({
+    baseURL: import.meta.env.VITE_SELLER_URL_LOCAL,
+});
 
-    useEffect(() => {
-        if (data.length > 0) {
-            const existingHeatmapLayer = Object.values(map._layers).find(layer => layer instanceof L.HeatLayer);
-            if (existingHeatmapLayer) {
-                map.removeLayer(existingHeatmapLayer);
-            }
-
-            L.heatLayer(data, { radius: 20, blur: 35, maxZoom: 15 }).addTo(map);
-        }
-    }, [data, map]);
-
-    return null;
-};
-
-HeatmapLayer.propTypes = {
-    data: PropTypes.arrayOf(PropTypes.array).isRequired,
-};
-
-// Default icon for markers
+// Default icon configuration
 const defaultIcon = new L.Icon({
     iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
     iconSize: [25, 41],
@@ -40,11 +23,56 @@ const defaultIcon = new L.Icon({
     shadowSize: [41, 41],
 });
 
-// Heatmap Legend for the Analysis Section
-const HeatmapLegend = ({ type }) => {
-    const heatmapColors = type === 'completed'
-        ? ['#4575b4', '#91bfdb', '#e0f3f8', '#fee090', '#fc8d59', '#d73027']
-        : ['#313695', '#4575b4', '#74add1', '#fdae61', '#f46d43', '#a50026'];
+
+// Memoized HeatmapLayer Component
+const HeatmapLayer = React.memo(({ data }) => {
+    const map = useMap();
+
+    useEffect(() => {
+        if (!data?.length) return;
+
+        const existingHeatmapLayer = Object.values(map._layers).find(
+            layer => layer instanceof L.HeatLayer
+        );
+        
+        if (existingHeatmapLayer) {
+            map.removeLayer(existingHeatmapLayer);
+        }
+
+        const heatLayer = L.heatLayer(data, {
+            radius: 20,
+            blur: 35,
+            maxZoom: 15,
+            minOpacity: 0.4,
+            gradient: {
+                0.4: 'blue',
+                0.6: 'cyan',
+                0.8: 'lime',
+                1.0: 'red'
+            }
+        });
+
+        heatLayer.addTo(map);
+        return () => map.removeLayer(heatLayer);
+    }, [data, map]);
+
+    return null;
+});
+
+HeatmapLayer.displayName = 'HeatmapLayer';
+
+HeatmapLayer.propTypes = {
+    data: PropTypes.arrayOf(PropTypes.array).isRequired,
+};
+
+// Memoized HeatmapLegend Component
+const HeatmapLegend = React.memo(({ type }) => {
+    const heatmapColors = useMemo(() => 
+        type === 'completed'
+            ? ['#4575b4', '#91bfdb', '#e0f3f8', '#fee090', '#fc8d59', '#d73027']
+            : ['#313695', '#4575b4', '#74add1', '#fdae61', '#f46d43', '#a50026'],
+        [type]
+    );
 
     return (
         <div className="legend-box">
@@ -63,14 +91,13 @@ const HeatmapLegend = ({ type }) => {
             </div>
         </div>
     );
-};
+});
+
+HeatmapLegend.displayName = 'HeatmapLegend';
 
 HeatmapLegend.propTypes = {
     type: PropTypes.string.isRequired,
 };
-
-
-
 const GeoMetrics = () => {
     const [heatmapData, setHeatmapData] = useState([]);
     const [circlemapData, setCirclemapData] = useState([]);
@@ -87,14 +114,16 @@ const GeoMetrics = () => {
     const [varient, setVarient] = useState('ALL');
     const [type, setType] = useState('all');
 
-    useEffect(() => {
-        const timer = setTimeout(() => setMapLoading(false), 1000);
-        return () => clearTimeout(timer);
+    // Format date utility function
+    const formatDate = useCallback((dateString) => {
+        const [year, month, day] = dateString.split('-');
+        return `${day}-${month}-${year}`;
     }, []);
 
-    const fetchRideDistribution = async () => {
+    // Memoized API calls
+    const fetchRideDistribution = useCallback(async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/ride-distribution`);
+            const response = await api.get('/dashboard/api/seller/ride-distribution');
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -108,11 +137,11 @@ const GeoMetrics = () => {
         } finally {
             setOptionLoading(false);
         }
-    };
+    }, []);
 
-    const fetchCancelledRideDistribution = async () => {
+    const fetchCancelledRideDistribution = useCallback(async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/cancelled-distribution`);
+            const response = await api.get('/dashboard/api/seller/cancelled-distribution');
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -126,71 +155,87 @@ const GeoMetrics = () => {
         } finally {
             setOptionLoading(false);
         }
-    };
+    }, []);
 
-    // Function to format date as DD-MM-YYYY
-    const formatDate = (dateString) => {
-        const [year, month, day] = dateString.split('-');
-        return `${day}-${month}-${year}`;
-    };
+    const fetchDateRides = useCallback(async (date) => {
+        if (!date) return;
 
-    const fetchDateRides = async (date) => {
         try {
             setOptionLoading(true);
-            const formattedDate = formatDate(date); // Convert date to DD-MM-YYYY format
-            const requestData = { date: formattedDate };
+            const requestData = {
+                date: formatDate(date),
+                ...(startTime && { startTime }),
+                ...(endTime && { endTime }),
+                ...(varient !== 'ALL' && { varient }),
+                ...(type !== 'all' && { type })
+            };
 
-            // Add startTime and endTime to the request data if they are provided
-            if (startTime) requestData.startTime = startTime;
-            if (endTime) requestData.endTime = endTime;
-
-            // Only send varient and type if they're not "ALL" or "all"
-            if (varient !== 'ALL') requestData.varient = varient;
-            if (type !== 'all') requestData.type = type;
-
-            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/start-ride-clustering`, requestData);
+            const response = await api.post('/dashboard/api/seller/start-ride-clustering', requestData);
             const clusters = response.data.map(cluster => ({
                 center: [cluster.center.lat, cluster.center.lng],
                 count: cluster.numRides,
             }));
+            
             setCirclemapData(clusters);
-            setAnalysis(`Ride clustering for ${formattedDate}`);
+            setAnalysis(`Ride clustering for ${formatDate(date)}`);
         } catch (error) {
             console.error('Error fetching ride data:', error);
             setAnalysis('Error fetching ride clustering data.');
         } finally {
             setOptionLoading(false);
         }
-    };
+    }, [formatDate, startTime, endTime, varient, type]);
 
-
+    // Socket connection effect
     useEffect(() => {
-        const newSocket = io(`${import.meta.env.VITE_SELLER_URL_LOCAL}`);
+        const newSocket = io(import.meta.env.VITE_SELLER_URL_LOCAL, {
+            transports: ['websocket'],
+            reconnection: true,
+            reconnectionDelay: 1000,
+            reconnectionDelayMax: 5000,
+            reconnectionAttempts: 5
+        });
+
         setSocket(newSocket);
 
-        // Emit "getOnlineDrivers" to fetch the list of drivers when in "drivers" view
         if (viewMode === "drivers") {
             newSocket.emit("getOnlineDrivers");
         }
 
-        newSocket.on("onlineDrivers", (response) => {
+        const handleOnlineDrivers = (response) => {
             if (response?.drivers) {
-                const validDrivers = response.drivers.filter(driver => driver?.driverLiveLocation);
+                const validDrivers = response.drivers.filter(
+                    driver => driver?.driverLiveLocation
+                );
                 setDrivers(validDrivers);
                 setAnalysis("This map shows the locations of all active drivers. Click on a marker for more information.");
             }
-        });
+        };
 
-        newSocket.on("error", (error) => {
+        const handleError = (error) => {
             console.error("WebSocket error:", error);
             setAnalysis("Error fetching driver locations.");
-        });
+        };
 
-        return () => newSocket.close();
+        newSocket.on("onlineDrivers", handleOnlineDrivers);
+        newSocket.on("error", handleError);
+
+        return () => {
+            newSocket.off("onlineDrivers", handleOnlineDrivers);
+            newSocket.off("error", handleError);
+            newSocket.close();
+        };
     }, [viewMode]);
-    ;
 
+    // Loading timer effect
     useEffect(() => {
+        const timer = setTimeout(() => setMapLoading(false), 1000);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // Data fetching effect
+    useEffect(() => {
+        if (!viewMode) return;
 
         setOptionLoading(true);
 
@@ -205,10 +250,23 @@ const GeoMetrics = () => {
         } else if (viewMode === 'drivers') {
             setOptionLoading(false);
         }
+    }, [viewMode, rideType, selectedDate, fetchRideDistribution, fetchCancelledRideDistribution, fetchDateRides]);
 
-    }, [viewMode, rideType, selectedDate, startTime, endTime, varient, type]);
-
-
+    // Memoized circle event handlers
+    const createCircleEventHandlers = useCallback((cluster) => ({
+        mouseover: (e) => {
+            const popup = L.popup()
+                .setLatLng(e.latlng)
+                .setContent(`<b>Number of Rides:</b> ${cluster.count}`)
+                .openOn(e.target._map);
+            e.target._popup = popup;
+        },
+        mouseout: (e) => {
+            if (e.target._popup) {
+                e.target._map.closePopup(e.target._popup);
+            }
+        },
+    }), []);
 
     return (
         <div className="geo-container">
@@ -250,8 +308,6 @@ const GeoMetrics = () => {
                                 onChange={(e) => setSelectedDate(e.target.value)}
                             />
                         </div>
-
-                        {/* Add start time selection */}
                         <div className="select-container">
                             <label>Start Time:</label>
                             <input
@@ -260,8 +316,6 @@ const GeoMetrics = () => {
                                 onChange={(e) => setStartTime(e.target.value)}
                             />
                         </div>
-
-                        {/* Add end time selection */}
                         <div className="select-container">
                             <label>End Time:</label>
                             <input
@@ -270,13 +324,11 @@ const GeoMetrics = () => {
                                 onChange={(e) => setEndTime(e.target.value)}
                             />
                         </div>
-
-                        {/* Reset button */}
                         <div>
-                            <button onClick={() => { setStartTime(''); setEndTime(''); }}>Reset</button>
+                            <button onClick={() => { setStartTime(''); setEndTime(''); }}>
+                                Reset
+                            </button>
                         </div>
-
-                        {/* Add varient selection */}
                         <div className="select-container">
                             <label>Varient:</label>
                             <select
@@ -289,8 +341,6 @@ const GeoMetrics = () => {
                                 <option value="SEDAN">SEDAN</option>
                             </select>
                         </div>
-
-                        {/* Add type selection */}
                         <div className="select-container">
                             <label>Type:</label>
                             <select
@@ -321,13 +371,16 @@ const GeoMetrics = () => {
                         center={[23.031129, 72.529016]}
                         zoom={10}
                         zoomControl={false}
+                        preferCanvas={true}
                     >
                         <TileLayer
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             attribution="Map data © OpenStreetMap contributors"
                         />
                         <ZoomControl position="topright" />
+                        
                         {viewMode === 'heatmap' && <HeatmapLayer data={heatmapData} />}
+                        
                         {viewMode === 'drivers' && drivers.map(driver => (
                             <Marker
                                 key={driver.driverId}
@@ -346,6 +399,7 @@ const GeoMetrics = () => {
                                 </Popup>
                             </Marker>
                         ))}
+                        
                         {viewMode === 'ride24hrs' && (
                             <>
                                 {/* Render start circles if type is 'start' or 'all' */}
@@ -357,24 +411,11 @@ const GeoMetrics = () => {
                                                 center={[
                                                     cluster.center[0] + (index % 2 === 0 ? 0.0001 : -0.0001),
                                                     cluster.center[1]
-                                                ]}  // Slight offset to avoid overlap for start type
+                                                ]}
                                                 radius={cluster.count * 50}
                                                 color="blue"
                                                 fillOpacity={0.5}
-                                                eventHandlers={{
-                                                    mouseover: (e) => {
-                                                        const popup = L.popup()
-                                                            .setLatLng(e.latlng)
-                                                            .setContent(`<b>Number of Rides:</b> ${cluster.count}`)
-                                                            .openOn(e.target._map);
-                                                        e.target._popup = popup;
-                                                    },
-                                                    mouseout: (e) => {
-                                                        if (e.target._popup) {
-                                                            e.target._map.closePopup(e.target._popup);
-                                                        }
-                                                    },
-                                                }}
+                                                eventHandlers={createCircleEventHandlers(cluster)}
                                             />
                                         );
                                     }
@@ -390,24 +431,11 @@ const GeoMetrics = () => {
                                                 center={[
                                                     cluster.center[0] + (index % 2 === 0 ? -0.0001 : 0.0001),
                                                     cluster.center[1]
-                                                ]}  // Slight offset to avoid overlap for end type
+                                                ]}
                                                 radius={cluster.count * 50}
                                                 color="green"
                                                 fillOpacity={0.5}
-                                                eventHandlers={{
-                                                    mouseover: (e) => {
-                                                        const popup = L.popup()
-                                                            .setLatLng(e.latlng)
-                                                            .setContent(`<b>Number of Rides:</b> ${cluster.count}`)
-                                                            .openOn(e.target._map);
-                                                        e.target._popup = popup;
-                                                    },
-                                                    mouseout: (e) => {
-                                                        if (e.target._popup) {
-                                                            e.target._map.closePopup(e.target._popup);
-                                                        }
-                                                    },
-                                                }}
+                                                eventHandlers={createCircleEventHandlers(cluster)}
                                             />
                                         );
                                     }
@@ -415,11 +443,6 @@ const GeoMetrics = () => {
                                 })}
                             </>
                         )}
-
-
-
-
-
                     </MapContainer>
                 )}
             </div>
