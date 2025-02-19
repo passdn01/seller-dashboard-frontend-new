@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SELLER_URL_LOCAL } from "@/lib/utils";
+import MessagesCard from "./MessagesCard";
 
 const IssueDetail = () => {
   const [issue, setIssue] = useState(null);
@@ -136,40 +137,9 @@ const IssueDetail = () => {
         </CardContent>
       </Card>
 
-      <Card className="rounded-sm">
-        <CardHeader>
-          <CardTitle className="text-xl font-semibold">Messages</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {issue?.messages?.length > 0 ? (
-            <div className="space-y-4">
-              {issue.messages.map((message) => (
-                <div
-                  key={message?._id || Math.random()}
-                  className={`p-4 rounded-lg shadow-sm max-w-[80%] ${message?.sender === "user"
-                    ? "bg-blue-100 self-start text-left"
-                    : "bg-gray-200 self-end text-right"
-                    }`}
-                >
-                  <div className="flex justify-between items-center">
-                    <strong className="text-gray-800 capitalize">
-                      {message?.sender || "Unknown"}
-                    </strong>
-                    <span className="text-sm text-gray-500">
-                      {message?.timestamp ? new Date(message.timestamp).toLocaleString() : "N/A"}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-gray-700 break-words">
-                    {message?.message || "No message content"}
-                  </p>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-gray-500">No messages yet.</p>
-          )}
-        </CardContent>
-      </Card>
+      <MessagesCard issue={issue} issueId={id}></MessagesCard>
+
+
     </div>
   );
 };
