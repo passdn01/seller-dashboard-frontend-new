@@ -82,6 +82,12 @@ function SideNavbar() {
                     title: 'Ride Journey',
                     link: '/home/rideJourney',
                     icon: '',
+                },
+                {
+                    id: '4',
+                    title: 'Driver Journey',
+                    link: '/home/driverJourney',
+                    icon: '',
                 }
             ]
         },
