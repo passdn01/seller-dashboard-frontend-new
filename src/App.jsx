@@ -26,6 +26,7 @@ import RideInfo from './components/rides/RideInfo.jsx'
 import IAMUserPage from './components/admin/IAMUserPage.jsx'
 import ImageComponent from './components/Img.jsx'
 import RideJourneyIndex from './components/rideJourney/RideJourneyIndex.jsx'
+import PriceSetterPage from './components/pricing/PriceSetterPage.jsx'
 import DriverJourneyIndex from './components/DriverJourney/DriverJourneyIndex.jsx'
 function App() {
 
@@ -87,6 +88,7 @@ function App() {
           <Route path='/admin' element={<ProtectedRoute element={< IAMUserPage />} />} />
 
           <Route path='/home/dashboard/img' element={<ProtectedRoute element={< ImageComponent />} />} />
+          <Route path='/pricing' element={<ProtectedRoute element={< PriceSetterPage />} />} />
 
 
 

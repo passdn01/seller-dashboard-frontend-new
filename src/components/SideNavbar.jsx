@@ -32,7 +32,7 @@ import IssueSolverIcon from '../assets/NavIcons/IssueSolver.svg';
 import { useNavigate, useLocation } from 'react-router-dom';
 import roleRoutes from '../roles';
 import { getCookie, SELLER_URL_LOCAL } from '@/lib/utils';
-
+import pricing from '../assets/NavIcons/pricing.svg'
 import { Link } from 'react-router-dom'
 import { User } from 'lucide-react';
 
@@ -145,6 +145,13 @@ function SideNavbar() {
             submenu: false,
             icon: IAMAdminIcon,
         },
+        {
+            id: "9",
+            title: "Pricing",
+            link: '/pricing',
+            submenu: false,
+            icon: pricing
+        }
     ];
 
     console.log(menuList)

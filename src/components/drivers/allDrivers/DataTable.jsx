@@ -110,42 +110,42 @@ export default function DriverTable() {
             // Request to get all drivers
             socket.emit("getAllDrivers");
         });
-    
+
         // Handle incoming driver data (batch-based)
         socket.on("driverData", (data) => {
             const processedData = data.map(driver => {
                 const isIncompleteRegistration = driver.isCompleteRegistration === false;
                 // const completeRegistration = driver.isCompleteRegistration === true;
                 const isMissingNameOrLicense = driver.licenseNumber || driver.name && driver.name !== "null";
-    
+
                 let verificationStatus = "";
 
                 if (driver.isCompleteRegistration === true) {
                     verificationStatus = "Verified";
                 }
-    
+
                 if (isIncompleteRegistration && !isMissingNameOrLicense) {
                     verificationStatus = "Not";
                 }
-    
-                if (isIncompleteRegistration && isMissingNameOrLicense) { 
+
+                if (isIncompleteRegistration && isMissingNameOrLicense) {
                     verificationStatus = "Pending";
                 }
 
-    
+
                 return { ...driver, verify: verificationStatus };
             });
-    
+
             setData((prevDrivers) => [...prevDrivers, ...processedData]);
             setLoading(false);
         });
-    
+
         // Handle the end of the data stream
         socket.on("driverDataEnd", () => {
             console.timeEnd("Socket API Response Time");
             setLoading(false);
         });
-    
+
         // Handle errors
         socket.on("driverDataError", (error) => {
             console.error("Error:", error.message);
@@ -153,7 +153,7 @@ export default function DriverTable() {
             setLoading(false);
         });
 
-    
+
         // Clean up the socket connection when the component unmounts
         return () => {
             socket.off("driverData");
@@ -182,7 +182,7 @@ export default function DriverTable() {
 
     // Updated function to apply filters dynamically when data updates
     const applyMissingFilters = () => {
-        const { rcNumberMissing ,dlMissing, dlBackMissing, rcMissing, profileMissing, rcBackMissing, none } = missingFilters;
+        const { rcNumberMissing, dlMissing, dlBackMissing, rcMissing, profileMissing, rcBackMissing, none } = missingFilters;
 
         const filtered = data.filter((driver) => {
 
@@ -200,7 +200,7 @@ export default function DriverTable() {
 
             // Check for none missing documents
             if (none) {
-                return  driver.vehicleNumber &&
+                return driver.vehicleNumber &&
                     driver.drivingLicense &&
                     driver.drivingLicenseBack &&
                     driver.registrationCertificate &&
@@ -238,6 +238,15 @@ export default function DriverTable() {
     const openDeleteDialog = (driverId) => {
         setDriverToDelete(driverId);
         setIsDialogOpen(true);
+    };
+
+    //for syncing 
+    const handleUpdateDriver = (updatedDriver) => {
+        setData((prevData) =>
+            prevData.map((driver) =>
+                driver._id === updatedDriver._id ? updatedDriver : driver
+            )
+        );
     };
 
 
@@ -633,12 +642,12 @@ export default function DriverTable() {
                         <Button variant="outline">Present Docs</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                    <DropdownMenuCheckboxItem
+                        <DropdownMenuCheckboxItem
                             checked={missingFilters.rcNumberMissing}
                             onCheckedChange={() => handleCheckboxChange("rcNumberMissing")}
-                    >
+                        >
                             RC Number Present
-                    </DropdownMenuCheckboxItem>
+                        </DropdownMenuCheckboxItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
@@ -647,7 +656,7 @@ export default function DriverTable() {
                         <Button variant="outline">Select Missing Documents</Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                    <DropdownMenuCheckboxItem
+                        <DropdownMenuCheckboxItem
                             checked={missingFilters.rcNumberMissing}
                             onCheckedChange={() => handleCheckboxChange("rcNumberMissing")}
                         >
@@ -753,7 +762,7 @@ export default function DriverTable() {
                                             <TableRow key={`${row.id}-detail`}>
                                                 <TableCell colSpan={columns.length} className="p-0">
                                                     <div className="p-4 bg-gray-50">
-                                                        <DriverDetails data={row.original} />
+                                                        <DriverDetails data={row.original} onDriverUpdated={handleUpdateDriver} />
                                                     </div>
                                                 </TableCell>
                                             </TableRow>

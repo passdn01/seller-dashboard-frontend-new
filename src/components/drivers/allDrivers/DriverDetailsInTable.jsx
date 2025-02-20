@@ -18,7 +18,7 @@ import UploadDocuments from './UploadDocuments';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 
-const DriverDetails = ({ data }) => {
+const DriverDetails = ({ data, onDriverUpdated }) => {
     const driverId = data?._id;
 
     const [isLoading, setIsLoading] = useState(true);
@@ -137,8 +137,10 @@ const DriverDetails = ({ data }) => {
             });
 
             if (response.ok) {
-                await response.json();
+                const d = await response.json();
                 window.alert("Data saved successfully");
+                console.log(d)
+                onDriverUpdated(d.driver);
             } else {
                 throw new Error(response.statusText);
             }

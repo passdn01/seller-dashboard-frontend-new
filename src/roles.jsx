@@ -14,7 +14,8 @@ const roleRoutes = {
         "/issueSolver",
         "/issueDetail",
         "/users",
-        "/admin"
+        "/admin",
+        "/pricing"
     ],
     admin: [
         "/home/dashboard",

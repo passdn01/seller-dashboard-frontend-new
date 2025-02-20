@@ -49,15 +49,27 @@ const IssueSolver = () => {
     const [statusFilter, setStatusFilter] = useState("all");
     const [globalFilter, setGlobalFilter] = useState("");
 
+    const [ticketLoading, setTicketLoading] = useState(false);
+
+
     const userId = localStorage.getItem("userId");
 
     // Fetch all assigned tickets
     const fetchTickets = async () => {
+        setTicketLoading(true)
         try {
+
             const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/assigned/${userId}`);
+            console.log(response, "response")
+
+
             setTickets(response.data);
+
         } catch (err) {
             setError("Failed to load tickets");
+        } finally {
+            setTicketLoading(false)
+
         }
     };
     useEffect(() => {
@@ -327,7 +339,7 @@ const IssueSolver = () => {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                    {ticketLoading ? "Loading..." : "No results."}
                                 </TableCell>
                             </TableRow>
                         )}

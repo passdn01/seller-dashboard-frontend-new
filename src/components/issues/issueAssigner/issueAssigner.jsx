@@ -49,33 +49,43 @@ const IssueAssigner = () => {
     const [statusFilter, setStatusFilter] = useState("all");
     const [globalFilter, setGlobalFilter] = useState("");
 
+    const [ticketLoading, setTicketLoading] = useState(false);
+    const [solverLoading, setSolverLoading] = useState(false);
+
+
     const userId = localStorage.getItem("userId");
 
-    // Fetch all tickets
     useEffect(() => {
         const fetchTickets = async () => {
+            setTicketLoading(true);
             try {
                 const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets`);
                 setTickets(response.data);
             } catch (err) {
                 setError("Failed to load tickets");
+            } finally {
+                setTicketLoading(false);
             }
         };
         fetchTickets();
-    }, []);
+    }, [tickets]);
 
-    // Fetch all issue solvers
     useEffect(() => {
         const fetchSolvers = async () => {
+            setSolverLoading(true);
             try {
                 const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/solvers`);
-                setSolvers(response.data);
+                if (response?.data) {
+                    setSolvers(response.data);
+                }
             } catch (err) {
                 setError("Failed to load solvers");
+            } finally {
+                setSolverLoading(false);
             }
         };
         fetchSolvers();
-    }, []);
+    }, [solvers]);
 
     // Assign a ticket to a solver
     const handleAssignTicket = async (ticketId, solverId) => {
@@ -373,7 +383,8 @@ const IssueAssigner = () => {
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
+                                    {ticketLoading && solverLoading ? "Loading..." : "No results"}
+
                                 </TableCell>
                             </TableRow>
                         )}
