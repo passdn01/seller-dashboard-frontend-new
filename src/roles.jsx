@@ -3,6 +3,7 @@ const roleRoutes = {
     superAdmin: [
         "/home/dashboard",
         "/home/mapData",
+        "/home/rideJourney",
         "/drivers/allDrivers",
         "/drivers/liveDrivers",
         "/drivers/allDrivers",
@@ -17,6 +18,7 @@ const roleRoutes = {
     admin: [
         "/home/dashboard",
         "/home/mapData",
+        "/home/rideJourney",
         "/drivers/allDrivers",
         "/drivers/liveDrivers",
         "/drivers/allDrivers",
@@ -27,7 +29,7 @@ const roleRoutes = {
         "/issueDetail",
         "/users",
     ],
-    verifier: ["/home/dashboard", "/home/mapData", "/drivers/allDrivers",
+    verifier: ["/home/dashboard", "/home/mapData","/home/rideJourney", "/drivers/allDrivers",
         "/drivers/liveDrivers",
         "/drivers/allDrivers",
         "/drivers/allVerified",],

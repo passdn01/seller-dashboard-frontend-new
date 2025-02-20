@@ -76,6 +76,12 @@ function SideNavbar() {
                     title: 'Map Data',
                     link: '/home/mapData',
                     icon: '',
+                },
+                {
+                    id: '3',
+                    title: 'Ride Journey',
+                    link: '/home/rideJourney',
+                    icon: '',
                 }
             ]
         },
