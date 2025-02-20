@@ -13,7 +13,8 @@ const roleRoutes = {
         "/issueSolver",
         "/issueDetail",
         "/users",
-        "/admin"
+        "/admin",
+        "/pricing"
     ],
     admin: [
         "/home/dashboard",
@@ -29,7 +30,7 @@ const roleRoutes = {
         "/issueDetail",
         "/users",
     ],
-    verifier: ["/home/dashboard", "/home/mapData","/home/rideJourney", "/drivers/allDrivers",
+    verifier: ["/home/dashboard", "/home/mapData", "/home/rideJourney", "/drivers/allDrivers",
         "/drivers/liveDrivers",
         "/drivers/allDrivers",
         "/drivers/allVerified",],
