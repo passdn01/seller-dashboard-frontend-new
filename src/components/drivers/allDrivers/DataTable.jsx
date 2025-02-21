@@ -248,7 +248,11 @@ export default function DriverTable() {
                 driver._id === updatedDriver._id ? updatedDriver : driver
             )
         );
-        // The pagination state will be preserved because it's in the table state
+        setFilteredData((prevData) =>
+            prevData.map((driver) =>
+                driver._id === updatedDriver._id ? updatedDriver : driver
+            )
+        );
     };
 
 
