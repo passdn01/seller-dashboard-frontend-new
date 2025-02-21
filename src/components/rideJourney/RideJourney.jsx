@@ -84,7 +84,8 @@ const RideJourney = () => {
       autoSearches: 0,
       eliteSearches: 0,
       completedRides: 0,
-      notAcceptedRides: 0
+      notAcceptedRides: 0,
+      cancelledRides: 0
     };
   
     return {
@@ -92,7 +93,8 @@ const RideJourney = () => {
       autoSearches: metricsData.autoSearch || 0,
       eliteSearches: metricsData.eliteSearch || 0,
       completedRides: (metricsData.autoCompleted || 0) + (metricsData.cabCompleted || 0) + (metricsData.eliteCompleted || 0),
-      notAcceptedRides: (metricsData.autoNotAccepted || 0) + (metricsData.cabNotAccepted || 0) + (metricsData.eliteNotAccepted || 0)
+      notAcceptedRides: (metricsData.autoNotAccepted || 0) + (metricsData.cabNotAccepted || 0) + (metricsData.eliteNotAccepted || 0),
+      cancelledRides: (metricsData.autoCancelled || 0) + (metricsData.cabCancelled || 0) + (metricsData.eliteCancelled || 0)
     };
   };
 
@@ -116,6 +118,7 @@ const RideJourney = () => {
         { name: 'Elite Accepted' },
         { name: 'Ride Not Accepted' },
         { name: 'Completed' },
+        { name: 'Cancelled' },
         { name: 'Not Completed' }
       ]
     },
@@ -125,7 +128,7 @@ const RideJourney = () => {
         <div class="p-2 bg-white shadow-lg rounded">
           <p class="font-bold">${data.source} → ${data.target}</p>
           <p>Count: ${data.value.toLocaleString()}</p>
-          ${data.target === 'Completed' || data.target === 'Not Completed' ? 
+          ${data.target === 'Completed' || data.target === 'Not Completed' || data.target === 'Cancelled' ? 
             `<p class="text-sm text-gray-600">Final Status</p>` : ''}
         </div>
       `
@@ -188,7 +191,7 @@ const RideJourney = () => {
         </div>
 
         {(flowData.length > 0 || error) && (
-          <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="mt-2 grid grid-cols-2 md:grid-cols-5 gap-2">
             <MetricCard 
               label="Total Searches" 
               value={metrics.totalSearches}
@@ -200,6 +203,10 @@ const RideJourney = () => {
             <MetricCard 
               label="Completed Rides" 
               value={metrics.completedRides}
+            />
+            <MetricCard 
+              label="Cancelled Rides" 
+              value={metrics.cancelledRides}
             />
             <MetricCard 
               label="Not Completed Rides" 
