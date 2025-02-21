@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import '@carbon/charts-react/styles.css';
-// import { AlluvialChart } from '@carbon/charts-react';
 import { Calendar, Search } from 'lucide-react';
 import SankeyChart from './SankeyChart';
 
-const RideJourney = () => {
+const DriverJourney = () => {
   const [flowData, setFlowData] = useState([]);
   const [metricsData, setMetricsData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -14,11 +12,11 @@ const RideJourney = () => {
     end: new Date().toISOString().split('T')[0]
   });
 
-  const fetchRideData = async () => {
+  const fetchDriverData = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideJourney?start=${dateRange.start}&end=${dateRange.end}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverJourney?start=${dateRange.start}&end=${dateRange.end}`
       );
       const data = await response.json();
 
@@ -60,7 +58,7 @@ const RideJourney = () => {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideJourney?start=${start}&end=${end}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverJourney?start=${start}&end=${end}`
       );
       const data = await response.json();
 
@@ -80,24 +78,28 @@ const RideJourney = () => {
 
   const calculateMetrics = () => {
     if (!metricsData) return {
-      totalSearches: 0,
-      autoSearches: 0,
-      eliteSearches: 0,
-      completedRides: 0,
-      notAcceptedRides: 0
+      totalDrivers: 0,
+      verifiedDrivers: 0,
+      pendingDrivers: 0,
+      notVerifiedDrivers: 0,
+      autoDrivers: 0,
+      cabDrivers: 0,
+      eliteDrivers: 0
     };
   
     return {
-      totalSearches: metricsData.totalRideSearch || 0,
-      autoSearches: metricsData.autoSearch || 0,
-      eliteSearches: metricsData.eliteSearch || 0,
-      completedRides: (metricsData.autoCompleted || 0) + (metricsData.cabCompleted || 0) + (metricsData.eliteCompleted || 0),
-      notAcceptedRides: (metricsData.autoNotAccepted || 0) + (metricsData.cabNotAccepted || 0) + (metricsData.eliteNotAccepted || 0)
+      totalDrivers: metricsData.totalDrivers || 0,
+      verifiedDrivers: metricsData.verifiedDrivers || 0,
+      pendingDrivers: metricsData.pendingDrivers || 0,
+      notVerifiedDrivers: metricsData.notVerifiedDrivers || 0,
+      autoDrivers: metricsData.autoDrivers || 0,
+      cabDrivers: metricsData.cabDrivers || 0,
+      eliteDrivers: metricsData.eliteDrivers || 0
     };
   };
 
   const options = {
-    title: 'Ride Journey Flow Analysis',
+    title: 'Driver Journey Flow Analysis',
     height: '400px',
     axes: {
       left: { mapsTo: 'source', scaleType: 'labels' },
@@ -107,29 +109,15 @@ const RideJourney = () => {
       nodePadding: 15,
       width: 15,
       nodes: [
-        { name: 'Total Ride Search' },
-        { name: 'Auto Search' },
-        { name: 'Cab Search' },
-        { name: 'Elite Search' },
-        { name: 'Auto Accepted' },
-        { name: 'Cab Accepted' },
-        { name: 'Elite Accepted' },
-        { name: 'Ride Not Accepted' },
-        { name: 'Completed' },
-        { name: 'Not Completed' }
+        { name: 'Total Drivers' },
+        { name: 'Verified Drivers' },
+        { name: 'Pending Drivers' },
+        { name: 'Not Verified Drivers' },
+        { name: 'Auto Drivers' },
+        { name: 'Cab Drivers' },
+        { name: 'Elite Drivers' }
       ]
     },
-    tooltip: {
-      enabled: true,
-      customHTML: (data) => `
-        <div class="p-2 bg-white shadow-lg rounded">
-          <p class="font-bold">${data.source} → ${data.target}</p>
-          <p>Count: ${data.value.toLocaleString()}</p>
-          ${data.target === 'Completed' || data.target === 'Not Completed' ? 
-            `<p class="text-sm text-gray-600">Final Status</p>` : ''}
-        </div>
-      `
-    }
   };
 
   const metrics = calculateMetrics();
@@ -138,7 +126,7 @@ const RideJourney = () => {
     <div className="w-full h-auto p-4 bg-white">
       <div className="mb-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-          <h2 className="text-xl font-bold text-gray-800">Analysis</h2>
+          <h2 className="text-xl font-bold text-gray-800">Driver Analysis</h2>
           
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center w-full md:w-auto">
             <div className="flex gap-2">
@@ -176,7 +164,7 @@ const RideJourney = () => {
                 className="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
-                onClick={fetchRideData}
+                onClick={fetchDriverData}
                 disabled={isLoading}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:bg-blue-300"
               >
@@ -190,20 +178,20 @@ const RideJourney = () => {
         {(flowData.length > 0 || error) && (
           <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
             <MetricCard 
-              label="Total Searches" 
-              value={metrics.totalSearches}
+              label="Total Drivers" 
+              value={metrics.totalDrivers}
             />
             <MetricCard 
-              label="Auto Searches" 
-              value={metrics.autoSearches}
+              label="Verified Drivers" 
+              value={metrics.verifiedDrivers}
             />
             <MetricCard 
-              label="Completed Rides" 
-              value={metrics.completedRides}
+              label="Auto Drivers" 
+              value={metrics.autoDrivers}
             />
             <MetricCard 
-              label="Not Completed Rides" 
-              value={metrics.notAcceptedRides}
+              label="Elite Drivers" 
+              value={metrics.eliteDrivers}
             />
           </div>
         )}
@@ -240,4 +228,4 @@ const MetricCard = ({ label, value }) => (
   </div>
 );
 
-export default RideJourney;
+export default DriverJourney;

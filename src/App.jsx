@@ -27,6 +27,7 @@ import IAMUserPage from './components/admin/IAMUserPage.jsx'
 import ImageComponent from './components/Img.jsx'
 import RideJourneyIndex from './components/rideJourney/RideJourneyIndex.jsx'
 import PriceSetterPage from './components/pricing/PriceSetterPage.jsx'
+import DriverJourneyIndex from './components/DriverJourney/DriverJourneyIndex.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -62,6 +63,7 @@ function App() {
         <Routes>
           <Route path="/home/mapData" element={<ProtectedRoute element={<Home />} />} />
           <Route path="/home/rideJourney" element={<ProtectedRoute element={<RideJourneyIndex />} />} />
+          <Route path="/home/driverJourney" element={<ProtectedRoute element={<DriverJourneyIndex />} />} />
           <Route path="/home/dashboard" element={<ProtectedRoute element={<HomeMetricPage />} />} />
           <Route path='/' element={<Login />}></Route>
           <Route path='/drivers/allDrivers' element={<ProtectedRoute element={<AllDrivers />} />} />
