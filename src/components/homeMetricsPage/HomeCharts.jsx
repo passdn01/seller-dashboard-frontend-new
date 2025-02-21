@@ -99,15 +99,10 @@ const HomeCharts = () => {
             enabled: true,
             numberOfIcons: 3,
             controls: [
-                {
-                    type: 'Zoom in'
-                },
-                {
-                    type: 'Zoom out'
-                },
-                {
-                    type: 'Reset zoom'
-                },
+                { type: 'Reset zoom' },
+                { type: 'Export as CSV' },
+                { type: 'Show as data-table' }
+
             ]
         },
         zoomBar: {

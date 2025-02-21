@@ -79,9 +79,9 @@ const YearlyDataRenderer = ({ mdata, group, chartTitle }) => {
             enabled: true,
             numberOfIcons: 3,
             controls: [
-                { type: 'Zoom in' },
-                { type: 'Zoom out' },
                 { type: 'Reset zoom' },
+                { type: 'Export as CSV' }
+
             ]
         },
         zoomBar: {
