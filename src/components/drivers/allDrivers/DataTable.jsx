@@ -247,6 +247,11 @@ export default function DriverTable() {
                 driver._id === updatedDriver._id ? updatedDriver : driver
             )
         );
+        setFilteredData((prevData) =>
+            prevData.map((driver) =>
+                driver._id === updatedDriver._id ? updatedDriver : driver
+            )
+        );
     };
 
 
