@@ -75,6 +75,7 @@ export default function DriverTable() {
     const [sorting, setSorting] = useState([]);
     const [columnFilters, setColumnFilters] = useState([]);
     const [columnVisibility, setColumnVisibility] = useState({});
+    const [currentPage, setCurrentPage] = useState(0);
     const [rowSelection, setRowSelection] = useState({});
     const [data, setData] = useState([]);
     // const [message, setMessage] = useState('');
@@ -247,6 +248,7 @@ export default function DriverTable() {
                 driver._id === updatedDriver._id ? updatedDriver : driver
             )
         );
+        // The pagination state will be preserved because it's in the table state
     };
 
 
@@ -528,8 +530,19 @@ export default function DriverTable() {
             columnVisibility,
             rowSelection,
             globalFilter,
+            pagination: {
+                pageIndex: currentPage,
+                pageSize: 10, // or whatever your default page size is
+            },
         },
         onGlobalFilterChange: setGlobalFilter,
+        onPaginationChange: (updater) => {
+            if (typeof updater === 'function') {
+                const newState = updater({ pageIndex: currentPage, pageSize: 10 });
+                setCurrentPage(newState.pageIndex);
+            }
+        },
+    
     });
 
     useEffect(() => {
@@ -793,7 +806,10 @@ export default function DriverTable() {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => table.previousPage()}
+                        onClick={() => {
+                            table.previousPage();
+                            setCurrentPage(table.getState().pagination.pageIndex - 1);
+                        }}
                         disabled={!table.getCanPreviousPage()}
                     >
                         Previous
@@ -814,7 +830,10 @@ export default function DriverTable() {
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => table.nextPage()}
+                        onClick={() => {
+                            table.nextPage();
+                            setCurrentPage(table.getState().pagination.pageIndex + 1);
+                        }}
                         disabled={!table.getCanNextPage()}
                     >
                         Next
