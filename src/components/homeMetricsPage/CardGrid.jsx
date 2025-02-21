@@ -101,7 +101,7 @@ function CardGrid() {
     const todayTabData = [
         {
             icon: search,
-            number: formatNumber(3*todayMetrics.SearchRides || 0),
+            number: formatNumber(todayMetrics.SearchRides || 0),
             title: "Search Rides",
             increase: lastHourMetrics.SearchRides,
         },
@@ -209,7 +209,7 @@ function CardGrid() {
     const allTimeTabData = [
         {
             icon: search,
-            number: formatNumber(3*allTimeMetrics.SearchRides || 0),
+            number: formatNumber(allTimeMetrics.SearchRides || 0),
             title: "Search Rides",
             increase: todayMetrics.SearchRides,
             hover: true,
