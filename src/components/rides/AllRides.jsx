@@ -1,6 +1,7 @@
 import Header from '../drivers/allDrivers/Header'
 import SideNavbar from '../SideNavbar'
-import RideTable from './RideTable'
+import RideTableNew from './AllRidesNew'
+
 
 function AllRides() {
     return (
@@ -9,7 +10,7 @@ function AllRides() {
             <div className='flex-1 ml-[250px]'>
                 <Header className='w-full' title='ALL RIDES' />
                 <div className='overflow-auto'>
-                    <RideTable />
+                    <RideTableNew />
                 </div>
             </div>
         </div>

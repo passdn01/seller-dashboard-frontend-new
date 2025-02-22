@@ -174,7 +174,7 @@ export default function DriverTable() {
 
     useEffect(() => {
         applyMissingFilters(); // Apply filters whenever new data arrives
-    }, [data]); // Trigger on data change
+    }, [missingFilters, data]); // Trigger on data change
 
     useEffect(() => {
         applyMissingFilters(); // Reapply filters when filters change
@@ -228,10 +228,6 @@ export default function DriverTable() {
     };
 
 
-    // Whenever the missing filter state changes, apply filters
-    useEffect(() => {
-        applyMissingFilters();
-    }, [missingFilters, data]);
 
 
     // Function to open the dialog with the selected driver ID
@@ -243,11 +239,6 @@ export default function DriverTable() {
     //for syncing 
     const handleUpdateDriver = (updatedDriver) => {
         setData((prevData) =>
-            prevData.map((driver) =>
-                driver._id === updatedDriver._id ? updatedDriver : driver
-            )
-        );
-        setFilteredData((prevData) =>
             prevData.map((driver) =>
                 driver._id === updatedDriver._id ? updatedDriver : driver
             )
@@ -514,9 +505,7 @@ export default function DriverTable() {
 
 
 
-
-
-    const table = useReactTable({
+    let table = useReactTable({
         data,
         columns,
         onSortingChange: setSorting,
@@ -536,6 +525,30 @@ export default function DriverTable() {
         },
         onGlobalFilterChange: setGlobalFilter,
     });
+
+    useEffect(() => {
+        table = useReactTable({
+            data,
+            columns,
+            onSortingChange: setSorting,
+            onColumnFiltersChange: setColumnFilters,
+            getCoreRowModel: getCoreRowModel(),
+            getPaginationRowModel: getPaginationRowModel(),
+            getSortedRowModel: getSortedRowModel(),
+            getFilteredRowModel: getFilteredRowModel(),
+            onColumnVisibilityChange: setColumnVisibility,
+            onRowSelectionChange: setRowSelection,
+            state: {
+                sorting,
+                columnFilters,
+                columnVisibility,
+                rowSelection,
+                globalFilter,
+            },
+            onGlobalFilterChange: setGlobalFilter,
+        });
+
+    }, [missingFilters, isMissingNameOrLicense])
 
     useEffect(() => {
         if (verifyFilter && verifyFilter !== "all") {
