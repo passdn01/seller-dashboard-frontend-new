@@ -78,6 +78,11 @@ const columns = [
         cell: ({ row }) => <div>{row.getValue("userInfo")?.name} </div>
     },
     {
+        accessorKey: "userPhone",
+        header: "User Phone",
+        cell: ({ row }) => <div>{row.getValue("userInfo")?.phone} </div>
+    },
+    {
         accessorKey: "fare",
         header: "Fare",
         cell: ({ row }) => <div>{row.getValue("fare")}</div>,
