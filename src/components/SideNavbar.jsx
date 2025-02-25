@@ -88,6 +88,12 @@ function SideNavbar() {
                     title: 'Driver Journey',
                     link: '/home/driverJourney',
                     icon: '',
+                },
+                {
+                    id: '5',
+                    title: 'Driver Logs',
+                    link: '/home/driverLogs',
+                    icon: '',
                 }
             ]
         },
