@@ -98,6 +98,7 @@ HeatmapLegend.displayName = 'HeatmapLegend';
 HeatmapLegend.propTypes = {
     type: PropTypes.string.isRequired,
 };
+
 const GeoMetrics = () => {
     const [heatmapData, setHeatmapData] = useState([]);
     const [circlemapData, setCirclemapData] = useState([]);
@@ -108,7 +109,8 @@ const GeoMetrics = () => {
     const [mapLoading, setMapLoading] = useState(true);
     const [socket, setSocket] = useState(null);
     const [optionLoading, setOptionLoading] = useState(false);
-    const [selectedDate, setSelectedDate] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const [varient, setVarient] = useState('ALL');
@@ -157,13 +159,14 @@ const GeoMetrics = () => {
         }
     }, []);
 
-    const fetchDateRides = useCallback(async (date) => {
-        if (!date) return;
+    const fetchDateRides = useCallback(async () => {
+        if (!startDate || !endDate) return;
 
         try {
             setOptionLoading(true);
             const requestData = {
-                date: formatDate(date),
+                startDate: formatDate(startDate),
+                endDate: formatDate(endDate || startDate), // Use startDate as endDate if endDate is not provided
                 ...(startTime && { startTime }),
                 ...(endTime && { endTime }),
                 ...(varient !== 'ALL' && { varient }),
@@ -171,20 +174,35 @@ const GeoMetrics = () => {
             };
 
             const response = await api.post('/dashboard/api/seller/start-ride-clustering', requestData);
+            
+            // Process the response to separate start and end clusters
             const clusters = response.data.map(cluster => ({
                 center: [cluster.center.lat, cluster.center.lng],
                 count: cluster.numRides,
+                type: cluster.type // 'start' or 'end'
             }));
             
             setCirclemapData(clusters);
-            setAnalysis(`Ride clustering for ${formatDate(date)}`);
+            
+            const dateRange = startDate === endDate || !endDate 
+                ? `on ${formatDate(startDate)}`
+                : `from ${formatDate(startDate)} to ${formatDate(endDate)}`;
+                
+            setAnalysis(`Ride clustering ${dateRange}`);
         } catch (error) {
             console.error('Error fetching ride data:', error);
             setAnalysis('Error fetching ride clustering data.');
         } finally {
             setOptionLoading(false);
         }
-    }, [formatDate, startTime, endTime, varient, type]);
+    }, [formatDate, startDate, endDate, startTime, endTime, varient, type]);
+
+    // Auto-set endDate to match startDate when startDate changes
+    useEffect(() => {
+        if (startDate && !endDate) {
+            setEndDate(startDate);
+        }
+    }, [startDate]);
 
     // Socket connection effect
     useEffect(() => {
@@ -245,19 +263,26 @@ const GeoMetrics = () => {
             } else {
                 fetchCancelledRideDistribution();
             }
-        } else if (viewMode === 'ride24hrs' && selectedDate) {
-            fetchDateRides(selectedDate);
+        } else if (viewMode === 'ride24hrs' && startDate) {
+            fetchDateRides();
         } else if (viewMode === 'drivers') {
             setOptionLoading(false);
         }
-    }, [viewMode, rideType, selectedDate, fetchRideDistribution, fetchCancelledRideDistribution, fetchDateRides]);
+    }, [viewMode, rideType, startDate, endDate, fetchRideDistribution, fetchCancelledRideDistribution, fetchDateRides]);
+
+    // Reset function for form fields
+    const resetFields = () => {
+        setStartTime('');
+        setEndTime('');
+        setEndDate(startDate); // Reset endDate to match startDate
+    };
 
     // Memoized circle event handlers
     const createCircleEventHandlers = useCallback((cluster) => ({
         mouseover: (e) => {
             const popup = L.popup()
                 .setLatLng(e.latlng)
-                .setContent(`<b>Number of Rides:</b> ${cluster.count}`)
+                .setContent(`<b>Number of Rides:</b> ${cluster.count}<br><b>Type:</b> ${cluster.type === 'start' ? 'Start Point' : 'End Point'}`)
                 .openOn(e.target._map);
             e.target._popup = popup;
         },
@@ -301,11 +326,19 @@ const GeoMetrics = () => {
                 {viewMode === 'ride24hrs' && (
                     <>
                         <div className="select-container">
-                            <label>Select Date:</label>
+                            <label>Start Date:</label>
                             <input
                                 type="date"
-                                value={selectedDate}
-                                onChange={(e) => setSelectedDate(e.target.value)}
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                            />
+                        </div>
+                        <div className="select-container">
+                            <label>End Date:</label>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
                             />
                         </div>
                         <div className="select-container">
@@ -325,7 +358,7 @@ const GeoMetrics = () => {
                             />
                         </div>
                         <div>
-                            <button onClick={() => { setStartTime(''); setEndTime(''); }}>
+                            <button onClick={resetFields}>
                                 Reset
                             </button>
                         </div>
@@ -337,8 +370,8 @@ const GeoMetrics = () => {
                             >
                                 <option value="ALL">ALL</option>
                                 <option value="AUTO">AUTO</option>
-                                <option value="CAB">CAB</option>
-                                <option value="SEDAN">SEDAN</option>
+                                <option value="HATCHBACK">CAB</option>
+                                <option value="SEDAN">ELITE</option>
                             </select>
                         </div>
                         <div className="select-container">
@@ -402,38 +435,18 @@ const GeoMetrics = () => {
                         
                         {viewMode === 'ride24hrs' && (
                             <>
-                                {/* Render start circles if type is 'start' or 'all' */}
                                 {circlemapData.map((cluster, index) => {
-                                    if (type === 'start' || type === 'all') {
+                                    // Determine color based on type
+                                    const color = cluster.type === 'start' ? 'blue' : 'green';
+                                    
+                                    // Only show if the type filter matches
+                                    if (type === 'all' || type === cluster.type) {
                                         return (
                                             <Circle
-                                                key={`start-${index}`}
-                                                center={[
-                                                    cluster.center[0] + (index % 2 === 0 ? 0.0001 : -0.0001),
-                                                    cluster.center[1]
-                                                ]}
+                                                key={`${cluster.type}-${index}`}
+                                                center={cluster.center}
                                                 radius={cluster.count * 50}
-                                                color="blue"
-                                                fillOpacity={0.5}
-                                                eventHandlers={createCircleEventHandlers(cluster)}
-                                            />
-                                        );
-                                    }
-                                    return null;
-                                })}
-
-                                {/* Render end circles if type is 'end' or 'all' */}
-                                {circlemapData.map((cluster, index) => {
-                                    if (type === 'end' || type === 'all') {
-                                        return (
-                                            <Circle
-                                                key={`end-${index}`}
-                                                center={[
-                                                    cluster.center[0] + (index % 2 === 0 ? -0.0001 : 0.0001),
-                                                    cluster.center[1]
-                                                ]}
-                                                radius={cluster.count * 50}
-                                                color="green"
+                                                color={color}
                                                 fillOpacity={0.5}
                                                 eventHandlers={createCircleEventHandlers(cluster)}
                                             />
