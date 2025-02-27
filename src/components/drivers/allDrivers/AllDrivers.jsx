@@ -1,6 +1,7 @@
 import Header from './Header'
 import SideNavbar from '../../../components/SideNavbar.jsx'
 import DataTable from './DataTable.jsx'
+import DataTableNew from './DataTableNew.jsx'
 
 function AllDrivers() {
     return (
@@ -9,7 +10,7 @@ function AllDrivers() {
             <div className='flex-1 ml-[250px]'>
                 <Header className='w-full' title='ALL DRIVERS' />
                 <div className='overflow-auto'>
-                    <DataTable />
+                    <DataTableNew />
                 </div>
             </div>
         </div>

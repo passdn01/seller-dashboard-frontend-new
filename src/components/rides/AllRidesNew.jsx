@@ -2,7 +2,6 @@ import React from 'react'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
 import {
     flexRender,
     getCoreRowModel,
@@ -12,7 +11,6 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
-
 import { Button } from "../ui/button";
 import {
     DropdownMenu,
@@ -39,23 +37,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from "../ui/select";
-import { Oval } from 'react-loader-spinner';
 import RideDetail from './RideDetail';
-import { SELLER_URL_LOCAL } from '@/lib/utils';
-import { io } from 'socket.io-client';
-
-
 import { Label } from '../ui/label';
-
-
-import { ButtonSkeleton } from 'carbon-components-react';
-
 
 
 
 function AllRidesNew() {
-
-
 
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -72,7 +59,7 @@ function AllRidesNew() {
         setExpandedRowId(expandedRowId === rowId ? null : rowId);
     };
 
-    const statusOptions = ["ALL", "COMPLETED", "CANCELLED", "Driver Not Available", "PENDING"]
+    const statusOptions = ["ALL", "COMPLETED", "CANCELLED", "FAKE RIDE", "REJECTED"]
 
     const sortByOptions = ["created at: desc", "created at: asc", "updatedAt: desc", "updatedAt: asc"]
 
@@ -109,11 +96,11 @@ function AllRidesNew() {
                 return <div>{formattedDate}</div>; // Render the formatted date
             },
         },
-        {
-            accessorKey: "userInfo",
-            header: "User Name",
-            cell: ({ row }) => <div>{row.getValue("userInfo")?.name} </div>
-        },
+        // {
+        //     accessorKey: "userInfo",
+        //     header: "User Name",
+        //     cell: ({ row }) => <div>{row.getValue("userInfo")?.name} </div>
+        // },
         {
             accessorKey: "fare",
             header: "Fare",
@@ -149,6 +136,22 @@ function AllRidesNew() {
 
                 return <div>{formattedDate}</div>; // Render the formatted date
             },
+        },
+
+        {
+            accessorKey: "driverDetails",
+            header: "Driver Name",
+            cell: ({ row }) => {
+                const l = row.original.driverDetails.length
+                console.log(l)
+                let driverName = "NA"
+                if (l > 0) {
+                    driverName = row.original?.driverDetails[l - 1]?.name
+                }
+
+                return (<div>{driverName} </div>)
+
+            }
         },
         {
             id: "actions",
@@ -242,6 +245,7 @@ function AllRidesNew() {
     }
     return (
         <div className='p-6 text-sm'>
+            {/* filters */}
             <div className="flex gap-x-8 px-4 pb-4 items-center ">
                 <div>
                     <Label>Start Date</Label>

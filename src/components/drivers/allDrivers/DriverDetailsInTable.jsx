@@ -20,7 +20,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 const DriverDetails = ({ data, onDriverUpdated }) => {
     const driverId = data?._id;
-
+    const [saveLoading, setSaveLoading] = useState(false)
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
@@ -81,13 +81,13 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                     dob: driver.dob || "",
                     gender: driver.gender || "Male",
                     address: driver.driverAddress || "",
-                    licenseType: driver.drivingLicenseCategory || "",
+                    licenseType: driver.drivingLicenseCategory || "LMV",
                     licenseValidUpTo: driver.drivingLicenseValidUpto || "",
                     vehicleNumber: driver.vehicleNumber || "",
                     rcValidUpTo: driver.rcValidUpto || "",
                     category: driver.category || "",
                     vehicleModel: driver.vehicleMakerModel || "",
-                    fuelType: driver.vehicleFuelType || "",
+                    fuelType: driver.vehicleFuelType || "CNG",
                     upiId: driver.upiID || "",
                     balance: driver.balance || "",
                     status: driver.status || "",
@@ -124,6 +124,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
 
     const handleSave = async () => {
         try {
+            setSaveLoading(true)
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverTableEdit`, {
                 method: "POST",
                 headers: {
@@ -147,6 +148,8 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
         } catch (error) {
             console.error("Error saving data:", error);
             window.alert("Failed to save data");
+        } finally {
+            setSaveLoading(false)
         }
     };
 
@@ -313,7 +316,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                         />
 
                         <div className="space-x-2 flex justify-end mb-4">
-                            <Button onClick={handleSave}>Save</Button>
+                            <Button onClick={handleSave} disabled={saveLoading ? true : false}> {saveLoading ? 'Saving...' : 'Save'}</Button>
                             <Button variant="outline" onClick={fetchDriverDetails}>Refresh</Button>
                         </div>
                     </div>
