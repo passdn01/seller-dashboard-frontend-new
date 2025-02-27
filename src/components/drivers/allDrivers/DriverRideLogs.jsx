@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import moment from 'moment';
+import moment from 'moment'; // Changed from '* as moment' to default import
 import { 
     Card, 
     CardContent, 
@@ -9,10 +8,11 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Oval } from 'react-loader-spinner';
-import { Calendar, Search } from 'lucide-react';
+import { Calendar, Search, Clock, Timer, Car, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 
 const DriverRideLogs = ({ driverId }) => {
     const [rideLogsData, setRideLogsData] = useState(null);
+    const [sessionData, setSessionData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [dateRange, setDateRange] = useState('today');
@@ -30,8 +30,8 @@ const DriverRideLogs = ({ driverId }) => {
         return moment(date).format('DD-MM-YYYY'); // Expected format for the backend
     };
 
-    // Fetch ride logs based on current date range
-    const fetchRideLogs = async () => {
+    // Fetch ride logs and session duration based on current date range
+    const fetchData = async () => {
         if (!driverId) return;
 
         setLoading(true);
@@ -63,20 +63,51 @@ const DriverRideLogs = ({ driverId }) => {
         }
 
         try {
-            const response = await axios.post(
+            // Fetch ride logs
+            const rideResponse = await fetch(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverRideLogs`,
                 {
-                    driverId,
-                    startDate: formattedStartDate,
-                    endDate: formattedEndDate
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        driverId,
+                        startDate: formattedStartDate,
+                        endDate: formattedEndDate
+                    })
                 }
             );
 
-            setRideLogsData(response.data);
-            processDataForSummary(response.data);
+            // Fetch session duration
+            const sessionResponse = await fetch(
+                `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverSession`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        driverId,
+                        startDate: formattedStartDate,
+                        endDate: formattedEndDate
+                    })
+                }
+            );
+
+            if (!rideResponse.ok || !sessionResponse.ok) {
+                throw new Error('Failed to fetch data');
+            }
+
+            const rideData = await rideResponse.json();
+            const sessionData = await sessionResponse.json();
+
+            setRideLogsData(rideData);
+            setSessionData(sessionData);
+            processDataForSummary(rideData);
         } catch (err) {
-            console.error('Error fetching driver ride logs:', err);
-            setError(err.response?.data?.message || 'Failed to fetch ride logs');
+            console.error('Error fetching data:', err);
+            setError(err.message || 'Failed to fetch data');
         } finally {
             setLoading(false);
         }
@@ -105,12 +136,12 @@ const DriverRideLogs = ({ driverId }) => {
     // Handle date range selection
     const handleDateRangeChange = (range) => {
         setDateRange(range);
-        fetchRideLogs();  // Trigger fetch when date range changes
+        // We'll update the fetch logic in useEffect instead of calling it here
     };
 
     // Trigger search with current dates
     const handleSearch = () => {
-        fetchRideLogs();
+        fetchData();
     };
 
     // Calculate acceptance rate
@@ -128,11 +159,11 @@ const DriverRideLogs = ({ driverId }) => {
     };
 
     useEffect(() => {
-        fetchRideLogs();  // Initially fetch ride logs on load
+        fetchData();  // Fetch data when driverId or dateRange changes
     }, [driverId, dateRange]);
 
     return (
-        <Card className="border-none  px-2 my-4 mx-3">
+        <Card className="border-none px-2 my-4 mx-3">
             <CardHeader className="pb-2">
                 <div className='flex justify-between items-center'>
                     <CardTitle className="text-xl mb-4">Driver Ride Logs</CardTitle>
@@ -219,22 +250,55 @@ const DriverRideLogs = ({ driverId }) => {
                     <div className="text-center p-4">No data available</div>
                 ) : (
                     <div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
                             <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Car className="h-5 w-5 text-blue-700" />
+                                    <h3 className="text-sm font-medium text-blue-700">Rides Arrived</h3>
+                                </div>
                                 <p className="text-2xl font-bold text-blue-900">{summaryData.rideArrived}</p>
-                                <h3 className="text-sm font-medium text-blue-700 mb-2">Rides Arrived</h3>
                             </div>
                             <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <CheckCircle className="h-5 w-5 text-green-700" />
+                                    <h3 className="text-sm font-medium text-green-700">Rides Accepted</h3>
+                                </div>
                                 <p className="text-2xl font-bold text-green-900">{summaryData.rideAccepted}</p>
-                                <h3 className="text-sm font-medium text-green-700 mb-2">Rides Accepted</h3>
                             </div>
                             <div className="bg-red-50 p-4 rounded-lg border border-red-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <XCircle className="h-5 w-5 text-red-700" />
+                                    <h3 className="text-sm font-medium text-red-700">Rides Rejected</h3>
+                                </div>
                                 <p className="text-2xl font-bold text-red-900">{summaryData.rideRejected}</p>
-                                <h3 className="text-sm font-medium text-red-700 mb-2">Rides Rejected</h3>
                             </div>
-                            <div className="p-4 rounded-lg border border-orange-100">
+                            <div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <AlertTriangle className="h-5 w-5 text-orange-700" />
+                                    <h3 className="text-sm font-medium text-orange-700">Rides Cancelled</h3>
+                                </div>
                                 <p className="text-2xl font-bold text-orange-900">{summaryData.rideCancelled}</p>
-                                <h3 className="text-sm font-medium text-orange-700 mb-2">Rides Cancelled</h3>
+                            </div>
+                            <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Clock className="h-5 w-5 text-purple-700" />
+                                    <h3 className="text-sm font-medium text-purple-700">Total Sessions</h3>
+                                </div>
+                                <p className="text-2xl font-bold text-purple-900">
+                                    {sessionData?.sessionCount || 0}
+                                </p>
+                            </div>
+                            <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Timer className="h-5 w-5 text-indigo-700" />
+                                    <h3 className="text-sm font-medium text-indigo-700">Total Duration</h3>
+                                </div>
+                                <p className="text-2xl font-bold text-indigo-900">
+                                    {sessionData?.totalDuration?.hours || 0}h {sessionData?.totalDuration?.minutes || 0}m
+                                </p>
+                                <p className="text-xs text-indigo-500">
+                                    Avg: {sessionData?.averageDuration?.hours || 0}h {sessionData?.averageDuration?.minutes || 0}m
+                                </p>
                             </div>
                         </div>
                         
