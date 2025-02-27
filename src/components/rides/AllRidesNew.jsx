@@ -60,23 +60,24 @@ function AllRidesNew() {
         setExpandedRowId(expandedRowId === rowId ? null : rowId);
     };
 
-    const statusOptions = ["ALL", "COMPLETED", "CANCELLED", "FAKE RIDE", "REJECTED"]
+    const statusOptions = ["ALL", 'RIDE_ENROUTE_PICKUP', 'RIDE_ARRIVED_PICKUP', 'RIDE_STARTED', 'RIDE_ENDED', 'RIDE_CANCELLED', 'DRIVER_NOT_FOUND', 'FAKE_RIDE']
 
     const sortByOptions = ["created at: desc", "created at: asc", "updatedAt: desc", "updatedAt: asc"]
 
     const [sortby, setSortby] = useState("created at: desc")
     const [goToPage, setGoToPage] = useState("");
+    const [exportLoading, setExportLoading] = useState(false)
 
     const handleExportExcel = async () => {
         try {
             // Show loading state
-            setLoading(true);
+            setExportLoading(true);
 
             // Prepare query parameters based on current filters
             const exportParams = {
                 startDate: startDate || undefined,
                 endDate: endDate || undefined,
-                status: statusFilter !== "all" ? statusFilter : undefined
+                status: statusFilter !== "ALL" ? statusFilter : undefined
             };
 
             console.log(exportParams)
@@ -87,7 +88,7 @@ function AllRidesNew() {
                 exportParams
             );
 
-            console.log(response.data.data.length)
+            console.log(response.data.data, "response")
 
             if (response.data.success) {
                 // Process the data for Excel
@@ -134,7 +135,7 @@ function AllRidesNew() {
             console.error('Export failed:', error);
             // You might want to show an error message to the user here
         } finally {
-            setLoading(false);
+            setExportLoading(false);
         }
     };
 
@@ -189,6 +190,11 @@ function AllRidesNew() {
             cell: ({ row }) => <div>{row.getValue("status")}</div>,
         },
         {
+            accessorKey: "statusCode",
+            header: "Status Code",
+            cell: ({ row }) => <div>{row.getValue("statusCode")}</div>,
+        },
+        {
             accessorKey: "updatedAt",
             header: ({ column }) => (
                 <div className="flex items-center gap-2">
@@ -226,6 +232,21 @@ function AllRidesNew() {
             }
         },
         {
+            header: "Driver Phone",
+            cell: ({ row }) => {
+                const driverDetails = row.original.driverDetails
+                const l = driverDetails?.length
+
+                let driverPhone = "NA"
+                if (l > 0) {
+                    driverPhone = driverDetails[l - 1]?.phone
+                }
+
+                return (<div>{driverPhone} </div>)
+
+            }
+        },
+        {
             id: "actions",
             enableHiding: false,
             cell: ({ row }) => {
@@ -252,14 +273,7 @@ function AllRidesNew() {
                             <DropdownMenuItem onClick={() => window.open(`/rides/allRides/${ride._id}`, "_blank", "noopener,noreferrer")}>
                                 View Ride Details
                             </DropdownMenuItem>
-                            <Button
-                                variant="outline"
-                                onClick={handleExportExcel}
-                                disabled={loading}
-                                className="ml-2 bg-green-600 text-white"
-                            >
-                                {loading ? 'Exporting...' : 'Export Excel'}
-                            </Button>
+
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
@@ -369,6 +383,14 @@ function AllRidesNew() {
                 <div className='mt-4 flex gap-x-4'>
                     <Button onClick={() => setApplyButton(!applyButton)} disabled={loading ? true : false}>Apply filters</Button>
                     <Button onClick={() => handleReset()} disabled={loading ? true : false}>Reset filters</Button>
+                    <Button
+                        variant="outline"
+                        onClick={handleExportExcel}
+                        disabled={loading}
+                        className="ml-2 bg-green-600 text-white"
+                    >
+                        {exportLoading ? 'Exporting...' : 'Export Excel'}
+                    </Button>
                 </div>
             </div>
             <div className='border-gray-200 border-2 rounded'>
@@ -408,7 +430,7 @@ function AllRidesNew() {
                                     <TableRow key={`${row.id}-detail`}>
                                         <TableCell colSpan={columns.length} className="p-0">
                                             <div className="p-4 bg-gray-50">
-                                                <RideDetail transactionId={row.original.transaction_id} distance={row.original.distance} userInfo={row.original.userInfo}></RideDetail>
+                                                <RideDetail transactionId={row.original.transaction_id} distance={row.original.distance} driverDetails={row.original.driverDetails} locations={row.original?.locations} dataFromTable={row.original}></RideDetail>
                                             </div>
                                         </TableCell>
                                     </TableRow>

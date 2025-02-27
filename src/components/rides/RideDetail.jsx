@@ -7,7 +7,11 @@ import "leaflet/dist/leaflet.css";
 import { MapPin } from "lucide-react";
 import { SELLER_URL_LOCAL } from "@/lib/utils";
 
-function RideDetail({ transactionId, distance, userInfo }) {
+function RideDetail({ transactionId, distance, dataFromTable }) {
+    console.log(dataFromTable, "data from table")
+    const driverDetails = dataFromTable?.driverDetails
+    const driver = driverDetails.length > 0 ? driverDetails[driverDetails.length - 1] : null
+    const locations = dataFromTable?.locations
     const [rideData, setRideData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [status, setStatus] = useState("");
@@ -22,6 +26,7 @@ function RideDetail({ transactionId, distance, userInfo }) {
                 setIsLoading(false);
                 if (response.data.success) {
                     setRideData(response.data.data);
+                    console.log(response.data, "data from api")
                     setStatus(response.data.data.status);
                 }
             })
@@ -63,11 +68,11 @@ function RideDetail({ transactionId, distance, userInfo }) {
     if (isLoading) return <div className="p-4 text-center">Loading...</div>;
     if (!rideData) return <div className="p-4 text-center">No ride data available</div>;
 
-    const startLocation = rideData.locations.find(loc => loc.type === "START")?.location;
-    const endLocation = rideData.locations.find(loc => loc.type === "END")?.location;
+    const startLocation = locations.find(loc => loc.type === "START")?.location;
+    const endLocation = locations.find(loc => loc.type === "END")?.location;
     const startCoords = startLocation?.gps.split(",").map(Number) || [0, 0];
     const endCoords = endLocation?.gps.split(",").map(Number) || [0, 0];
-    const driver = rideData?.driverDetails ? rideData?.driverDetails[0] : {} || rideData?.driverDetails || {};
+    const userInfo = rideData.userInfo
 
     return (
         <div className="p-4 max-w-5xl mx-auto">
@@ -160,21 +165,31 @@ function RideDetail({ transactionId, distance, userInfo }) {
                         </div>
                     </div>
 
-                    {/* Driver Details */}
-                    {driver?.name && (<div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
+                        {/* Driver Details */}
                         <div>
+                            <p className="text-sm font-semibold">User Name</p>
+                            <p>{userInfo?.name || "N/A"}</p>
+                            <p className="text-sm font-semibold mt-2">Number:</p>
+                            <p>{userInfo?.phone || "N/A"}</p>
+
+
+                        </div>
+                        {driver?.name && <div>
                             <p className="text-sm font-semibold">Driver Name:</p>
                             <p>{driver?.name || "N/A"}</p>
                             <p className="text-sm font-semibold mt-2">Phone Number:</p>
                             <p>{driver?.phone || "N/A"}</p>
-                        </div>
-                        <div>
+                        </div>}
+                        {driver?.name && <div>
                             <p className="text-sm font-semibold">Vehicle Type:</p>
                             <p>{driver?.vehicleDetail?.make || "N/A"}</p>
                             <p className="text-sm font-semibold mt-2">Vehicle Number:</p>
                             <p>{driver?.vehicleDetail?.registration || "N/A"}</p>
-                        </div>
-                    </div>)}
+                        </div>}
+
+
+                    </div>
                 </div>
             </div>
         </div>
