@@ -28,6 +28,7 @@ import ImageComponent from './components/Img.jsx'
 import RideJourneyIndex from './components/rideJourney/RideJourneyIndex.jsx'
 import PriceSetterPage from './components/pricing/PriceSetterPage.jsx'
 import DriverJourneyIndex from './components/DriverJourney/DriverJourneyIndex.jsx'
+import LogsIndex from './components/AllDriverRideLogs/LogsIndex.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -64,7 +65,10 @@ function App() {
           <Route path="/home/mapData" element={<ProtectedRoute element={<Home />} />} />
           <Route path="/home/rideJourney" element={<ProtectedRoute element={<RideJourneyIndex />} />} />
           <Route path="/home/driverJourney" element={<ProtectedRoute element={<DriverJourneyIndex />} />} />
+          <Route path="/home/driverLogs" element={<ProtectedRoute element={<LogsIndex />} />} />
           <Route path="/home/dashboard" element={<ProtectedRoute element={<HomeMetricPage />} />} />
+
+
           <Route path='/' element={<Login />}></Route>
           <Route path='/drivers/allDrivers' element={<ProtectedRoute element={<AllDrivers />} />} />
           <Route path='/drivers/liveDrivers' element={<ProtectedRoute element={<LiveDrivers />} />} />

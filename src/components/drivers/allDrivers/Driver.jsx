@@ -34,6 +34,7 @@ import { Title } from '@radix-ui/react-dialog';
 import DriverInfoCharts from '../driverInfo/DriverInfoCharts';
 import BalanceStatement from '../driverInfo/BalanceStatement';
 import { SELLER_URL_LOCAL } from '@/lib/utils';
+import DriverRideLogs from './DriverRideLogs';
 function Driver() {
     const { id } = useParams();
     console.log("driver param", id)
@@ -125,7 +126,7 @@ function Driver() {
             <SideNavbar />
             <div className='flex-1 ml-[250px]'>
                 <Header className='w-full' title='ALL DRIVERS' />
-                <div className='overflow-auto mx-8'>
+                <div className='overflow-auto mx-4'>
                     <div className='p-4 my-4 justify-between flex'>
                         <Button variant='outline' className='shadow' onClick={() => {
 
@@ -188,6 +189,9 @@ function Driver() {
                         <div className="flex flex-col md:flex-row gap-4 p-4">
                             <DriverLicense data={data} />
                             <DriverRC data={data} />
+                        </div>
+                        <div>
+                            <DriverRideLogs driverId={id} />
                         </div>
                         <div>
                             <Performance data={data}></Performance>

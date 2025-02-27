@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import * as XLSX from 'xlsx';
 import {
     flexRender,
     getCoreRowModel,
@@ -76,6 +76,11 @@ const columns = [
         accessorKey: "userInfo",
         header: "User Name",
         cell: ({ row }) => <div>{row.getValue("userInfo")?.name} </div>
+    },
+    {
+        accessorKey: "userPhone",
+        header: "User Phone",
+        cell: ({ row }) => <div>{row.getValue("userInfo")?.phone} </div>
     },
     {
         accessorKey: "fare",
@@ -226,6 +231,78 @@ export default function RideTable() {
         setFilteredData(filtered);
     }, [data, startDate, endDate]);
 
+
+    const handleExportExcel = async () => {
+        try {
+            // Show loading state
+            setLoading(true);
+    
+            // Prepare query parameters based on current filters
+            const exportParams = {
+                startDate: startDate || undefined,
+                endDate: endDate || undefined,
+                status: statusFilter !== "all" ? statusFilter : undefined
+            };
+
+            console.log(exportParams)
+    
+            // Call the export API
+            const response = await axios.post(
+                `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/exportRide`,
+                exportParams
+            );
+
+            console.log(response.data.data.length)
+    
+            if (response.data.success) {
+                // Process the data for Excel
+                const excelData = response.data.data.map(ride => ({
+                    'Date': new Date(ride.createdAt).toLocaleDateString(),
+                    'Transaction ID': ride.transaction_id || '',
+                    'User Name': ride.userInfo?.name || '',
+                    'User Phone': ride.userInfo?.phone || '',
+                    'Driver Name': ride.driverInfo?.name || '',
+                    'Driver Phone': ride.driverInfo?.phone || '',
+                    'Vehicle Category': ride.driverInfo?.vehicleDetail?.category || '',
+                    'Vehicle Number': ride.driverInfo?.vehicleDetail?.vehicleNumber || '',
+                    'License Number': ride.driverInfo?.vehicleDetail?.licenseNumber || '',
+                    'Fare': ride.fare || 0,
+                    'Distance': ride.distance || 0,
+                    'Status': ride.status || '',
+                    'Last Updated': new Date(ride.updatedAt).toLocaleDateString()
+                }));
+    
+                // Create workbook and worksheet
+                const workbook = XLSX.utils.book_new();
+                const worksheet = XLSX.utils.json_to_sheet(excelData);
+    
+                // Add worksheet to workbook
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Rides');
+    
+                // Generate Excel file
+                const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `rides_export_${new Date().toISOString().split('T')[0]}.xlsx`;
+                link.click();
+    
+                // Cleanup
+                window.URL.revokeObjectURL(url);
+            } else {
+                throw new Error('Failed to export data');
+            }
+        } catch (error) {
+            console.error('Export failed:', error);
+            // You might want to show an error message to the user here
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const table = useReactTable({
         data: filteredData, // Use filteredData instead of data
         columns,
@@ -335,6 +412,14 @@ export default function RideTable() {
                             ))}
                     </DropdownMenuContent>
                 </DropdownMenu>
+                <Button
+                    variant="outline"
+                    onClick={handleExportExcel}
+                    disabled={loading}
+                    className="ml-2 bg-green-600 text-white"
+                >
+                    {loading ? 'Exporting...' : 'Export Excel'}
+                </Button>
             </div>
             {/* Rest of the component remains the same... */}
             <div className="rounded-md border">
