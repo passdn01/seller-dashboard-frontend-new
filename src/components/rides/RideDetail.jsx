@@ -14,27 +14,27 @@ function RideDetail({ transactionId, distance, dataFromTable }) {
     const locations = dataFromTable?.locations
     const [rideData, setRideData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [status, setStatus] = useState("");
+    const [status, setStatus] = useState(dataFromTable.status);
     const [errorMessage, setErrorMessage] = useState("");
 
-    useEffect(() => {
-        if (!transactionId) return;
+    // useEffect(() => {
+    //     if (!transactionId) return;
 
-        setIsLoading(true);
-        axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideDetail`, { transactionId })
-            .then(response => {
-                setIsLoading(false);
-                if (response.data.success) {
-                    setRideData(response.data.data);
-                    console.log(response.data, "data from api")
-                    setStatus(response.data.data.status);
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching ride details:", error);
-                setIsLoading(false);
-            });
-    }, [transactionId]);
+    //     setIsLoading(true);
+    //     axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideDetail`, { transactionId })
+    //         .then(response => {
+    //             setIsLoading(false);
+    //             if (response.data.success) {
+    //                 setRideData(response.data.data);
+    //                 console.log(response.data, "data from api")
+    //                 setStatus(response.data.data.status);
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error("Error fetching ride details:", error);
+    //             setIsLoading(false);
+    //         });
+    // }, [transactionId]);
 
     const updateRideStatus = async () => {
         if (!rideData) return;
@@ -65,14 +65,14 @@ function RideDetail({ transactionId, distance, dataFromTable }) {
         }
     };
 
-    if (isLoading) return <div className="p-4 text-center">Loading...</div>;
-    if (!rideData) return <div className="p-4 text-center">No ride data available</div>;
+    // if (isLoading) return <div className="p-4 text-center">Loading...</div>;
+    // if (!rideData) return <div className="p-4 text-center">No ride data available</div>;
 
     const startLocation = locations.find(loc => loc.type === "START")?.location;
     const endLocation = locations.find(loc => loc.type === "END")?.location;
     const startCoords = startLocation?.gps.split(",").map(Number) || [0, 0];
     const endCoords = endLocation?.gps.split(",").map(Number) || [0, 0];
-    const userInfo = rideData.userInfo
+    const userInfo = dataFromTable.userDetails
 
     return (
         <div className="p-4 max-w-5xl mx-auto">
@@ -101,7 +101,7 @@ function RideDetail({ transactionId, distance, dataFromTable }) {
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="font-semibold">Transaction Id:</span>
-                            <span className="text-gray-600">{rideData.transaction_id}</span>
+                            <span className="text-gray-600">{dataFromTable.transaction_id}</span>
                         </div>
                         {driver?.vehicleDetail?.make && (<div className="flex items-center gap-2">
                             <span className="font-semibold">Vehicle Type:</span>
@@ -134,6 +134,7 @@ function RideDetail({ transactionId, distance, dataFromTable }) {
                                 <option value="ACTIVE">Active</option>
                                 <option value="COMPLETED">Completed</option>
                                 <option value="CANCELLED">Cancelled</option>
+                                <option value="REJECTED">Rejected</option>
                             </select>
                         </div>
                         <div className="flex items-end">
@@ -157,11 +158,11 @@ function RideDetail({ transactionId, distance, dataFromTable }) {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-sm font-semibold">Fare</p>
-                            <p className="text-xl font-bold">₹{rideData.fare}</p>
+                            <p className="text-xl font-bold">₹{dataFromTable.fare}</p>
                         </div>
                         <div>
                             <p className="text-sm font-semibold">Distance</p>
-                            <p className="text-xl font-bold">{distance}km</p>
+                            <p className="text-xl font-bold">{dataFromTable.distance}km</p>
                         </div>
                     </div>
 
@@ -169,7 +170,7 @@ function RideDetail({ transactionId, distance, dataFromTable }) {
                         {/* Driver Details */}
                         <div>
                             <p className="text-sm font-semibold">User Name</p>
-                            <p>{userInfo?.name || "N/A"}</p>
+                            <p>{userInfo?.firstName + " " + userInfo.lastName || "N/A"}</p>
                             <p className="text-sm font-semibold mt-2">Number:</p>
                             <p>{userInfo?.phone || "N/A"}</p>
 

@@ -47,6 +47,8 @@ const RoleCard = ({ data, onUserDeleted, onUserEdited }) => {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+    const [showPassword, setShowPassword] = useState(false);
+
     const handleDeleteRole = async () => {
         setIsLoading(true);
         try {
@@ -184,13 +186,22 @@ const RoleCard = ({ data, onUserDeleted, onUserEdited }) => {
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="password">Password</Label>
-                                        <Input
-                                            id="password"
-                                            type="password"
-                                            value={editedData.password}
-                                            onChange={(e) => handleInputChange('password', e.target.value)}
-                                            placeholder="Enter your password"
-                                        />
+                                        <div className="relative flex items-center">
+                                            <Input
+                                                id="password"
+                                                type={showPassword ? "text" : "password"}
+                                                value={editedData.password}
+                                                onChange={(e) => handleInputChange('password', e.target.value)}
+                                                placeholder="Enter your password"
+                                            />
+                                            <button
+                                                type="button"
+                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 text-sm"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                            >
+                                                {showPassword ? "Hide" : "Show"}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="flex justify-end gap-3">

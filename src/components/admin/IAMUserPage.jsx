@@ -16,12 +16,14 @@ import { Input } from "@/components/ui/input"
 import { Button } from '../ui/button'
 import AddUser from './AddUser'
 import { SELLER_URL_LOCAL } from '@/lib/utils'
+import { LoaderCircle } from 'lucide-react';
 
 function IAMUserPage() {
     const [roleData, setRoleData] = useState([])
     const [filteredRoleData, setFilteredRoleData] = useState([])
     const [roleFilter, setRoleFilter] = useState("all")
     const [searchQuery, setSearchQuery] = useState("")
+    const [loading, setLoading] = useState(true) // Start with loading as true
     const username = localStorage.getItem('username')
 
     const roles = [
@@ -38,16 +40,26 @@ function IAMUserPage() {
 
     useEffect(() => {
         try {
+            setLoading(true)
             fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/getDashboardUsers`)
                 .then(response => response.json())
                 .then(data => {
                     const filtered = data.data.filter((role) => role.username !== username)
                     setRoleData(filtered)
                     setFilteredRoleData(filtered)
+                    // Add a small delay to make loading state visible
+                    setTimeout(() => {
+                        setLoading(false)
+                    }, 500)
+                })
+                .catch(error => {
+                    console.error("Error fetching users:", error)
+                    setLoading(false)
                 })
         }
         catch (e) {
             console.log(e)
+            setLoading(false)
         }
     }, [])
 
@@ -108,9 +120,6 @@ function IAMUserPage() {
         );
     }
 
-
-
-
     return (
         <div>
             <SideNavbar />
@@ -153,11 +162,24 @@ function IAMUserPage() {
                     </Dialog>
                 </div>
 
-                <RoleList
-                    roleData={filteredRoleData}
-                    onUserDeleted={handleUserDeleted}
-                    onUserEdited={handleEditUser}
-                />
+                {loading ? (
+                    <div className="flex flex-col justify-center items-center h-64 w-full">
+                        <div className="animate-spin text-blue-500"><LoaderCircle /></div>
+
+                    </div>
+                ) : (
+                    filteredRoleData.length > 0 ? (
+                        <RoleList
+                            roleData={filteredRoleData}
+                            onUserDeleted={handleUserDeleted}
+                            onUserEdited={handleEditUser}
+                        />
+                    ) : (
+                        <div className="flex justify-center items-center h-64 w-full">
+                            <div className="text-xl font-semibold text-gray-500">No users found</div>
+                        </div>
+                    )
+                )}
             </div>
         </div>
     )

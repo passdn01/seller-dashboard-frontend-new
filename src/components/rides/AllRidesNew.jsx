@@ -10,7 +10,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Search, } from "lucide-react";
 import { Button } from "../ui/button";
 import {
     DropdownMenu,
@@ -55,18 +55,25 @@ function AllRidesNew() {
     const [totalPages, setTotalPages] = useState(1);
     const [applyButton, setApplyButton] = useState(false);
 
+    const [searchQuery, setSearchQuery] = useState("");
+
     const [expandedRowId, setExpandedRowId] = useState(null);
     const handleRowClick = (rowId) => {
         setExpandedRowId(expandedRowId === rowId ? null : rowId);
     };
 
-    const statusOptions = ["ALL", 'RIDE_ENROUTE_PICKUP', 'RIDE_ARRIVED_PICKUP', 'RIDE_STARTED', 'RIDE_ENDED', 'RIDE_CANCELLED', 'DRIVER_NOT_FOUND', 'FAKE_RIDE']
+    const statusOptions = ["ALL", 'RIDE_ENROUTE_PICKUP', 'RIDE_ARRIVED_PICKUP', 'RIDE_STARTED', 'RIDE_ENDED', 'RIDE_CANCELLED', 'DRIVER_NOT_FOUND', 'FAKE_RIDE', 'RIDE_CONFIRMED']
 
     const sortByOptions = ["created at: desc", "created at: asc", "updatedAt: desc", "updatedAt: asc"]
 
     const [sortby, setSortby] = useState("created at: desc")
     const [goToPage, setGoToPage] = useState("");
     const [exportLoading, setExportLoading] = useState(false)
+
+    const handleSearch = () => {
+        setPage(1); // Reset to first page when searching
+        setApplyButton(!applyButton); // Toggle to trigger useEffect
+    };
 
     const handleExportExcel = async () => {
         try {
@@ -77,7 +84,7 @@ function AllRidesNew() {
             const exportParams = {
                 startDate: startDate || undefined,
                 endDate: endDate || undefined,
-                status: statusFilter !== "ALL" ? statusFilter : undefined
+                status: statusFilter !== "ALL" ? statusFilter : undefined,
             };
 
             console.log(exportParams)
@@ -189,10 +196,60 @@ function AllRidesNew() {
             header: "Status",
             cell: ({ row }) => <div>{row.getValue("status")}</div>,
         },
+
+
+
         {
-            accessorKey: "statusCode",
-            header: "Status Code",
-            cell: ({ row }) => <div>{row.getValue("statusCode")}</div>,
+            accessorKey: "driverDetails",
+            header: "Driver Name",
+            cell: ({ row }) => {
+                const l = row.original.driverDetails?.length
+                let driverName = "NA"
+                if (l && l > 0) {
+                    driverName = row.original?.driverDetails[l - 1]?.name
+                }
+
+                return (<div>{driverName} </div>)
+
+            }
+        },
+
+        {
+            header: "Driver Phone",
+            cell: ({ row }) => {
+                const driverDetails = row.original.driverDetails
+                const l = driverDetails?.length
+
+                let driverPhone = "NA"
+                if (l > 0) {
+                    driverPhone = driverDetails[l - 1]?.phone
+                }
+
+                return (<div>{driverPhone} </div>)
+
+            }
+        },
+        {
+            header: "User Name",
+            cell: ({ row }) => {
+                const userDetails = row.original.userDetails
+                return (
+                    <div>{userDetails?.firstName} {userDetails?.lastName}</div>
+                )
+
+            }
+
+        },
+        {
+            header: "User Phone",
+            cell: ({ row }) => {
+                const userDetails = row.original.userDetails
+                return (
+                    <div>{userDetails?.phone}</div>
+                )
+
+            }
+
         },
         {
             accessorKey: "updatedAt",
@@ -214,37 +271,6 @@ function AllRidesNew() {
 
                 return <div>{formattedDate}</div>; // Render the formatted date
             },
-        },
-
-        {
-            accessorKey: "driverDetails",
-            header: "Driver Name",
-            cell: ({ row }) => {
-                const l = row.original.driverDetails.length
-                console.log(l)
-                let driverName = "NA"
-                if (l > 0) {
-                    driverName = row.original?.driverDetails[l - 1]?.name
-                }
-
-                return (<div>{driverName} </div>)
-
-            }
-        },
-        {
-            header: "Driver Phone",
-            cell: ({ row }) => {
-                const driverDetails = row.original.driverDetails
-                const l = driverDetails?.length
-
-                let driverPhone = "NA"
-                if (l > 0) {
-                    driverPhone = driverDetails[l - 1]?.phone
-                }
-
-                return (<div>{driverPhone} </div>)
-
-            }
         },
         {
             id: "actions",
@@ -286,10 +312,10 @@ function AllRidesNew() {
         setLoading(true);
         try {
             const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/getAllRidesNew`, {
-                params: { startDate, endDate, status: statusFilter, page, limit: 10, sortby },
+                params: { startDate, endDate, status: statusFilter, page, limit: 10, sortby, searchQuery },
             });
 
-            console.log(response.data.rides, "response")
+            console.log(response.data, "response")
             setData(response.data.rides);
             setTotalPages(response.data.totalPages);
         } catch (err) {
@@ -331,6 +357,7 @@ function AllRidesNew() {
 
 
     const handleReset = () => {
+        setSearchQuery("");
         setStartDate("")
         setEndDate("")
         setStatusFilter("ALL")
@@ -340,6 +367,22 @@ function AllRidesNew() {
     return (
         <div className='p-6 text-sm'>
             {/* filters */}
+            <div className='flex gap-4 mb-4 ml-4'>
+                <Input
+                    placeholder="Search by name, phone..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-96"
+                />
+                <Button
+                    onClick={handleSearch}
+                    variant="default"
+                    className="flex items-center gap-1"
+                >
+                    <Search className="h-4 w-4" />
+                    Search
+                </Button>
+            </div>
             <div className="flex gap-x-8 px-4 pb-4 items-center ">
                 <div>
                     <Label>Start Date</Label>
@@ -421,7 +464,7 @@ function AllRidesNew() {
                                     onClick={() => handleRowClick(row.id)}
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell key={cell.id} className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
@@ -430,7 +473,7 @@ function AllRidesNew() {
                                     <TableRow key={`${row.id}-detail`}>
                                         <TableCell colSpan={columns.length} className="p-0">
                                             <div className="p-4 bg-gray-50">
-                                                <RideDetail transactionId={row.original.transaction_id} distance={row.original.distance} driverDetails={row.original.driverDetails} locations={row.original?.locations} dataFromTable={row.original}></RideDetail>
+                                                <RideDetail dataFromTable={row.original}></RideDetail>
                                             </div>
                                         </TableCell>
                                     </TableRow>
