@@ -9,10 +9,11 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Oval } from 'react-loader-spinner';
-import { Calendar, Search } from 'lucide-react';
+import { Calendar, Search, Clock, Timer, Car, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 
 const AllDriverRideLogs = () => {
     const [rideLogsData, setRideLogsData] = useState(null);
+    const [sessionData, setSessionData] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [dateRange, setDateRange] = useState('today');
@@ -24,8 +25,8 @@ const AllDriverRideLogs = () => {
         return moment(date).format('DD-MM-YYYY'); // Expected format for the backend
     };
 
-    // Fetch ride logs based on current date range
-    const fetchRideLogs = async () => {
+    // Fetch data based on current date range
+    const fetchData = async () => {
         setLoading(true);
         setError(null);
 
@@ -55,7 +56,8 @@ const AllDriverRideLogs = () => {
         }
 
         try {
-            const response = await axios.post(
+            // Fetch ride logs
+            const rideResponse = await axios.post(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/allDriverRideLogs`,
                 {
                     startDate: formattedStartDate,
@@ -63,10 +65,20 @@ const AllDriverRideLogs = () => {
                 }
             );
 
-            setRideLogsData(response.data);
+            // Fetch session data
+            const sessionResponse = await axios.post(
+                `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/allDriverSession`,
+                {
+                    startDate: formattedStartDate,
+                    endDate: formattedEndDate
+                }
+            );
+
+            setRideLogsData(rideResponse.data);
+            setSessionData(sessionResponse.data);
         } catch (err) {
-            console.error('Error fetching all driver ride logs:', err);
-            setError(err.response?.data?.message || 'Failed to fetch ride logs');
+            console.error('Error fetching data:', err);
+            setError(err.response?.data?.message || 'Failed to fetch data');
         } finally {
             setLoading(false);
         }
@@ -75,12 +87,12 @@ const AllDriverRideLogs = () => {
     // Handle date range selection
     const handleDateRangeChange = (range) => {
         setDateRange(range);
-        fetchRideLogs();  // Trigger fetch when date range changes
+        // Don't call fetchData() here to avoid using stale state
     };
 
     // Trigger search with current dates
     const handleSearch = () => {
-        fetchRideLogs();
+        fetchData();
     };
 
     // Calculate acceptance rate
@@ -98,8 +110,8 @@ const AllDriverRideLogs = () => {
     };
 
     useEffect(() => {
-        fetchRideLogs();  // Initially fetch ride logs on load
-    }, []);
+        fetchData(); // Fetch data when dateRange changes
+    }, [dateRange]);
 
     return (
         <Card className="w-full border-none">
@@ -189,22 +201,58 @@ const AllDriverRideLogs = () => {
                     <div className="text-center p-4">No data available</div>
                 ) : (
                     <div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
                             <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Car className="h-5 w-5 text-blue-700" />
+                                    <h3 className="text-sm font-medium text-blue-700">Rides Arrived</h3>
+                                </div>
                                 <p className="text-2xl font-bold text-blue-900">{rideLogsData.totalRideArrived}</p>
-                                <h3 className="text-sm font-medium text-blue-700 mb-2">Rides Arrived</h3>
                             </div>
                             <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <CheckCircle className="h-5 w-5 text-green-700" />
+                                    <h3 className="text-sm font-medium text-green-700">Rides Accepted</h3>
+                                </div>
                                 <p className="text-2xl font-bold text-green-900">{rideLogsData.totalRideAccepted}</p>
-                                <h3 className="text-sm font-medium text-green-700 mb-2">Rides Accepted</h3>
                             </div>
                             <div className="bg-red-50 p-4 rounded-lg border border-red-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <XCircle className="h-5 w-5 text-red-700" />
+                                    <h3 className="text-sm font-medium text-red-700">Rides Rejected</h3>
+                                </div>
                                 <p className="text-2xl font-bold text-red-900">{rideLogsData.totalRideRejected}</p>
-                                <h3 className="text-sm font-medium text-red-700 mb-2">Rides Rejected</h3>
                             </div>
-                            <div className="p-4 rounded-lg border border-orange-100">
+                            <div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <AlertTriangle className="h-5 w-5 text-orange-700" />
+                                    <h3 className="text-sm font-medium text-orange-700">Rides Cancelled</h3>
+                                </div>
                                 <p className="text-2xl font-bold text-orange-900">{rideLogsData.totalRideCancelled}</p>
-                                <h3 className="text-sm font-medium text-orange-700 mb-2">Rides Cancelled</h3>
+                            </div>
+                            <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Clock className="h-5 w-5 text-purple-700" />
+                                    <h3 className="text-sm font-medium text-purple-700">Total Sessions</h3>
+                                </div>
+                                <p className="text-2xl font-bold text-purple-900">
+                                    {sessionData?.sessionCount || 0}
+                                </p>
+                            </div>
+                            <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-100">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Timer className="h-5 w-5 text-indigo-700" />
+                                    <h3 className="text-sm font-medium text-indigo-700">Total Duration</h3>
+                                </div>
+                                <p className="text-2xl font-bold text-indigo-900">
+                                    {sessionData?.totalDuration?.days > 0 && `${sessionData?.totalDuration?.days}d `}
+                                    {sessionData?.totalDuration?.hours || 0}h {sessionData?.totalDuration?.minutes || 0}m
+                                </p>
+                                <p className="text-xs text-indigo-500">
+                                    Avg: 
+                                    {sessionData?.averageDuration?.days > 0 && `${sessionData?.averageDuration?.days}d `}
+                                    {sessionData?.averageDuration?.hours || 0}h {sessionData?.averageDuration?.minutes || 0}m
+                                </p>
                             </div>
                         </div>
                         
