@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import React from 'react'
 import axios from "axios";
 import {
     flexRender,
@@ -35,8 +36,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Oval } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 import { SELLER_URL_LOCAL } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
 
 const IssueAssigner = () => {
+    const navigate = useNavigate();
     const [tickets, setTickets] = useState([]);
     const [solvers, setSolvers] = useState([]);
     const [selectedSolver, setSelectedSolver] = useState({});
@@ -45,30 +48,39 @@ const IssueAssigner = () => {
     const [rowSelection, setRowSelection] = useState({});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const [sorting, setSorting] = useState([]);
-    const [statusFilter, setStatusFilter] = useState("all");
+    const [sortby, setSortby] = useState("created at: desc")
+    const [statusFilter, setStatusFilter] = useState("All");
     const [globalFilter, setGlobalFilter] = useState("");
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [applyButton, setApplyButton] = useState(false);
 
     const [ticketLoading, setTicketLoading] = useState(false);
     const [solverLoading, setSolverLoading] = useState(false);
 
 
     const userId = localStorage.getItem("userId");
+    const fetchTickets = async () => {
+        setTicketLoading(true);
+        try {
+            const params = {
+                status: statusFilter !== "All" ? statusFilter : undefined,
+                search: globalFilter || undefined,
+                page: page,
+                limit: 10,
+                sortby
+            };
+            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets`, { params });
+            console.log(response.data, response)
+            setTickets(response.data.tickets);
+            setTotalPages(response.data.totalPages);
+        } catch (err) {
+            setError("Failed to load tickets");
+        } finally {
+            setTicketLoading(false);
+        }
+    };
 
-    useEffect(() => {
-        const fetchTickets = async () => {
-            setTicketLoading(true);
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets`);
-                setTickets(response.data);
-            } catch (err) {
-                setError("Failed to load tickets");
-            } finally {
-                setTicketLoading(false);
-            }
-        };
-        fetchTickets();
-    }, [tickets]);
 
     useEffect(() => {
         const fetchSolvers = async () => {
@@ -85,7 +97,12 @@ const IssueAssigner = () => {
             }
         };
         fetchSolvers();
-    }, [solvers]);
+    }, []);
+
+    useEffect(() => {
+        console.log("in use effect")
+        fetchTickets();
+    }, [page, applyButton]);
 
     // Assign a ticket to a solver
     const handleAssignTicket = async (ticketId, solverId) => {
@@ -132,13 +149,9 @@ const IssueAssigner = () => {
             accessorKey: "createdAt",
             header: ({ column }) => (
                 <div className="flex items-center gap-2">
-                    <Button
-                        variant="ghost"
-                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                    >
-                        Joining
-                        <ArrowUpDown className="ml-2 h-4 w-4" />
-                    </Button>
+
+                    Joining
+
                 </div>
             ),
             cell: ({ row }) => {
@@ -165,13 +178,9 @@ const IssueAssigner = () => {
         {
             accessorKey: "updatedAt",
             header: ({ column }) => (
-                <Button
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Updated
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
+                <div>
+                    Updated</div>
+
             ),
             cell: ({ row }) => {
                 const date = new Date(row.getValue("updatedAt")); // Convert to Date object
@@ -223,7 +232,6 @@ const IssueAssigner = () => {
             enableHiding: false,
             cell: ({ row }) => {
                 const tickets = row.original;
-                const navigate = useNavigate();
 
                 return (
                     <DropdownMenu>
@@ -251,35 +259,36 @@ const IssueAssigner = () => {
         },
     ];
 
-    // Initialize the table
+    const tableData = React.useMemo(
+        () => (ticketLoading ? Array(10).fill({}) : tickets),
+        [ticketLoading, tickets]
+    );
+    const tableColumns = React.useMemo(
+        () =>
+            ticketLoading
+                ? columns.map((column) => ({
+                    ...column,
+                    cell: () => (
+                        <div className='h-8 bg-gray-100 rounded'></div>
+                    )
+                }))
+                : columns,
+        [ticketLoading]
+    );
+
     const table = useReactTable({
-        data: tickets,
-        columns,
-        onSortingChange: setSorting,
-        onissueColumnFiltersChange: setIssueColumnFilters,
+        data: tableData,
+        columns: tableColumns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        onColumnVisibilityChange: setColumnVisibility,
-        onRowSelectionChange: setRowSelection,
-        state: {
-            sorting,
-            issueColumnFilters,
-            columnVisibility,
-            rowSelection,
-            globalFilter,
-        },
-        onGlobalFilterChange: setGlobalFilter,
     });
 
-    useEffect(() => {
-        if (statusFilter && statusFilter !== "all") {
-            table.getColumn("status")?.setFilterValue(statusFilter);
-        } else {
-            table.getColumn("status")?.setFilterValue("");
-        }
-    }, [statusFilter, table]);
+    const handleReset = () => {
+        setStatusFilter("All")
+        setSortby("created at: desc")
+        fetchTickets();
+    }
+
 
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">
@@ -300,56 +309,54 @@ const IssueAssigner = () => {
         return <div>Error: {error}</div>;
     }
 
-    // Get unique status values for the filter
-    const statusOptions = [...new Set(tickets.map(item => item.status))];
+    const statusOptions = ["All", "In Progress", "Pending", "Completed", "Active"];
+    const sortByOptions = ["created at: desc", "created at: asc", "updatedAt: desc", "updatedAt: asc"]
+
 
     return (
-        <div className="w-[90%] mx-12">
-            <div className="flex items-center py-4">
-                <Input
-                    placeholder="Search all columns..."
-                    value={globalFilter ?? ""}
-                    onChange={(event) => setGlobalFilter(event.target.value)}
-                    className="max-w-sm mr-4"
-                />
-                <Select onValueChange={setStatusFilter} value={statusFilter}>
-                    <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Filter by status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">All Statuses</SelectItem>
-                        {statusOptions.map((status) => (
-                            <SelectItem key={status} value={status}>
-                                {status}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="ml-auto">
-                            Columns <ChevronDown className="ml-2 h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        {table
-                            .getAllColumns()
-                            .filter((column) => column.getCanHide())
-                            .map((column) => (
-                                <DropdownMenuCheckboxItem
-                                    key={column.id}
-                                    className="capitalize"
-                                    checked={column.getIsVisible()}
-                                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                                >
-                                    {column.id}
-                                </DropdownMenuCheckboxItem>
+        <div className='p-6 text-sm'>
+
+            <div className="flex gap-x-8 px-4 pb-4 items-center ">
+                <div>
+                    <Label>Status</Label><Select onValueChange={setStatusFilter} value={statusFilter}>
+                        <SelectTrigger className="w-[180px] mr-2">
+                            <SelectValue placeholder="Filter by status" />
+                        </SelectTrigger>
+                        <SelectContent>
+
+                            {statusOptions.map((status) => (
+                                <SelectItem key={status} value={status}>
+                                    {status}
+                                </SelectItem>
+
                             ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
+
+                        </SelectContent>
+                    </Select></div>
+                <div>
+                    <Label>Sort by</Label><Select onValueChange={setSortby} value={sortby}>
+                        <SelectTrigger className="w-[180px] mr-2">
+                            <SelectValue placeholder="created at: desc" />
+                        </SelectTrigger>
+                        <SelectContent>
+
+                            {sortByOptions.map((status) => (
+                                <SelectItem key={status} value={status}>
+                                    {status}
+                                </SelectItem>
+
+                            ))}
+
+                        </SelectContent>
+                    </Select></div>
+
+                <div className='mt-4 flex gap-x-4'>
+                    <Button onClick={() => setApplyButton(!applyButton)} disabled={loading ? true : false}>Apply filters</Button>
+                    <Button onClick={() => handleReset()} disabled={loading ? true : false}>Reset filters</Button>
+                </div>
             </div>
-            <div className="rounded-md border">
-                <Table>
+            <div className='border-gray-200 border-2 rounded'>
+                <Table >
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
@@ -368,66 +375,42 @@ const IssueAssigner = () => {
                     </TableHeader>
                     <TableBody>
                         {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
+                            table.getRowModel().rows.map((row) => ([
                                 <TableRow
                                     key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
+                                    data-state={!loading && row.getIsSelected() && "selected"}
+                                    className={loading ? '' : "cursor-pointer hover:bg-gray-100"}
+
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell key={cell.id} className="whitespace-nowrap overflow-hidden text-ellipsis max-w-[150px]">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
-                                </TableRow>
-                            ))
+                                </TableRow>,
+
+
+                            ]).flat())
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    {ticketLoading && solverLoading ? "Loading..." : "No results"}
-
+                                    {ticketLoading ? "Loading..." : "No Results."}
                                 </TableCell>
                             </TableRow>
                         )}
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
-                <div className="flex-1 text-sm text-muted-foreground">
-                    Total {table.getFilteredRowModel().rows.length} row(s) available.
-                </div>
-                <div className="flex items-center space-x-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        Previous
-                    </Button>
-                    <input
-                        type="number"
-                        min="1"
-                        max={table.getFilteredRowModel().rows.length}
-                        placeholder="Go to row..."
-                        className="w-60 border rounded px-2 py-2 text-sm"
-                        onChange={(e) => {
-                            const rowNumber = Number(e.target.value);
-                            if (rowNumber > 0 && rowNumber <= table.getFilteredRowModel().rows.length) {
-                                table.setPageIndex(Math.floor((rowNumber - 1) / table.getState().pagination.pageSize));
-                            }
-                        }}
-                    />
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        Next
-                    </Button>
-                </div>
-            </div>
+            <div className='flex gap-x-4 items-center'>
+                {/* Previous Button */}
+                <Button variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
+
+                <span>Page {page} of {totalPages}</span>
+
+                {/* Next Button */}
+                <Button variant="outline" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button></div>
         </div>
+
     );
 
 };
