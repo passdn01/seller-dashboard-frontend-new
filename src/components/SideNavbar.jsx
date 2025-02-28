@@ -109,6 +109,12 @@ function SideNavbar() {
                     title: 'All Drivers',
                     link: '/drivers/allDrivers',
                     icon: '',
+                },
+                {
+                    id: '1',
+                    title: 'All Offers',
+                    link: '/drivers/allOffers',
+                    icon: '',
                 }
             ]
         },
