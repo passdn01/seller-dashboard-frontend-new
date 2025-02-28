@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import React from 'react'
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
     Dialog,
     DialogContent,
@@ -177,6 +177,7 @@ function DataTableNew() {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [page, setPage] = useState(1);
+    const [goToPage, setGoToPage] = useState("");
     const [totalPages, setTotalPages] = useState(1);
     const [totalDrivers, setTotalDrivers] = useState(0)
     const [applyButton, setApplyButton] = useState(false);
@@ -191,6 +192,8 @@ function DataTableNew() {
     const handleRowClick = (rowId) => {
         setExpandedRowId(expandedRowId === rowId ? null : rowId);
     };
+
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [driverToDelete, setDriverToDelete] = useState(null);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -469,11 +472,13 @@ function DataTableNew() {
 
     const applyFilters = () => {
         setPage(1); // Reset to first page when applying new filters
+        updateUrlParams();
         setApplyButton(!applyButton); // Toggle this to trigger the useEffect
     };
 
     const handleSearch = () => {
         setPage(1); // Reset to first page when searching
+        updateUrlParams();
         setApplyButton(!applyButton); // Toggle to trigger useEffect
     };
 
@@ -487,11 +492,61 @@ function DataTableNew() {
         setMissingDocsFilter([]);
         setStartDate("");
         setEndDate("");
+        setGoToPage("")
         setSortby("created at: desc")
 
         // Fetch with reset filters
         setPage(1);
+        setSearchParams(new URLSearchParams());
         setApplyButton(!applyButton);
+    };
+
+    //req query
+    useEffect(() => {
+        // Initialize state from URL params
+        setSearchQuery(searchParams.get('search') || "");
+        setStatusFilter(searchParams.get('status') || "ALL");
+        setCategoryFilter(searchParams.get('category') || "ALL");
+        setVerificationFilter(searchParams.get('verification') || "ALL");
+        setRcNumberPresent(searchParams.get('rcPresent') === 'true');
+        setPage(parseInt(searchParams.get('page') || '1'));
+        setSortby(searchParams.get('sortby') || "created at: desc");
+
+        // Handle missing docs filter as comma-separated values
+        const missingDocs = searchParams.get('missingDocs');
+        if (missingDocs) {
+            setMissingDocsFilter(missingDocs.split(','));
+        }
+
+        // Date filters
+        if (searchParams.get('startDate')) setStartDate(searchParams.get('startDate'));
+        if (searchParams.get('endDate')) setEndDate(searchParams.get('endDate'));
+
+        // Fetch data if URL has parameters
+        if (searchParams.toString()) {
+            fetchDrivers();
+        }
+    }, []);
+
+    const updateUrlParams = () => {
+        const params = new URLSearchParams();
+
+        if (searchQuery) params.set('search', searchQuery);
+        if (statusFilter !== "ALL") params.set('status', statusFilter);
+        if (categoryFilter !== "ALL") params.set('category', categoryFilter);
+        if (verificationFilter !== "ALL") params.set('verification', verificationFilter);
+        if (rcNumberPresent) params.set('rcPresent', 'true');
+        if (page > 1) params.set('page', page.toString());
+        if (sortby !== "created at: desc") params.set('sortby', sortby);
+
+        if (missingDocsFilter.length > 0) {
+            params.set('missingDocs', missingDocsFilter.join(','));
+        }
+
+        if (startDate) params.set('startDate', startDate);
+        if (endDate) params.set('endDate', endDate);
+
+        setSearchParams(params);
     };
 
     const tableData = React.useMemo(
@@ -719,7 +774,7 @@ function DataTableNew() {
                         )}
                     </TableBody>
                 </Table></div>
-            <div className='flex items-center justify-between mx-4'>
+            <div className='flex items-center justify-between mx-4 text-sm'>
                 <div className='mt-4 text-gray-500'>
                     Total Drivers : {totalDrivers}
                 </div>
@@ -727,7 +782,12 @@ function DataTableNew() {
                     <Button
                         variant="outline"
                         disabled={page === 1 || loading}
-                        onClick={() => setPage(page - 1)}
+                        onClick={() => {
+                            const newPage = page - 1;
+                            setPage(newPage);
+                            searchParams.set('page', newPage.toString());
+                            setSearchParams(searchParams);
+                        }}
                     >
                         Previous
                     </Button>
@@ -735,9 +795,44 @@ function DataTableNew() {
                     <Button
                         variant="outline"
                         disabled={page === totalPages || totalPages === 0 || loading}
-                        onClick={() => setPage(page + 1)}
+                        onClick={() => {
+                            const newPage = page + 1;
+                            setPage(newPage);
+                            searchParams.set('page', newPage.toString());
+                            setSearchParams(searchParams);
+                        }}
                     >
                         Next
+                    </Button>
+                </div>
+                <div className='flex gap-x-4'>
+                    <div className='flex items-center gap-x-2'>
+                        <label htmlFor="page">Page</label>
+                        <input
+                            type="number"
+                            min="1"
+                            max={totalPages}
+                            value={goToPage}
+                            onChange={(e) => {
+                                setGoToPage(e.target.value)
+                            }}
+                            className="w-full border rounded text-center p-2"
+                            placeholder="Page No"
+                        /></div>
+
+                    {/* Go Button */}
+                    <Button
+
+                        onClick={() => {
+                            const newPage = Math.max(1, Math.min(totalPages, Number(goToPage)));
+                            setPage(newPage);
+                            searchParams.set('page', newPage.toString());
+                            setSearchParams(searchParams);
+                            setGoToPage("")
+                        }}
+                        disabled={!goToPage || goToPage < 1 || goToPage > totalPages}
+                    >
+                        Go To Page
                     </Button>
                 </div>
             </div>

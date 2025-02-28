@@ -25,6 +25,7 @@ import {
     useReactTable,
 } from "@tanstack/react-table";
 import UserEditCard from "./UserEditCard";
+import { useSearchParams } from "react-router-dom";
 
 const AllUserTableNew = () => {
 
@@ -89,6 +90,8 @@ const AllUserTableNew = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
+    const [goToPage, setGoToPage] = useState(1);
+    const [totalUsers, setTotalUsers] = useState(0)
     const [totalPages, setTotalPages] = useState(1);
 
     const [expandedRowId, setExpandedRowId] = useState(null);
@@ -101,6 +104,7 @@ const AllUserTableNew = () => {
     const [genderFilter, setGenderFilter] = useState("All");
     const [coinRange, setCoinRange] = useState({ min: 0, max: 1000000 });
     const [dateFilter, setDateFilter] = useState({ from: "", to: "" });
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const fetchUsers = async () => {
         setLoading(true);
@@ -122,6 +126,7 @@ const AllUserTableNew = () => {
             );
             setUsers(response.data.users);
             setTotalPages(response.data.totalPages);
+            setTotalUsers(response.data.totalUsers)
         } catch (err) {
             setError("Error fetching data");
         } finally {
@@ -134,22 +139,74 @@ const AllUserTableNew = () => {
         fetchUsers();
     }, [page]);
 
+    useEffect(() => {
+        // Initialize from URL parameters on first load
+        const searchParam = searchParams.get("search");
+        const genderParam = searchParams.get("gender");
+        const minCoinsParam = searchParams.get("minCoins");
+        const maxCoinsParam = searchParams.get("maxCoins");
+        const fromDateParam = searchParams.get("fromDate");
+        const toDateParam = searchParams.get("toDate");
+        const pageParam = searchParams.get("page");
+
+        if (searchParam) setSearch(searchParam);
+        if (genderParam) setGenderFilter(genderParam);
+        if (minCoinsParam || maxCoinsParam) {
+            setCoinRange({
+                min: minCoinsParam ? Number(minCoinsParam) : 0,
+                max: maxCoinsParam ? Number(maxCoinsParam) : 1000000
+            });
+        }
+        if (fromDateParam || toDateParam) {
+            setDateFilter({
+                from: fromDateParam || "",
+                to: toDateParam || ""
+            });
+        }
+        if (pageParam) setPage(Number(pageParam));
+
+        fetchUsers();
+    }, []);
+
     const handleSearch = () => {
         setPage(1);
+        searchParams.set("search", search);
+        searchParams.set("page", "1");
+        setSearchParams(searchParams);
         fetchUsers();
     };
 
     const handleApplyFilters = () => {
         setPage(1);
+
+        // Update URL with all current filter values
+        if (search) searchParams.set("search", search);
+        if (genderFilter !== "All") searchParams.set("gender", genderFilter);
+        else searchParams.delete("gender");
+
+        if (coinRange.min > 0) searchParams.set("minCoins", coinRange.min.toString());
+        else searchParams.delete("minCoins");
+
+        if (coinRange.max < 1000000) searchParams.set("maxCoins", coinRange.max.toString());
+        else searchParams.delete("maxCoins");
+
+        if (dateFilter.from) searchParams.set("fromDate", dateFilter.from);
+        else searchParams.delete("fromDate");
+
+        if (dateFilter.to) searchParams.set("toDate", dateFilter.to);
+        else searchParams.delete("toDate");
+
+        searchParams.set("page", "1");
+        setSearchParams(searchParams);
         fetchUsers();
     };
-
     const handleResetFilters = () => {
         setSearch("");
         setGenderFilter("All");
         setCoinRange({ min: 0, max: 1000000 });
         setDateFilter({ from: "", to: "" });
         setPage(1);
+        setSearchParams({}); // Clear all URL params
         fetchUsers();
     };
 
@@ -272,14 +329,68 @@ const AllUserTableNew = () => {
 
 
                 {/* Pagination */}
-                <div className="flex justify-end space-x-2 py-4 items-center">
-                    <Button onClick={() => setPage((prev) => Math.max(prev - 1, 1))} disabled={page === 1} >
-                        Previous
-                    </Button>
-                    <span>Page {page} of {totalPages}</span>
-                    <Button onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))} disabled={page === totalPages}>
-                        Next
-                    </Button>
+                <div className="flex justify-between space-x-2 py-4 items-center">
+                    <div className="text-gray-500">
+                        Total Users : {totalUsers}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                const newPage = Math.max(page - 1, 1);
+                                setPage(newPage);
+                                searchParams.set('page', newPage.toString());
+                                setSearchParams(searchParams);
+                            }}
+                            disabled={page === 1 || loading}
+                        >
+                            Previous
+                        </Button>
+                        <span>Page {page} of {totalPages}</span>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                const newPage = Math.min(page + 1, totalPages);
+                                setPage(newPage);
+                                searchParams.set('page', newPage.toString());
+                                setSearchParams(searchParams);
+                            }}
+                            disabled={page === totalPages}
+                        >
+                            Next
+                        </Button>
+
+                        {/* GO to Page */}
+                        <div className='flex gap-x-4'>
+                            <div className='flex items-center gap-x-2'>
+                                <label htmlFor="page">Page</label>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max={totalPages}
+                                    value={goToPage}
+                                    onChange={(e) => {
+                                        setGoToPage(e.target.value)
+                                    }}
+                                    className="w-full border rounded text-center p-2"
+                                    placeholder="Page No"
+                                /></div>
+
+                            <Button
+                                onClick={() => {
+                                    const newPage = Math.max(1, Math.min(totalPages, Number(goToPage)));
+                                    setPage(newPage);
+                                    searchParams.set('page', newPage.toString());
+                                    setSearchParams(searchParams);
+                                    setGoToPage("");
+                                }}
+                                disabled={!goToPage || goToPage < 1 || goToPage > totalPages}
+                            >
+                                Go To Page
+                            </Button>
+                        </div>
+                    </div>
+
                 </div>
             </CardContent>
         </Card>
