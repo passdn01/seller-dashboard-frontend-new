@@ -177,6 +177,7 @@ function DataTableNew() {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
     const [page, setPage] = useState(1);
+    const [goToPage, setGoToPage] = useState("");
     const [totalPages, setTotalPages] = useState(1);
     const [totalDrivers, setTotalDrivers] = useState(0)
     const [applyButton, setApplyButton] = useState(false);
@@ -491,6 +492,7 @@ function DataTableNew() {
         setMissingDocsFilter([]);
         setStartDate("");
         setEndDate("");
+        setGoToPage("")
         setSortby("created at: desc")
 
         // Fetch with reset filters
@@ -772,7 +774,7 @@ function DataTableNew() {
                         )}
                     </TableBody>
                 </Table></div>
-            <div className='flex items-center justify-between mx-4'>
+            <div className='flex items-center justify-between mx-4 text-sm'>
                 <div className='mt-4 text-gray-500'>
                     Total Drivers : {totalDrivers}
                 </div>
@@ -801,6 +803,36 @@ function DataTableNew() {
                         }}
                     >
                         Next
+                    </Button>
+                </div>
+                <div className='flex gap-x-4'>
+                    <div className='flex items-center gap-x-2'>
+                        <label htmlFor="page">Page</label>
+                        <input
+                            type="number"
+                            min="1"
+                            max={totalPages}
+                            value={goToPage}
+                            onChange={(e) => {
+                                setGoToPage(e.target.value)
+                            }}
+                            className="w-full border rounded text-center p-2"
+                            placeholder="Page No"
+                        /></div>
+
+                    {/* Go Button */}
+                    <Button
+
+                        onClick={() => {
+                            const newPage = Math.max(1, Math.min(totalPages, Number(goToPage)));
+                            setPage(newPage);
+                            searchParams.set('page', newPage.toString());
+                            setSearchParams(searchParams);
+                            setGoToPage("")
+                        }}
+                        disabled={!goToPage || goToPage < 1 || goToPage > totalPages}
+                    >
+                        Go To Page
                     </Button>
                 </div>
             </div>

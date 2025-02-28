@@ -53,6 +53,7 @@ const IssueAssigner = () => {
     const [globalFilter, setGlobalFilter] = useState("");
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [goToPage, setGoToPage] = useState("")
     const [applyButton, setApplyButton] = useState(false);
 
     const [ticketLoading, setTicketLoading] = useState(false);
@@ -121,10 +122,17 @@ const IssueAssigner = () => {
                 solverId
             });
 
-            alert("Ticket assigned successfully!");
+            // Find the full solver object by ID
+            const assignedSolver = solvers.find(solver => solver._id === solverId);
+
+            // Update tickets with solver details
             setTickets(tickets.map(ticket =>
-                ticket._id === ticketId ? { ...ticket, solverId, status: "In Progress" } : ticket
+                ticket._id === ticketId
+                    ? { ...ticket, solverId: assignedSolver, status: "In Progress" }
+                    : ticket
             ));
+
+            alert("Ticket assigned successfully!");
         } catch (err) {
             alert("Failed to assign ticket");
         } finally {
@@ -202,7 +210,9 @@ const IssueAssigner = () => {
                     }}
                 >
                     <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select Solver" />
+                        <SelectValue>
+                            {solvers.find(solver => solver._id === (selectedSolver[row.original._id] || row.original.solverId?._id))?.name || "Select Solver"}
+                        </SelectValue>
                     </SelectTrigger>
                     <SelectContent>
                         {solvers.map(solver => (
@@ -215,18 +225,6 @@ const IssueAssigner = () => {
             ),
         },
 
-        {
-            id: "assign",
-            header: "Assign",
-            cell: ({ row }) => (
-                <Button
-                    onClick={() => handleAssignTicket(row.original._id)}
-                    disabled={loading}
-                >
-                    {loading ? "Assigning..." : "Assign"}
-                </Button>
-            ),
-        },
         {
             id: "actions",
             enableHiding: false,
@@ -273,7 +271,7 @@ const IssueAssigner = () => {
                     )
                 }))
                 : columns,
-        [ticketLoading]
+        [ticketLoading, solverLoading, loading]
     );
 
     const table = useReactTable({
@@ -401,14 +399,43 @@ const IssueAssigner = () => {
                     </TableBody>
                 </Table>
             </div>
-            <div className='flex gap-x-4 items-center'>
+            <div className='flex gap-x-4 items-center justify-between p-4'>
                 {/* Previous Button */}
-                <Button variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
+                <div className="flex gap-4 items-center">
+                    <Button variant="outline" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</Button>
 
-                <span>Page {page} of {totalPages}</span>
+                    <span>Page {page} of {totalPages}</span>
 
-                {/* Next Button */}
-                <Button variant="outline" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button></div>
+                    {/* Next Button */}
+                    <Button variant="outline" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+                </div>
+
+                <div className='flex gap-x-4'>
+                    <div className='flex items-center gap-x-2'>
+                        <label htmlFor="page">Page</label>
+                        <input
+                            type="number"
+                            min="1"
+                            max={totalPages}
+                            value={goToPage}
+                            onChange={(e) => {
+                                setGoToPage(e.target.value)
+                            }}
+                            className="w-full border rounded text-center p-2"
+                            placeholder="Page No"
+                        />
+                    </div>
+                    <Button
+                        onClick={() => {
+                            const newPage = Math.max(1, Math.min(totalPages, Number(goToPage)));
+                            setPage(newPage);
+                            setGoToPage("");
+                        }}
+                        disabled={!goToPage || goToPage < 1 || goToPage > totalPages}
+                    >
+                        Go To Page
+                    </Button>
+                </div></div>
         </div>
 
     );
