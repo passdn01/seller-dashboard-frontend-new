@@ -1,43 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
-import markerIconPng from "leaflet/dist/images/marker-icon.png"
-import { Icon } from 'leaflet'
+import markerIconPng from "leaflet/dist/images/marker-icon.png";
+import { Icon } from 'leaflet';
 import "leaflet/dist/leaflet.css";
 import { MapPin } from "lucide-react";
 import { SELLER_URL_LOCAL } from "@/lib/utils";
 
-function RideDetail({ transactionId, distance, dataFromTable }) {
-    console.log(dataFromTable, "data from table")
-    const driverDetails = dataFromTable?.driverDetails
-    const driver = driverDetails.length > 0 ? driverDetails[driverDetails.length - 1] : null
-    const locations = dataFromTable?.locations
-    const [rideData, setRideData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [status, setStatus] = useState(dataFromTable.status);
+function RideDetail({ dataFromTable = {} }) {
+    // Add a default empty object to prevent destructuring errors
+    const driverDetails = dataFromTable?.driverDetails || [];
+    const driver = driverDetails.length > 0 ? driverDetails[driverDetails.length - 1] : null;
+    const locations = dataFromTable?.locations || [];
+    const [status, setStatus] = useState(dataFromTable?.status || "PENDING");
     const [errorMessage, setErrorMessage] = useState("");
-
-    // useEffect(() => {
-    //     if (!transactionId) return;
-
-    //     setIsLoading(true);
-    //     axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideDetail`, { transactionId })
-    //         .then(response => {
-    //             setIsLoading(false);
-    //             if (response.data.success) {
-    //                 setRideData(response.data.data);
-    //                 console.log(response.data, "data from api")
-    //                 setStatus(response.data.data.status);
-    //             }
-    //         })
-    //         .catch(error => {
-    //             console.error("Error fetching ride details:", error);
-    //             setIsLoading(false);
-    //         });
-    // }, [transactionId]);
+    const transactionId = dataFromTable?.transaction_id;
 
     const updateRideStatus = async () => {
-        if (!rideData) return;
+        if (!transactionId) {
+            setErrorMessage("Transaction ID is missing");
+            return;
+        }
 
         setErrorMessage("");
 
@@ -45,7 +28,7 @@ function RideDetail({ transactionId, distance, dataFromTable }) {
             // Make both requests simultaneously
             const [response1, response2] = await Promise.all([
                 axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideStatusUpdate`, { transactionId, status }),
-                axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/rideStatusUpdate`, { transactionId, status }) // Assuming a second endpoint
+                axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/rideStatusUpdate`, { transactionId, status })
             ]);
 
             if (response1.data.success && response2.data.success) {
@@ -65,14 +48,16 @@ function RideDetail({ transactionId, distance, dataFromTable }) {
         }
     };
 
-    // if (isLoading) return <div className="p-4 text-center">Loading...</div>;
-    // if (!rideData) return <div className="p-4 text-center">No ride data available</div>;
+    // Handle missing data gracefully
+    if (!dataFromTable || Object.keys(dataFromTable).length === 0) {
+        return <div className="p-4 text-center">No ride data available</div>;
+    }
 
-    const startLocation = locations.find(loc => loc.type === "START")?.location;
-    const endLocation = locations.find(loc => loc.type === "END")?.location;
-    const startCoords = startLocation?.gps.split(",").map(Number) || [0, 0];
-    const endCoords = endLocation?.gps.split(",").map(Number) || [0, 0];
-    const userInfo = dataFromTable.userDetails
+    const startLocation = locations.find(loc => loc?.type === "START")?.location;
+    const endLocation = locations.find(loc => loc?.type === "END")?.location;
+    const startCoords = startLocation?.gps?.split(",").map(Number) || [20.5937, 78.9629]; // Default to India coords
+    const endCoords = endLocation?.gps?.split(",").map(Number) || [20.5937, 78.9629];
+    const userInfo = dataFromTable.userDetails || {};
 
     return (
         <div className="p-4 max-w-5xl mx-auto">
@@ -83,15 +68,17 @@ function RideDetail({ transactionId, distance, dataFromTable }) {
                         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                         {startLocation && (
                             <Marker position={startCoords}>
-                                <Popup>{startLocation.address}</Popup>
+                                <Popup>{startLocation.address || "Start Location"}</Popup>
                             </Marker>
                         )}
                         {endLocation && (
                             <Marker position={endCoords} icon={new Icon({ iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41] })}>
-                                <Popup>{endLocation.address}</Popup>
+                                <Popup>{endLocation.address || "End Location"}</Popup>
                             </Marker>
                         )}
-                        <Polyline positions={[startCoords, endCoords]} color="blue" />
+                        {startLocation && endLocation && (
+                            <Polyline positions={[startCoords, endCoords]} color="blue" />
+                        )}
                     </MapContainer>
                 </div>
 
@@ -101,23 +88,25 @@ function RideDetail({ transactionId, distance, dataFromTable }) {
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
                             <span className="font-semibold">Transaction Id:</span>
-                            <span className="text-gray-600">{dataFromTable.transaction_id}</span>
+                            <span className="text-gray-600">{transactionId || "N/A"}</span>
                         </div>
-                        {driver?.vehicleDetail?.make && (<div className="flex items-center gap-2">
-                            <span className="font-semibold">Vehicle Type:</span>
-                            <span>{driver?.vehicleDetail?.make || "N/A"}</span>
-                        </div>)}
+                        {driver?.vehicleDetail?.make && (
+                            <div className="flex items-center gap-2">
+                                <span className="font-semibold">Vehicle Type:</span>
+                                <span>{driver.vehicleDetail.make}</span>
+                            </div>
+                        )}
                     </div>
 
                     {/* Locations */}
                     <div className="space-y-2">
                         <div className="flex items-start gap-2">
                             <MapPin className="text-green-500 mt-1 flex-shrink-0" />
-                            <p className="text-sm break-all">{startLocation?.address}</p>
+                            <p className="text-sm break-all">{startLocation?.address || "Start address not available"}</p>
                         </div>
                         <div className="flex items-start gap-2">
                             <MapPin className="text-blue-500 mt-1 flex-shrink-0" />
-                            <p className="text-sm break-all">{endLocation?.address}</p>
+                            <p className="text-sm break-all">{endLocation?.address || "End address not available"}</p>
                         </div>
                     </div>
 
@@ -158,38 +147,42 @@ function RideDetail({ transactionId, distance, dataFromTable }) {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <p className="text-sm font-semibold">Fare</p>
-                            <p className="text-xl font-bold">₹{dataFromTable.fare}</p>
+                            <p className="text-xl font-bold">₹{dataFromTable.fare || "0"}</p>
                         </div>
                         <div>
                             <p className="text-sm font-semibold">Distance</p>
-                            <p className="text-xl font-bold">{dataFromTable.distance}km</p>
+                            <p className="text-xl font-bold">{dataFromTable.distance || "0"}km</p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-3 gap-4">
-                        {/* Driver Details */}
+                        {/* User Details */}
                         <div>
                             <p className="text-sm font-semibold">User Name</p>
-                            <p>{userInfo?.firstName + " " + userInfo.lastName || "N/A"}</p>
+                            <p>{userInfo?.firstName && userInfo?.lastName ? `${userInfo.firstName} ${userInfo.lastName}` : "N/A"}</p>
                             <p className="text-sm font-semibold mt-2">Number:</p>
                             <p>{userInfo?.phone || "N/A"}</p>
-
-
                         </div>
-                        {driver?.name && <div>
-                            <p className="text-sm font-semibold">Driver Name:</p>
-                            <p>{driver?.name || "N/A"}</p>
-                            <p className="text-sm font-semibold mt-2">Phone Number:</p>
-                            <p>{driver?.phone || "N/A"}</p>
-                        </div>}
-                        {driver?.name && <div>
-                            <p className="text-sm font-semibold">Vehicle Type:</p>
-                            <p>{driver?.vehicleDetail?.make || "N/A"}</p>
-                            <p className="text-sm font-semibold mt-2">Vehicle Number:</p>
-                            <p>{driver?.vehicleDetail?.registration || "N/A"}</p>
-                        </div>}
 
+                        {/* Driver Details - only show if driver exists */}
+                        {driver?.name && (
+                            <div>
+                                <p className="text-sm font-semibold">Driver Name:</p>
+                                <p>{driver.name}</p>
+                                <p className="text-sm font-semibold mt-2">Phone Number:</p>
+                                <p>{driver.phone || "N/A"}</p>
+                            </div>
+                        )}
 
+                        {/* Vehicle Details - only show if vehicle exists */}
+                        {driver?.vehicleDetail && (
+                            <div>
+                                <p className="text-sm font-semibold">Vehicle Type:</p>
+                                <p>{driver.vehicleDetail.make || "N/A"}</p>
+                                <p className="text-sm font-semibold mt-2">Vehicle Number:</p>
+                                <p>{driver.vehicleDetail.registration || "N/A"}</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
