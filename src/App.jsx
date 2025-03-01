@@ -29,6 +29,7 @@ import RideJourneyIndex from './components/rideJourney/RideJourneyIndex.jsx'
 import PriceSetterPage from './components/pricing/PriceSetterPage.jsx'
 import DriverJourneyIndex from './components/DriverJourney/DriverJourneyIndex.jsx'
 import LogsIndex from './components/AllDriverRideLogs/LogsIndex.jsx'
+import OfferIndex from './components/offers/OfferIndex.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -71,6 +72,7 @@ function App() {
 
           <Route path='/' element={<Login />}></Route>
           <Route path='/drivers/allDrivers' element={<ProtectedRoute element={<AllDrivers />} />} />
+          <Route path='/drivers/allOffers' element={<ProtectedRoute element={<OfferIndex />} />} />
           <Route path='/drivers/liveDrivers' element={<ProtectedRoute element={<LiveDrivers />} />} />
           <Route path='/drivers/allDrivers/:id' element={<ProtectedRoute element={<Driver />} />} />
           <Route path='/drivers/allVerified/:id' element={<ProtectedRoute element={<Driver />} />} />
