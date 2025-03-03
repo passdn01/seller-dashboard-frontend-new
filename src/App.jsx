@@ -30,6 +30,8 @@ import PriceSetterPage from './components/pricing/PriceSetterPage.jsx'
 import DriverJourneyIndex from './components/DriverJourney/DriverJourneyIndex.jsx'
 import LogsIndex from './components/AllDriverRideLogs/LogsIndex.jsx'
 import OfferIndex from './components/offers/OfferIndex.jsx'
+import BlogEditor from './components/blogs/Blog.jsx'
+import BlogView from './components/blogs/BlogView.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -88,6 +90,9 @@ function App() {
           <Route path='/issueSolver' element={<ProtectedRoute element={<IssueSolverIndex />} />} />
           <Route path='/issueDetail/:id' element={<ProtectedRoute element={<IssueDetailIndex />} />} />
           <Route path='/blogs' element={<ProtectedRoute element={<AllBlogs />} />} />
+          <Route path="/blogs/new" element={<ProtectedRoute element={<BlogEditor />} />} />
+          <Route path="/blogs/:id" element={<ProtectedRoute element={<BlogView />} />} />
+          <Route path="/blogs/:id/edit" element={<ProtectedRoute element={<BlogEditor />} />} />
 
           <Route path='/users' element={<ProtectedRoute element={< AllUserPage />} />} />
           <Route path='/users/:id' element={<ProtectedRoute element={< UserInfoPage />} />} />
