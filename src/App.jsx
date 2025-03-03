@@ -30,6 +30,7 @@ import PriceSetterPage from './components/pricing/PriceSetterPage.jsx'
 import DriverJourneyIndex from './components/DriverJourney/DriverJourneyIndex.jsx'
 import LogsIndex from './components/AllDriverRideLogs/LogsIndex.jsx'
 import OfferIndex from './components/offers/OfferIndex.jsx'
+import CityIndex from './components/city/CityIndex.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -92,6 +93,8 @@ function App() {
           <Route path='/users' element={<ProtectedRoute element={< AllUserPage />} />} />
           <Route path='/users/:id' element={<ProtectedRoute element={< UserInfoPage />} />} />
           <Route path='/admin' element={<ProtectedRoute element={< IAMUserPage />} />} />
+
+          <Route path='/city' element={<ProtectedRoute element={<CityIndex />} />} />
 
           <Route path='/home/dashboard/img' element={<ProtectedRoute element={< ImageComponent />} />} />
           <Route path='/pricing' element={<ProtectedRoute element={< PriceSetterPage />} />} />
