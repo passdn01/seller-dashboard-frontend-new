@@ -109,10 +109,10 @@ const DriverJourney = () => {
       nodePadding: 15,
       width: 15,
       nodes: [
-        { name: 'Total Drivers' },
+        { name: 'Total LogIn Drivers' },
         { name: 'Verified Drivers' },
         { name: 'Pending Drivers' },
-        { name: 'Not Verified Drivers' },
+        { name: 'In process Document Drivers' },
         { name: 'Auto Drivers' },
         { name: 'Cab Drivers' },
         { name: 'Elite Drivers' }
@@ -178,7 +178,7 @@ const DriverJourney = () => {
         {(flowData.length > 0 || error) && (
           <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
             <MetricCard 
-              label="Total Drivers" 
+              label="Total LogIn Drivers" 
               value={metrics.totalDrivers}
             />
             <MetricCard 
