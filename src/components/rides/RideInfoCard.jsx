@@ -11,7 +11,7 @@ function RideInfoCard({ userInfo }) {
             <CardContent>
                 <div className="space-y-4 pt-4">
                     <p><strong>Name:</strong><br />
-                        {userInfo?.name}</p>
+                        {userInfo?.firstName} {userInfo?.lastName}</p>
 
                     <p><strong>Phone:</strong><br />
                         {userInfo?.phone}</p>

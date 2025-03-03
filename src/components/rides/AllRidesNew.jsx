@@ -494,7 +494,9 @@ function AllRidesNew() {
                                         <TableCell colSpan={columns.length} className="p-0">
                                             <div className="p-4 bg-gray-50">
                                                 <RideDetail dataFromTable={row.original}></RideDetail>
+
                                             </div>
+
                                         </TableCell>
                                     </TableRow>
                                 ))

@@ -9,33 +9,46 @@ import {
     BreadcrumbItem,
     BreadcrumbLink,
     BreadcrumbList,
-    // BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import backArrow from '../../assets/backArrow.svg'
 import RideInfoCard from './RideInfoCard'
-import { SELLER_URL_LOCAL } from '@/lib/utils'
+
 function RideInfo() {
     const { id } = useParams();
-
-    const [transactionId, setTransactionId] = useState(null);
-    const [distance, setDistance] = useState(null);
-    const [userInfo, setUserInfo] = useState(null);
+    const [data, setData] = useState({})
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState(null)
     const navigate = useNavigate()
+
     useEffect(() => {
         const fetchRideInfo = async () => {
-            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/getRide`, { id: id })
-            console.log(response.data, "response in rideinfo")
-            if (response?.data?.success) {
-                setTransactionId(response.data.data.transactionId)
-                setDistance(response.data.data.distance)
-                setUserInfo(response.data.data.userInfo)
+            setLoading(true)
+            try {
+                // Use a safer way to access environment variables
+                const baseUrl = import.meta.env.VITE_SELLER_URL_LOCAL || '';
+                const response = await axios.post(`${baseUrl}/dashboard/api/seller/getRide`, { id: id })
+
+                if (response?.data?.success) {
+                    setData(response.data.data)
+                } else {
+                    setError(response?.data?.message || "Failed to fetch ride information")
+                }
+            }
+            catch (err) {
+                console.error("Error fetching ride info:", err)
+                setError("An error occurred while fetching ride data")
+            } finally {
+                setLoading(false)
             }
         }
-        fetchRideInfo()
 
+        if (id) {
+            fetchRideInfo()
+        }
     }, [id])
+
     return (
         <div className='flex'>
             <SideNavbar></SideNavbar>
@@ -65,7 +78,7 @@ function RideInfo() {
                         <Breadcrumb className="px-4">
                             <BreadcrumbList>
                                 <BreadcrumbItem>
-                                    <BreadcrumbLink href="/users" className="text-blue-500">
+                                    <BreadcrumbLink href="/rides/allRides" className="text-blue-500">
                                         Rides
                                     </BreadcrumbLink>
                                 </BreadcrumbItem>
@@ -75,32 +88,27 @@ function RideInfo() {
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
-
-                        {/* <div className="justify-end">
-                            <Dialog>
-                                <DialogTrigger className="pr-4">
-                                    <span className="text-blue-600 hover:underline text-sm border-2 p-1">
-                                        Edit
-                                    </span>
-                                </DialogTrigger>
-                                <DialogContent className="mt-[10px] mb-[10px]">
-                                    <DrivingLicenseForm data={data} id={id} />
-                                    <UploadDocuments id={id} />
-                                </DialogContent>
-                            </Dialog>
-
-
-                        </div> */}
                     </div>
 
-                    <div className='flex flex-row items-center justify-between m-8 border rounded-md shadow '>
-                        <RideDetail transactionId={transactionId} distance={distance}></RideDetail>
-                    </div>
+                    {loading ? (
+                        <div className="flex justify-center items-center p-10">
+                            <div className="text-lg">Loading ride information...</div>
+                        </div>
+                    ) : error ? (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded m-8">
+                            <p>{error}</p>
+                        </div>
+                    ) : (
+                        <div>
+                            <div className='flex flex-row items-center justify-between m-8 border rounded-md shadow'>
+                                <RideDetail dataFromTable={data} />
+                            </div>
 
-                    <div className='flex flex-row items-center justify-between m-8 border rounded-md shadow '>
-                        <RideInfoCard userInfo={userInfo} />
-
-                    </div>
+                            <div className='flex flex-row items-center justify-between m-8 border rounded-md shadow'>
+                                <RideInfoCard userInfo={data?.userDetails} />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
