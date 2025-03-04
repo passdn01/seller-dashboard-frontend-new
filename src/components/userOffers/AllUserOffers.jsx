@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
-import { RefreshCw, ChevronDown, ChevronUp, Calendar, Info } from "lucide-react";
+import { RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -28,12 +28,12 @@ import {
   getPaginationRowModel,
   flexRender,
 } from '@tanstack/react-table';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
 import CreateOffer from './CreateOffers';
 import OfferToggle from './OfferToggle';
 import UpdateOffer from './UpdateOffers';
+import OfferInTable from './OfferInTable'; // Import the new component
 
 function AllUserOffers() {
   const [offers, setOffers] = useState([]);
@@ -42,7 +42,6 @@ function AllUserOffers() {
   const [expandedOfferId, setExpandedOfferId] = useState(null);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [selectedOfferId, setSelectedOfferId] = useState(null);
-  const [expandedTab, setExpandedTab] = useState('details');
 
   useEffect(() => {
     fetchOffers();
@@ -83,7 +82,6 @@ function AllUserOffers() {
       setExpandedOfferId(null);
     } else {
       setExpandedOfferId(offerId);
-      setExpandedTab('details'); // Reset to details tab when expanding a new offer
     }
   };
 
@@ -296,194 +294,8 @@ function AllUserOffers() {
                     {expandedOfferId === row.original._id && expandedOffer && (
                       <TableRow>
                         <TableCell colSpan={columns.length} className="p-0 border-t-0">
-                          <div className="bg-gray-50 p-6">
-                            <Tabs value={expandedTab} onValueChange={setExpandedTab}>
-                              <TabsList className="mb-4">
-                                <TabsTrigger value="details">Details</TabsTrigger>
-                                <TabsTrigger value="location">Location Info</TabsTrigger>
-                                <TabsTrigger value="json">JSON Data</TabsTrigger>
-                              </TabsList>
-                              
-                              <TabsContent value="details" className="mt-0">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                  <Card>
-                                    <CardHeader className="pb-2">
-                                      <CardTitle className="text-sm font-medium">Basic Information</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                      <dl className="space-y-2">
-                                        <div>
-                                          <dt className="text-sm font-medium text-gray-500">Title</dt>
-                                          <dd>{expandedOffer.title}</dd>
-                                        </div>
-                                        <div>
-                                          <dt className="text-sm font-medium text-gray-500">Subtitle</dt>
-                                          <dd>{expandedOffer.subtitle}</dd>
-                                        </div>
-                                        <div>
-                                          <dt className="text-sm font-medium text-gray-500">Type</dt>
-                                          <dd>
-                                            <Badge variant="outline" className="font-mono text-xs">
-                                              {expandedOffer.type}
-                                            </Badge>
-                                          </dd>
-                                        </div>
-                                        <div>
-                                          <dt className="text-sm font-medium text-gray-500">Status</dt>
-                                          <dd>
-                                            {getStatusBadge(
-                                              expandedOffer.status,
-                                              expandedOffer.isActive,
-                                              expandedOffer.startDate,
-                                              expandedOffer.endDate
-                                            )}
-                                          </dd>
-                                        </div>
-                                      </dl>
-                                    </CardContent>
-                                  </Card>
-                                  
-                                  <Card>
-                                    <CardHeader className="pb-2">
-                                      <CardTitle className="text-sm font-medium">Offer Details</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                      <dl className="space-y-2">
-                                        {expandedOffer.minCoin && (
-                                          <div>
-                                            <dt className="text-sm font-medium text-gray-500">Min Coin</dt>
-                                            <dd>{expandedOffer.minCoin}</dd>
-                                          </div>
-                                        )}
-                                        {expandedOffer.maxCoin && (
-                                          <div>
-                                            <dt className="text-sm font-medium text-gray-500">Max Coin</dt>
-                                            <dd>{expandedOffer.maxCoin}</dd>
-                                          </div>
-                                        )}
-                                        {expandedOffer.percentage && (
-                                          <div>
-                                            <dt className="text-sm font-medium text-gray-500">Percentage</dt>
-                                            <dd>{expandedOffer.percentage}%</dd>
-                                          </div>
-                                        )}
-                                        {expandedOffer.xRideFree > 0 && (
-                                          <div>
-                                            <dt className="text-sm font-medium text-gray-500">Free after X Rides</dt>
-                                            <dd>{expandedOffer.xRideFree}</dd>
-                                          </div>
-                                        )}
-                                        <div>
-                                          <dt className="text-sm font-medium text-gray-500">Main Page</dt>
-                                          <dd>{expandedOffer.isMainPage ? 'Yes' : 'No'}</dd>
-                                        </div>
-                                      </dl>
-                                    </CardContent>
-                                  </Card>
-                                  
-                                  <Card>
-                                    <CardHeader className="pb-2">
-                                      <CardTitle className="text-sm font-medium">Time Period</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                      <dl className="space-y-2">
-                                        <div>
-                                          <dt className="text-sm font-medium text-gray-500">Start Date</dt>
-                                          <dd className="flex items-center">
-                                            <Calendar className="w-4 h-4 mr-1 text-blue-500" />
-                                            {formatDate(expandedOffer.startDate)}
-                                          </dd>
-                                        </div>
-                                        <div>
-                                          <dt className="text-sm font-medium text-gray-500">End Date</dt>
-                                          <dd className="flex items-center">
-                                            <Calendar className="w-4 h-4 mr-1 text-blue-500" />
-                                            {formatDate(expandedOffer.endDate)}
-                                          </dd>
-                                        </div>
-                                        <div>
-                                          <dt className="text-sm font-medium text-gray-500">Created At</dt>
-                                          <dd>{new Date(expandedOffer.createdAt).toLocaleString()}</dd>
-                                        </div>
-                                      </dl>
-                                    </CardContent>
-                                  </Card>
-                                  
-                                  <Card className="md:col-span-3">
-                                    <CardHeader className="pb-2">
-                                      <CardTitle className="text-sm font-medium">Description & Terms</CardTitle>
-                                    </CardHeader>
-                                    <CardContent>
-                                      <div className="space-y-4">
-                                        <div>
-                                          <h4 className="text-sm font-medium text-gray-500 mb-1">Description</h4>
-                                          <p className="bg-white p-3 rounded border">{expandedOffer.description}</p>
-                                        </div>
-                                        
-                                        {expandedOffer.termsAndConditions && (
-                                          <div>
-                                            <h4 className="text-sm font-medium text-gray-500 mb-1">Terms and Conditions</h4>
-                                            <div className="bg-white p-3 rounded border whitespace-pre-line">
-                                              {expandedOffer.termsAndConditions}
-                                            </div>
-                                          </div>
-                                        )}
-                                      </div>
-                                    </CardContent>
-                                  </Card>
-                                </div>
-                              </TabsContent>
-                              
-                              <TabsContent value="location" className="mt-0">
-                                <div className="bg-white rounded-lg border p-4">
-                                  <h3 className="text-lg font-medium mb-2">Location Information</h3>
-                                  
-                                  {expandedOffer.type === 'LOCATION' && expandedOffer.locationBoundaries ? (
-                                    <div className="space-y-4">
-                                      <div>
-                                        <h4 className="text-sm font-medium">Location Boundaries</h4>
-                                        {expandedOffer.locationBoundaries.coordinates && 
-                                         expandedOffer.locationBoundaries.coordinates[0] && 
-                                         expandedOffer.locationBoundaries.coordinates[0].length > 0 ? (
-                                          <div className="mt-2">
-                                            <div className="text-sm mb-2">
-                                              <span className="font-medium">Type:</span> {expandedOffer.locationBoundaries.type}
-                                            </div>
-                                            <div className="text-sm">
-                                              <span className="font-medium">Number of boundary points:</span> {expandedOffer.locationBoundaries.coordinates[0].length}
-                                            </div>
-                                            <div className="mt-4 bg-gray-100 p-4 rounded-lg border">
-                                              <div className="text-sm text-gray-500">
-                                                A visualization map would be displayed here with the offer's location boundaries.
-                                              </div>
-                                            </div>
-                                          </div>
-                                        ) : (
-                                          <div className="flex items-center mt-2 text-amber-600">
-                                            <Info className="w-4 h-4 mr-2" />
-                                            No location boundaries defined for this offer.
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="flex items-center text-gray-500">
-                                      <Info className="w-4 h-4 mr-2" />
-                                      This offer type ({expandedOffer.type}) does not require location information.
-                                    </div>
-                                  )}
-                                </div>
-                              </TabsContent>
-                              
-                              <TabsContent value="json" className="mt-0">
-                                <div className="bg-gray-900 text-white p-4 rounded-lg overflow-auto max-h-[500px]">
-                                  <pre className="text-xs">
-                                    {JSON.stringify(expandedOffer, null, 2)}
-                                  </pre>
-                                </div>
-                              </TabsContent>
-                            </Tabs>
-                          </div>
+                          {/* Use the new OfferInTable component here */}
+                          <OfferInTable offer={expandedOffer} />
                         </TableCell>
                       </TableRow>
                     )}
