@@ -140,7 +140,7 @@ const CreateOffer = ({ onSuccess }) => {
 
   // Watch for form value changes to conditionally render fields
   const offerType = form.watch('type');
-
+  
   // Handle form submission
   const onSubmit = async (values) => {
     setLoading(true);
@@ -189,17 +189,34 @@ const CreateOffer = ({ onSuccess }) => {
     e.preventDefault(); // Prevent default form submission
     form.handleSubmit(onSubmit)(e);
   };
-
+  
+  // Utility to get available tabs based on offer type
+  const getAvailableTabs = () => {
+    const baseTabs = ["basic", "details", "schedule"];
+    return offerType === 'LOCATION' ? [...baseTabs, "location"] : baseTabs;
+  };
+  
+  const availableTabs = getAvailableTabs();
+  
+  // Update handleTabNavigation to work with dynamic tabs
   const handleTabNavigation = (direction) => {
-    const tabs = ["basic", "details", "location", "schedule"];
-    const currentIndex = tabs.indexOf(activeTab);
+    const currentIndex = availableTabs.indexOf(activeTab);
     
-    if (direction === 'next' && currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1]);
+    if (direction === 'next' && currentIndex < availableTabs.length - 1) {
+      setActiveTab(availableTabs[currentIndex + 1]);
     } else if (direction === 'prev' && currentIndex > 0) {
-      setActiveTab(tabs[currentIndex - 1]);
+      setActiveTab(availableTabs[currentIndex - 1]);
     }
   };
+  
+  // When offer type changes, check if we need to change the active tab
+  useEffect(() => {
+    // If current active tab is "location" but offer type is not LOCATION
+    if (activeTab === "location" && offerType !== 'LOCATION') {
+      // Set to a default tab
+      setActiveTab("details");
+    }
+  }, [offerType, activeTab]);
 
   return (
     <Card className="border-0 shadow-none">
@@ -227,10 +244,12 @@ const CreateOffer = ({ onSuccess }) => {
         )}
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className={`grid w-full mb-6 ${offerType === 'LOCATION' ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="basic">Basic Info</TabsTrigger>
             <TabsTrigger value="details">Offer Details</TabsTrigger>
-            <TabsTrigger value="location">Location</TabsTrigger>
+            {offerType === 'LOCATION' && (
+              <TabsTrigger value="location">Location</TabsTrigger>
+            )}
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
           </TabsList>
 
@@ -450,7 +469,7 @@ const CreateOffer = ({ onSuccess }) => {
                     )}
                   />
 
-                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION') && (
+                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION' || offerType === 'X_RIDE_AFTER_ONE_RIDE_FREE') && (
                     <FormField
                       control={form.control}
                       name="percentage"
@@ -543,9 +562,9 @@ const CreateOffer = ({ onSuccess }) => {
                 </div>
               </TabsContent>
 
-              {/* Location Tab */}
-              <TabsContent value="location" className="mt-0">
-                {offerType === 'LOCATION' ? (
+              {/* Location Tab - only rendered when offerType is LOCATION */}
+              {offerType === 'LOCATION' && (
+                <TabsContent value="location" className="mt-0">
                   <div className="space-y-4">
                     <div className="bg-muted rounded-lg p-4">
                       <h3 className="text-base font-medium mb-2">Location Settings</h3>
@@ -625,24 +644,8 @@ const CreateOffer = ({ onSuccess }) => {
                       </p>
                     </div>
                   </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <div className="text-amber-500 mb-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                      </svg>
-                    </div>
-                    <p className="text-muted-foreground mb-2">
-                      Location settings are only available for LOCATION type offers.
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Please change the offer type to LOCATION to configure location-based settings.
-                    </p>
-                  </div>
-                )}
-              </TabsContent>
+                </TabsContent>
+              )}
 
               {/* Schedule Tab */}
               <TabsContent value="schedule" className="mt-0">
@@ -747,12 +750,12 @@ const CreateOffer = ({ onSuccess }) => {
                     e.preventDefault();
                     handleTabNavigation('prev');
                   }}
-                  disabled={activeTab === "basic"}
+                  disabled={activeTab === availableTabs[0]}
                 >
                   Previous
                 </Button>
                 
-                {activeTab !== "schedule" ? (
+                {activeTab !== availableTabs[availableTabs.length - 1] ? (
                   <Button
                     type="button"
                     onClick={(e) => {

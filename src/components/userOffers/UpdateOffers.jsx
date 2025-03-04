@@ -260,16 +260,32 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
     form.handleSubmit(onSubmit)(e);
   };
 
+  // Utility to get available tabs based on offer type
+  const getAvailableTabs = () => {
+    const baseTabs = ["basic", "details", "schedule"];
+    return offerType === 'LOCATION' ? [...baseTabs, "location"] : baseTabs;
+  };
+  
+  const availableTabs = getAvailableTabs();
+
   const handleTabNavigation = (direction) => {
-    const tabs = ["basic", "details", "location", "schedule"];
-    const currentIndex = tabs.indexOf(activeTab);
+    const currentIndex = availableTabs.indexOf(activeTab);
     
-    if (direction === 'next' && currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1]);
+    if (direction === 'next' && currentIndex < availableTabs.length - 1) {
+      setActiveTab(availableTabs[currentIndex + 1]);
     } else if (direction === 'prev' && currentIndex > 0) {
-      setActiveTab(tabs[currentIndex - 1]);
+      setActiveTab(availableTabs[currentIndex - 1]);
     }
   };
+  
+  // When offer type changes, check if we need to change the active tab
+  useEffect(() => {
+    // If current active tab is "location" but offer type is not LOCATION
+    if (activeTab === "location" && offerType !== 'LOCATION') {
+      // Set to a default tab
+      setActiveTab("details");
+    }
+  }, [offerType, activeTab]);
 
   if (fetchLoading) {
     return (
@@ -497,7 +513,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
               {/* Offer Details Tab */}
               <TabsContent value="details" className="mt-0">
                 <div className="space-y-4">
-                  {(offerType === 'CASHBACK_OFFER' || offerType === 'EVERY_RIDE_CASHBACK_RIDE') && (
+                  {(offerType === 'EVERY_RIDE_CASHBACK_RIDE') && (
                     <>
                       <FormField
                         control={form.control}
@@ -545,7 +561,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                     )}
                   />
 
-                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION') && (
+                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION' || offerType === 'X_RIDE_AFTER_ONE_RIDE_FREE') && (
                     <FormField
                       control={form.control}
                       name="percentage"
@@ -575,7 +591,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                       name="xRideFree"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Free After X Rides</FormLabel>
+                          <FormLabel>X Rides Free</FormLabel>
                           <FormControl>
                             <Input 
                               type="number" 
@@ -639,8 +655,8 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
               </TabsContent>
 
               {/* Location Tab */}
+              {offerType === 'LOCATION' && (
               <TabsContent value="location" className="mt-0">
-                {offerType === 'LOCATION' ? (
                   <div className="space-y-4">
                     <div className="bg-muted rounded-lg p-4">
                       <h3 className="text-base font-medium mb-2">Location Settings</h3>
@@ -719,25 +735,9 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                         for selecting coordinates and defining boundaries.
                       </p>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <div className="text-amber-500 mb-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="12" y1="8" x2="12" y2="12"></line>
-                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                      </svg>
-                    </div>
-                    <p className="text-muted-foreground mb-2">
-                      Location settings are only available for LOCATION type offers.
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Please change the offer type to LOCATION to configure location-based settings.
-                    </p>
-                  </div>
+                  </div>      
+                  </TabsContent>
                 )}
-              </TabsContent>
 
               {/* Schedule Tab */}
               <TabsContent value="schedule" className="mt-0">
@@ -842,12 +842,12 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                     e.preventDefault();
                     handleTabNavigation('prev');
                   }}
-                  disabled={activeTab === "basic"}
-                >
-                  Previous
-                </Button>
-                
-                {activeTab !== "schedule" ? (
+                  disabled={activeTab === availableTabs[0]}
+                  >
+                    Previous
+                  </Button>
+                  
+                  {activeTab !== availableTabs[availableTabs.length - 1] ? (
                   <Button
                     type="button"
                     onClick={(e) => {
