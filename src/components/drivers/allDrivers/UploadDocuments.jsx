@@ -14,6 +14,18 @@ const UploadDocuments = ({ id }) => {
     const [drivingLicenseBack, setDrivingLicenseBack] = useState(null);
     const [registrationCertificate, setRegistrationCertificate] = useState(null);
     const [RCBack, setRCBack] = useState(null)
+    const [aadharCard, setAadharCard] = useState(null)
+    const [aadharCardBack, setAadharCardBack] = useState(null)
+
+
+    const handleAadharCardChange = (e) => {
+        setAadharCard(e.target.files[0]);
+    };
+
+
+    const handleAadharCardBackChange = (e) => {
+        setAadharCardBack(e.target.files[0]);
+    };
 
     const handleProfileImageChange = (e) => {
         setProfileUrl(e.target.files[0]);
@@ -164,6 +176,56 @@ const UploadDocuments = ({ id }) => {
         }
     };
 
+    const uploadAadharCard = async () => {
+        if (!aadharCard) {
+            alert("Please select a file to upload.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', aadharCard);
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-aadhar`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            alert(response.data.message);
+        } catch (error) {
+            console.error("Error uploading Aadhar:", error);
+            alert(error.response?.data?.message || "Error uploading Aadhar");
+        } finally {
+
+            setAadharCard(null);
+        }
+    };
+
+    const uploadAadharCardBack = async () => {
+        if (!aadharCardBack) {
+            alert("Please select a file to upload.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', aadharCardBack);
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-aadhar-back`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            alert(response.data.message);
+        } catch (error) {
+            console.error("Error uploading Aadhar Back:", error);
+            alert(error.response?.data?.message || "Error uploading Aadhar Back:");
+        } finally {
+
+            setAadharCardBack(null);
+        }
+    };
+
     return (
         <div className="space-y-6">
             <h2 className="text-xl font-bold">Upload Documents</h2>
@@ -220,6 +282,26 @@ const UploadDocuments = ({ id }) => {
                         accept="image/*"
                     />
                     <Button onClick={uploadRCBack} className="">Upload RC Back</Button>
+                </div>
+                <div className='flex items-center space-x-2'>
+                    {/* <Label className="block" htmlFor="registration-certificate">Upload Registration Certificate:</Label> */}
+                    <Input
+                        type="file"
+                        id="aadhar-card"
+                        onChange={handleAadharCardChange}
+                        accept="image/*"
+                    />
+                    <Button onClick={uploadAadharCard} className="">Upload Aadhar Card</Button>
+                </div>
+                <div className='flex items-center space-x-2'>
+                    {/* <Label className="block" htmlFor="registration-certificate">Upload Registration Certificate:</Label> */}
+                    <Input
+                        type="file"
+                        id="registration-certificate-back"
+                        onChange={handleAadharCardBackChange}
+                        accept="image/*"
+                    />
+                    <Button onClick={uploadAadharCardBack} className="">Upload Aadhar Back</Button>
                 </div>
             </div>
         </div>

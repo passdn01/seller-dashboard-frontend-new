@@ -44,6 +44,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
         balance: "",
         status: "",
         rejectReason: "NA",
+        aadharNumber: "",
         isCompleteRegistration: false,
     };
 
@@ -53,6 +54,8 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
         drivingLicenseBack: "",
         registrationCertificate: "",
         registrationCertificateBack: "",
+        aadharCard: "",
+        aadharCardBack: ""
     };
 
     const [formData, setFormData] = useState(initialFormState);
@@ -92,7 +95,8 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                     balance: driver.balance || "",
                     status: driver.status || "",
                     rejectReason: driver.rejectReason || "NA",
-                    isCompleteRegistration: driver.isCompleteRegistration || false
+                    isCompleteRegistration: driver.isCompleteRegistration || false,
+                    aadharNumber: driver.aadharNumber
                 });
 
                 setImageUrls({
@@ -101,6 +105,8 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                     drivingLicenseBack: driver.drivingLicenseBack || "",
                     registrationCertificate: driver.registrationCertificate || "",
                     registrationCertificateBack: driver.registrationCertificateBack || "",
+                    aadharCard: driver.aadharCard || "",
+                    aadharCardBack: driver.aadharCardBack || "",
                 });
             }
         } catch (err) {
@@ -292,6 +298,12 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                                 { label: "Electric", value: "ELECTRIC" }
                             ]}
                             onChange={(val) => handleChange("fuelType", val)}
+                        />
+
+                        <LabelField
+                            label="Aadhar Number"
+                            value={formData.aadharNumber}
+                            onChange={(val) => handleChange("aadharNumber", val)}
                         />
 
                         <DropdownField
