@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { PlusCircle } from 'lucide-react';
 import axios from 'axios';
 
@@ -10,6 +11,12 @@ export default function BlogList() {
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
+    // Site labels mapping
+    const siteLabels = {
+        'vayuride': 'VayuRide',
+        'tsp': 'TSP',
+    };
 
     useEffect(() => {
         async function fetchBlogs() {
@@ -68,16 +75,41 @@ export default function BlogList() {
                     {blogs.map((blog) => (
                         <Card
                             key={blog._id}
-                            className="cursor-pointer hover:shadow-lg transition-shadow"
+                            className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden"
                             onClick={() => handleBlogClick(blog._id)}
                         >
-                            <CardHeader>
-                                <CardTitle className="line-clamp-2">{blog.title}</CardTitle>
+                            {blog.bannerImage && (
+                                <div className="h-48 overflow-hidden">
+                                    <img
+                                        src={blog.bannerImage}
+                                        alt={`Banner for ${blog.title}`}
+                                        className="w-full h-full object-cover transition-transform hover:scale-105"
+                                    />
+                                </div>
+                            )}
+                            <CardHeader className={blog.bannerImage ? 'pt-4' : ''}>
+                                <div className="flex items-start justify-between">
+                                    <CardTitle className="line-clamp-2">{blog.title}</CardTitle>
+                                    {blog.site && (
+                                        <Badge variant="outline" className="ml-2 whitespace-nowrap">
+                                            {siteLabels[blog.site] || blog.site}
+                                        </Badge>
+                                    )}
+                                </div>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-gray-600 line-clamp-3">
                                     {stripHtml(blog.content).substring(0, 150)}...
                                 </p>
+                                {blog.tags && blog.tags.length > 0 && (
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                        {blog.tags.map((tag, index) => (
+                                            <Badge key={index} variant="secondary" className="text-xs">
+                                                {tag}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                )}
                             </CardContent>
                             <CardFooter className="text-sm text-gray-500 flex justify-between">
                                 <span>{blog.author}</span>

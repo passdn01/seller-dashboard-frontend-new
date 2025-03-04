@@ -37,6 +37,14 @@
     margin-top: 2rem;
 }
 
+/* Banner image styles */
+.banner-preview {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+}
+
 /* Optional: Style the blog content display */
 .blog-content {
     line-height: 1.7;

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Edit, Trash } from 'lucide-react';
 import axios from 'axios';
 
@@ -14,6 +15,12 @@ export default function BlogView() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [deleting, setDeleting] = useState(false);
+
+    // Site labels mapping
+    const siteLabels = {
+        'vayuride': 'VayuRide',
+        'tsp': 'TSP',
+    };
 
     useEffect(() => {
         async function fetchBlog() {
@@ -40,7 +47,6 @@ export default function BlogView() {
     };
 
     const handleDelete = async () => {
-
         setDeleting(true);
 
         try {
@@ -119,19 +125,42 @@ export default function BlogView() {
                 </div>
             </div>
 
-            <article className="prose prose-lg max-w-none">
-                <h1 className="text-3xl font-bold mb-2">{blog.title}</h1>
+            {/* Display banner image if available */}
+            {blog.bannerImage && (
+                <div className="mb-6 rounded-lg overflow-hidden">
+                    <img
+                        src={blog.bannerImage}
+                        alt={`Banner for ${blog.title}`}
+                        className="w-full h-64 object-cover"
+                    />
+                </div>
+            )}
 
-                <div className="text-gray-500 mb-8">
+            <article className="prose prose-lg max-w-none">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <h1 className="text-3xl font-bold m-0">{blog.title}</h1>
+                    {blog.site && (
+                        <Badge variant="outline" className="ml-2">
+                            {siteLabels[blog.site] || blog.site}
+                        </Badge>
+                    )}
+                </div>
+
+                <div className="text-gray-500 mb-4">
                     <span>By {blog.author}</span>
                     <span className="mx-2">•</span>
                     <span>{new Date(blog.updatedAt).toLocaleDateString()}</span>
                 </div>
 
-                <div
-                    className="blog-content"
-                    dangerouslySetInnerHTML={{ __html: blog.content }}
-                />
+                {blog.tags && blog.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-8">
+                        {blog.tags.map((tag, index) => (
+                            <Badge key={index} variant="secondary">
+                                {tag}
+                            </Badge>
+                        ))}
+                    </div>
+                )}
             </article>
         </div>
     );
