@@ -72,7 +72,7 @@ const SankeyChart = ({ data, width = 1000, height = 400 }) => {
       .attr("y", d => (d.y1 + d.y0) / 2)
       .attr("dy", "0.35em")
       .attr("text-anchor", d => d.x0 < width / 2 ? "start" : "end")
-      .text(d => d.name)
+      .text(d => `${d.name} (${d.value.toLocaleString()})`)
       .attr("font-size", "12px")
       .attr("fill", "#4B5563");
 

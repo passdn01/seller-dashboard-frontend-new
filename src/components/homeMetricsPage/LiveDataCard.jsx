@@ -29,38 +29,40 @@ const LiveDataComponent = () => {
 
 
     return (
-        <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
-            {/* Live Data Label */}
-            <span className="text-red-500 font-semibold text-sm">Live Data</span>
+        <div className="p-4">
+            <div className="flex items-center space-x-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                {/* Live Data Label */}
+                <span className="text-red-500 font-semibold text-sm">Live Data</span>
 
-            {/* Available Drivers */}
-            <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-4 py-2 rounded-md">
-                <img src={availabledrivers}
-                />
+                {/* Available Drivers */}
+                <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-4 py-2 rounded-md">
+                    <img src={availabledrivers}
+                    />
 
-                <div className="text-sm text-gray-600">
-                    <span>Available Drivers</span>{" "}
-                    <span className="font-bold text-blue-500">{data.availableDrivers}</span>
+                    <div className="text-sm text-gray-600">
+                        <span>Available Drivers</span>{" "}
+                        <span className="font-bold text-blue-500">{data.availableDrivers}</span>
+                    </div>
                 </div>
-            </div>
 
-            {/* Ongoing Rides */}
-            <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-4 py-2 rounded-md">
-                <img src={ongoing}
-                />
-                <div className="text-sm text-gray-600">
-                    <span>On Going Rides</span>{" "}
-                    <span className="font-bold text-blue-500">{data.ongoingRides}</span>
+                {/* Ongoing Rides */}
+                <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-4 py-2 rounded-md">
+                    <img src={ongoing}
+                    />
+                    <div className="text-sm text-gray-600">
+                        <span>On Going Rides</span>{" "}
+                        <span className="font-bold text-blue-500">{data.ongoingRides}</span>
+                    </div>
                 </div>
-            </div>
 
-            {/* City */}
-            <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-4 py-2 rounded-md">
-                <img src={cities}
-                />
-                <div className="text-sm text-gray-600">
-                    <span>City</span>{" "}
-                    <span className="font-bold text-blue-500">1</span>
+                {/* City */}
+                <div className="flex items-center space-x-2 bg-blue-50 border border-blue-200 px-4 py-2 rounded-md">
+                    <img src={cities}
+                    />
+                    <div className="text-sm text-gray-600">
+                        <span>City</span>{" "}
+                        <span className="font-bold text-blue-500">1</span>
+                    </div>
                 </div>
             </div>
         </div>

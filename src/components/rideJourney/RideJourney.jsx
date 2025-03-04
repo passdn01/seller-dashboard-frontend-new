@@ -50,7 +50,10 @@ const RideJourney = () => {
 
     if (preset === 'last30') {
       start = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    } else if (preset === 'allTime') {
+    } else if (preset === 'today') {
+      start = end;
+    }
+    else if (preset === 'allTime') {
       start = '2024-01-01';
     }
 
@@ -145,6 +148,12 @@ const RideJourney = () => {
           
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center w-full md:w-auto">
             <div className="flex gap-2">
+              <button
+                onClick={() => handlePresetClick('today')}
+                className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
+              >
+                Today
+              </button>
               <button
                 onClick={() => handlePresetClick('last30')}
                 className="px-4 py-2 bg-blue-100 text-blue-600 rounded-lg hover:bg-blue-200 transition-colors"
