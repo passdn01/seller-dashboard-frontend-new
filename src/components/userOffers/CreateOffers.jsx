@@ -63,10 +63,6 @@ const formSchema = z.object({
   endDate: z.string().min(1, "End date is required"),
   isMainPage: z.boolean().default(false),
   isActive: z.boolean().default(true),
-  locationBoundaries: z.object({
-    type: z.string().default("Polygon"),
-    coordinates: z.array(z.array(z.array(z.number()))).default([[]])
-  }).optional(),
   location: z.object({
     radius: z.number().optional(),
     coordinate: z.object({
@@ -105,18 +101,14 @@ const CreateOffer = ({ onSuccess }) => {
       subtitle: '',
       description: '',
       termsAndConditions: '',
-      minCoin: 50,
-      maxCoin: 200,
-      percentage: 50,
-      xRideFree: 0,
+      minCoin: null,
+      maxCoin: null,
+      percentage: null,
+      xRideFree: null,
       startDate: today,
       endDate: nextMonthDate,
       isMainPage: false,
       isActive: true,
-      locationBoundaries: {
-        type: "Polygon",
-        coordinates: [[]]
-      },
       location: {
         radius: 300,
         coordinate: {
@@ -160,7 +152,6 @@ const CreateOffer = ({ onSuccess }) => {
       const formattedValues = { ...values };
       
       if (offerType !== 'LOCATION') {
-        delete formattedValues.locationBoundaries;
         delete formattedValues.location;
       }
 
