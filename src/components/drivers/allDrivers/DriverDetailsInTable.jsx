@@ -140,7 +140,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
             if (response.ok) {
                 const d = await response.json();
                 window.alert("Data saved successfully");
-                console.log(d)
+                console.log(d.driver, "d driver")
                 onDriverUpdated(d.driver);
             } else {
                 throw new Error(response.statusText);

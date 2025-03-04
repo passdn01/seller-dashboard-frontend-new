@@ -264,7 +264,7 @@ function DataTableNew() {
         {
             accessorKey: "verify",
             header: "Verify",
-            cell: ({ row }) => <div>{row.original?.isCompleteRegistration ? 'VERIFIED' : row.original?.licenseNumber ? 'PENDING' : 'NOT'}</div>,
+            cell: ({ row }) => <div>{row.original?.isCompleteRegistration ? 'VERIFIED' : row.original?.licenseNumber ? row.original?.paymentTransactionId ? 'PENDING' : 'FEES PENDING' : 'NOT'}</div>,
         },
         {
             accessorKey: "vehicleNumber",
@@ -383,7 +383,12 @@ function DataTableNew() {
 
     //for syncing 
     const handleUpdateDriver = (updatedDriver) => {
-        fetchDrivers();
+        setData((prevData) =>
+            prevData.map((driver) =>
+                driver._id === updatedDriver._id ? updatedDriver : driver
+            )
+        );
+        // fetchDrivers();
     };
 
     const handleDriverDeleted = () => {
@@ -653,6 +658,7 @@ function DataTableNew() {
                             <SelectItem value="VERIFIED">Verified</SelectItem>
                             <SelectItem value="NOT">Not Verified</SelectItem>
                             <SelectItem value="PENDING">Pending</SelectItem>
+                            <SelectItem value="FEES PENDING"> Fees Pending</SelectItem>
                         </SelectContent>
                     </Select>
 

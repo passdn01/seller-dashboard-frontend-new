@@ -51,14 +51,14 @@ const MetricCard = ({
                                         <div className="space-y-2">
                                             <p className="font-semibold text-sm">{hoverData.title}</p>
                                             <div className="space-y-1">
-                                                <div className="flex items-center justify-between gap-4">
+                                                {hoverData.todayNumber && <div className="flex items-center justify-between gap-4">
                                                     <span className="text-xs text-gray-300">{hoverData.todayNumberLine}</span>
                                                     <span className="text-sm">{hoverData.todayNumber}</span>
-                                                </div>
-                                                <div className="flex items-center justify-between gap-4">
+                                                </div>}
+                                                {hoverData.lastHourNumber && <div className="flex items-center justify-between gap-4">
                                                     <span className="text-xs text-gray-300">{hoverData.lastHourNumberLine}</span>
                                                     <span className="text-sm">{hoverData.lastHourNumber}</span>
-                                                </div>
+                                                </div>}
                                             </div>
                                         </div>
                                     </TooltipContent>
