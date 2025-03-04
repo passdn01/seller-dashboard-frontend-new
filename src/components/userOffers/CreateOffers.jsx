@@ -402,7 +402,7 @@ const CreateOffer = ({ onSuccess }) => {
               {/* Offer Details Tab */}
               <TabsContent value="details" className="mt-0">
                 <div className="space-y-4">
-                  {(offerType === 'CASHBACK_OFFER' || offerType === 'EVERY_RIDE_CASHBACK_RIDE') && (
+                  {(offerType === 'EVERY_RIDE_CASHBACK_RIDE') && (
                     <>
                       <FormField
                         control={form.control}
@@ -480,7 +480,7 @@ const CreateOffer = ({ onSuccess }) => {
                       name="xRideFree"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Free After X Rides</FormLabel>
+                          <FormLabel>X Rides Free</FormLabel>
                           <FormControl>
                             <Input 
                               type="number" 
