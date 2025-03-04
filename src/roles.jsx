@@ -17,6 +17,7 @@ const roleRoutes = {
         "/issueSolver",
         "/issueDetail",
         "/users",
+        "/allUsersOffers",
         "/admin",
         "/pricing"
     ],
@@ -37,11 +38,12 @@ const roleRoutes = {
         "/issueSolver",
         "/issueDetail",
         "/users",
+        "/allUsersOffers",
     ],
     verifier: ["/home/dashboard", "/home/mapData","/home/rideJourney","/home/driverJourney","/home/driverLogs", "/drivers/allDrivers", "/drivers/allOffers",
         "/drivers/liveDrivers",
         "/drivers/allDrivers",
-        "/drivers/allVerified",],
+        "/drivers/allVerified","/allUsersOffers",],
     userExplore: ["/home/dashboard", "/users"],
     verifierAndIssueAssigner: [
         "/home/dashboard",

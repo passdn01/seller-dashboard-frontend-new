@@ -31,6 +31,7 @@ import DriverJourneyIndex from './components/DriverJourney/DriverJourneyIndex.js
 import LogsIndex from './components/AllDriverRideLogs/LogsIndex.jsx'
 import OfferIndex from './components/offers/OfferIndex.jsx'
 import CityIndex from './components/city/CityIndex.jsx'
+import UserOfferIndex from './components/userOffers/UserOfferIndex.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -91,6 +92,7 @@ function App() {
           <Route path='/blogs' element={<ProtectedRoute element={<AllBlogs />} />} />
 
           <Route path='/users' element={<ProtectedRoute element={< AllUserPage />} />} />
+          <Route path='/allUsersOffers' element={<ProtectedRoute element={< UserOfferIndex />} />} />
           <Route path='/users/:id' element={<ProtectedRoute element={< UserInfoPage />} />} />
           <Route path='/admin' element={<ProtectedRoute element={< IAMUserPage />} />} />
 
