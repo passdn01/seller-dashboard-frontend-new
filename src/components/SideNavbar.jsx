@@ -25,7 +25,7 @@ import LogoutIcon from '../assets/NavIcons/Logout.svg';
 import Logo from '../assets/vayu.png';
 // import LogsIcon from '../assets/NavIcons/logs.svg';
 import OfferIcon from '../assets/NavIcons/Offer.svg';
-// import QuizDashboardIcon from '../assets/NavIcons/QuizDashboard.svg';
+import QuizDashboardIcon from '../assets/NavIcons/QuizDashboard.svg';
 import TechCostIcon from '../assets/NavIcons/TechCost.svg';
 import WebsiteIcon from '../assets/NavIcons/Website.svg';
 import IssueSolverIcon from '../assets/NavIcons/IssueSolver.svg';
@@ -33,9 +33,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import roleRoutes from '../roles';
 import { getCookie, SELLER_URL_LOCAL } from '@/lib/utils';
 import pricing from '../assets/NavIcons/pricing.svg'
+import { Book, BookOpen, BookOpenText } from 'lucide-react';
 import { Link } from 'react-router-dom'
 import { User } from 'lucide-react';
-
+import blogs from '../assets/NavIcons/blogs.svg'
 function SideNavbar() {
     const [hoveredItem, setHoveredItem] = useState(null);
     const [userRole, setUserRole] = React.useState(null);
@@ -185,6 +186,13 @@ function SideNavbar() {
             link: '/pricing',
             submenu: false,
             icon: pricing
+        },
+        {
+            id: "10",
+            title: "Blogs",
+            link: '/blogs',
+            submenu: false,
+            icon: blogs
         }
     ];
 

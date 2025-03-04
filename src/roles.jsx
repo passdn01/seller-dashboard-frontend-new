@@ -19,7 +19,9 @@ const roleRoutes = {
         "/users",
         "/allUsersOffers",
         "/admin",
-        "/pricing"
+        "/pricing",
+        '/blogs',
+        '/blog/'
     ],
     admin: [
         "/home/dashboard",
@@ -40,7 +42,7 @@ const roleRoutes = {
         "/users",
         "/allUsersOffers",
     ],
-    verifier: ["/home/dashboard", "/home/mapData","/home/rideJourney","/home/driverJourney","/home/driverLogs", "/drivers/allDrivers", "/drivers/allOffers",
+    verifier: ["/home/dashboard", "/home/mapData", "/home/rideJourney", "/home/driverJourney", "/home/driverLogs", "/drivers/allDrivers", "/drivers/allOffers",
         "/drivers/liveDrivers",
         "/drivers/allDrivers",
         "/drivers/allVerified","/allUsersOffers",],

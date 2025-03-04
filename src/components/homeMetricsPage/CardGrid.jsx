@@ -43,9 +43,14 @@ function CardGrid() {
         return num.toFixed(2); // Two decimal places for small numbers
     };
 
+
     const d = [{
         group: 'Search/Completed Ride Ratio',
         value: allTimeMetrics.SearchRides / allTimeMetrics.completedRides || 0
+    }]
+    const dToday = [{
+        group: 'Search/Completed Ride Ratio',
+        value: todayMetrics.SearchRides / todayMetrics.completedRides || 0
     }]
 
     const op = {
@@ -104,106 +109,208 @@ function CardGrid() {
             number: formatNumber(todayMetrics.SearchRides || 0),
             title: "Search Rides",
             increase: lastHourMetrics.SearchRides,
+            hover: true,
+            hoverData: {
+                title: "Number of Ride Search",
+                lastHourNumber: lastHourMetrics.SearchRides,
+                lastHourNumberLine: "Last hour's Search",
+            },
         },
         {
             icon: completed,
             number: formatNumber(todayMetrics.completedRides || 0),
             title: "Complete Rides",
             increase: lastHourMetrics.completedRides,
+            hover: true,
+            hoverData: {
+                title: "Number of Completed Rides",
+                lastHourNumber: lastHourMetrics.completedRides,
+                lastHourNumberLine: "Last hour's Completed ride",
+            },
         },
         {
             icon: driverearning,
             number: `₹${formatNumber(todayMetrics.driversEarnings || 0)}`,
             title: "Driver's Earnings",
             increase: formatNumber(lastHourMetrics.driversEarnings),
+            hover: true,
+            hoverData: {
+                title: "Driver's Earnings",
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.driversEarnings)}`,
+                lastHourNumberLine: "Last hour's Earnings",
+            },
         },
         {
             icon: savecommission,
             number: `₹${formatNumber(calculateCommission(todayMetrics.driversEarnings) || 0)}`,
             title: "Save Commission",
             increase: formatNumber(calculateCommission(lastHourMetrics.driversEarnings)),
+            hover: true,
+            hoverData: {
+                title: "Saved Commissions",
+                lastHourNumber: `₹${formatNumber(calculateCommission(lastHourMetrics.driversEarnings))}`,
+                lastHourNumberLine: "Last hour's Saved Commission",
+            },
         },
         {
             icon: user,
             number: formatNumber(todayMetrics.Users || 0),
             title: "User Registered",
             increase: lastHourMetrics.Users,
+            hover: true,
+            hoverData: {
+                title: "Number of Registered Users",
+                lastHourNumber: lastHourMetrics.Users,
+                lastHourNumberLine: "Last hour's Registered Users",
+            },
         },
         {
             icon: drivers,
             number: formatNumber(todayMetrics.driversRegistered || 0),
             title: "Driver Registered",
             increase: lastHourMetrics.driversRegistered,
+            hover: true,
+            hoverData: {
+                title: "Number of Driver Registrations",
+                lastHourNumber: lastHourMetrics.driversRegistered,
+                lastHourNumberLine: "Last hour's Driver Registrations",
+            },
         },
         {
             icon: driverwalletadd,
             number: `₹${formatNumber(todayMetrics.walletCredits || 0)}`,
             title: "Driver Wallet Add",
             increase: formatNumber(lastHourMetrics.walletCredits),
+            hover: true,
+            hoverData: {
+                title: "Driver Wallet Additions",
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.walletCredits)}`,
+                lastHourNumberLine: "Last hour's Wallet Additions",
+            },
         },
         {
             icon: subscriptiontrans,
             number: formatNumber(todayMetrics.subscriptionTransactions || 0),
             title: "Subscription Transactions",
             increase: lastHourMetrics.subscriptionTransactions,
+            hover: true,
+            hoverData: {
+                title: "Subscription Transactions",
+                lastHourNumber: lastHourMetrics.subscriptionTransactions,
+                lastHourNumberLine: "Last hour's Subscription Transactions",
+            },
         },
         {
             icon: totalsubscription,
             number: `₹${formatNumber(todayMetrics.subscriptionAmount || 0)}`,
             title: "Total Subscription Amount",
             increase: formatNumber(lastHourMetrics.subscriptionAmount),
+            hover: true,
+            hoverData: {
+                title: "Total Subscription Amount",
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.subscriptionAmount)}`,
+                lastHourNumberLine: "Last hour's Subscription Amount",
+            },
         },
         {
             icon: coinsdistributed,
             number: formatNumber(todayMetrics.coinsDistributed || 0),
             title: "Coins Distributed",
             increase: lastHourMetrics.coinsDistributed,
+            hover: true,
+            hoverData: {
+                title: "Coins Distributed",
+                lastHourNumber: lastHourMetrics.coinsDistributed,
+                lastHourNumberLine: "Last hour's Coins Distributed",
+            },
         },
         {
             icon: userredeem,
             number: `₹${formatNumber(todayMetrics.userRedeemMoney || 0)}`,
             title: "User Redeem Money",
             increase: formatNumber(lastHourMetrics.userRedeemMoney),
+            hover: true,
+            hoverData: {
+                title: "User Redeemed Money",
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.userRedeemMoney)}`,
+                lastHourNumberLine: "Last hour's Redeemed Money",
+            },
         },
         {
             icon: kms,
             number: formatNumber(todayMetrics.kmServed || 0),
             title: "KM We Serve",
             increase: lastHourMetrics.kmServed,
+            hover: true,
+            hoverData: {
+                title: "Kilometers Served",
+                lastHourNumber: lastHourMetrics.kmServed,
+                lastHourNumberLine: "Last hour's Kilometers Served",
+            },
         },
         {
             icon: bike,
             number: formatNumber(todayMetrics.BikeRides || 0),
             title: "Bike Taxi",
-            // increase: lastHourMetrics.BikeRides,
             increase: 0,
+            hover: true,
+            hoverData: {
+                title: "Number of Bike Rides",
+                lastHourNumber: 0,
+                lastHourNumberLine: "Last hour's Bike Rides",
+            },
         },
         {
             icon: auto,
             number: formatNumber(todayMetrics.totalVerifiedAuto || 0),
             title: "Auto Rickshaw",
             increase: lastHourMetrics.totalVerifiedAuto,
+            hover: true,
+            hoverData: {
+                title: "Number of Auto Rickshaw Rides",
+                lastHourNumber: lastHourMetrics.totalVerifiedAuto,
+                lastHourNumberLine: "Last hour's Auto Rickshaw Rides",
+            },
         },
         {
             icon: cab,
             number: formatNumber(todayMetrics.totalVerifiedCab || 0),
             title: "Cab",
             increase: lastHourMetrics.totalVerifiedCab,
+            hover: true,
+            hoverData: {
+                title: "Number of Cab Rides",
+                lastHourNumber: lastHourMetrics.totalVerifiedCab,
+                lastHourNumberLine: "Last hour's Cab Rides",
+            },
         },
         {
             icon: fake,
             number: formatNumber(todayMetrics.FakeRides || 0),
             title: "Fake Rides",
             increase: lastHourMetrics.FakeRides,
+            hover: true,
+            hoverData: {
+                title: "Number of Fake Rides",
+                lastHourNumber: lastHourMetrics.FakeRides,
+                lastHourNumberLine: "Last hour's Fake Rides",
+            },
         },
         {
             icon: cancel,
             number: formatNumber(todayMetrics.cancelledRides || 0),
             title: "Cancel Rides",
             increase: lastHourMetrics.cancelledRides,
+            hover: true,
+            hoverData: {
+                title: "Number of Cancelled Rides",
+                lastHourNumber: lastHourMetrics.cancelledRides,
+                lastHourNumberLine: "Last hour's Cancelled Rides",
+            },
         },
     ];
-    
+
+
 
 
     const allTimeTabData = [
@@ -495,8 +602,12 @@ function CardGrid() {
                         />
                     ))}
                 </div>
+
+                <div className='p-2 border-2 border-gray-100 m-6 rounded '>
+                    {activeTab === 'today' ?
+                        <MeterChart data={dToday} options={op}></MeterChart> : <MeterChart data={d} options={op}></MeterChart>}
+                </div>
             </div>
-            <div className='p-2 border-2 border-gray-100 m-6 rounded '><MeterChart data={d} options={op}></MeterChart></div>
 
         </>
     )

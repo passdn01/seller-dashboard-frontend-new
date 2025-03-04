@@ -1,0 +1,92 @@
+/* Quill editor container styles */
+.editor-wrapper {
+    /* Add a fixed margin to ensure space between editor and button */
+    margin-bottom: 120px;
+    position: relative;
+}
+
+/* Style the Quill editor */
+.quill {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    /* Remove fixed height to prevent overflow issues */
+}
+
+/* Make the editor area expand properly */
+.ql-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+/* Ensure the editor content area expands */
+.ql-editor {
+    overflow-y: auto;
+    font-size: 16px;
+    /* Fixed height with scroll ensures content doesn't push buttons down */
+    height: 400px;
+}
+
+/* Button container to ensure it stays in position */
+.button-container {
+    position: relative;
+    z-index: 10;
+    background-color: white;
+    padding-top: 2rem;
+    margin-top: 2rem;
+}
+
+/* Banner image styles */
+.banner-preview {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+}
+
+/* Optional: Style the blog content display */
+.blog-content {
+    line-height: 1.7;
+}
+
+.blog-content p {
+    margin-bottom: 1rem;
+}
+
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4,
+.blog-content h5,
+.blog-content h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.blog-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 1rem 0;
+}
+
+.blog-content blockquote {
+    border-left: 4px solid #e2e8f0;
+    padding-left: 1rem;
+    margin-left: 0;
+    color: #4a5568;
+}
+
+.blog-content pre {
+    background-color: #f7fafc;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    overflow-x: auto;
+}
+
+.blog-content ul,
+.blog-content ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}

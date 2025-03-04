@@ -18,6 +18,7 @@ const UserCashStatement = ({ userId }) => {
     const [coinAction, setCoinAction] = useState(null); // 'add' or 'cut'
     const [coins, setCoins] = useState(0);
     const [title, setTitle] = useState('');
+
     const fetchCoinStatement = async () => {
         try {
             const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/getUserCoinStatement`, { userId });
@@ -28,9 +29,8 @@ const UserCashStatement = ({ userId }) => {
             setLoading(false);
         }
     };
+
     useEffect(() => {
-
-
         fetchCoinStatement();
     }, [userId]);
 
@@ -45,7 +45,8 @@ const UserCashStatement = ({ userId }) => {
                 title,
                 coins,
                 amount,
-                isDebit
+                isDebit,
+                coinAction
             });
 
             console.log(response);
@@ -57,12 +58,23 @@ const UserCashStatement = ({ userId }) => {
                 window.alert("Changes made successfully successfully")
                 fetchCoinStatement();
             } else {
-                window.alert("Failed to modify coins");
+                window.alert(response?.data?.message || "Failed to modify coins");
             }
         } catch (error) {
             console.error("Error modifying coin balance:", error);
         }
     };
+
+    // Calculate total cash in and cash out
+    const totalCashIn = coinTransactions
+        .filter(tx => !tx.isDebit)
+        .reduce((sum, tx) => sum + (parseFloat(tx.amount) || 0), 0)
+        .toFixed(2);
+
+    const totalCashOut = coinTransactions
+        .filter(tx => tx.isDebit)
+        .reduce((sum, tx) => sum + (parseFloat(tx.amount) || 0), 0)
+        .toFixed(2);
 
     if (loading) return <div>Loading...</div>;
     if (error) return <div>Error fetching transactions</div>;
@@ -100,8 +112,6 @@ const UserCashStatement = ({ userId }) => {
                                         </div>
                                     </div>
 
-
-
                                     <DialogFooter>
                                         <Button onClick={handleConfirm}>
                                             {coinAction === 'add' ? "Add" : "Cut"}
@@ -109,7 +119,6 @@ const UserCashStatement = ({ userId }) => {
                                     </DialogFooter>
                                 </DialogContent>
                             </Dialog>
-
                         </div>
                         {/* Transactions List */}
                         <div className='grid grid-cols-3 gap-x-32 justify-between border-b-2'>
@@ -133,6 +142,11 @@ const UserCashStatement = ({ userId }) => {
                                 <p className="text-gray-500">No coin transactions found</p>
                             )}
                         </ScrollArea>
+                        {/* Total Cash In */}
+                        <div className="mt-4 py-3 border-t-2 flex justify-between items-center">
+                            <span className="font-semibold text-lg">Total</span>
+                            <span className="font-bold text-lg text-green-600">+{totalCashIn}</span>
+                        </div>
                     </CardContent>
                 </Card>
 
@@ -163,8 +177,6 @@ const UserCashStatement = ({ userId }) => {
                                         </div>
                                     </div>
 
-
-
                                     <DialogFooter>
                                         <Button onClick={handleConfirm}>
                                             {coinAction === 'add' ? "Add" : "Cut"}
@@ -188,13 +200,18 @@ const UserCashStatement = ({ userId }) => {
                                             <span className='text-sm muted'>{format(new Date(tx.createdAt), "HH:mm")}</span>
                                         </span>
                                         <span>{tx.title || "Transaction"}</span>
-                                        <div className="font-medium text-green-600">+{tx.amount}</div>
+                                        <div className="font-medium text-red-600">-{tx.amount}</div>
                                     </div>
                                 ))
                             ) : (
                                 <p className="text-gray-500">No coin transactions found</p>
                             )}
                         </ScrollArea>
+                        {/* Total Cash Out */}
+                        <div className="mt-4 py-3 border-t-2 flex justify-between items-center">
+                            <span className="font-semibold text-lg">Total</span>
+                            <span className="font-bold text-lg text-red-600">-{totalCashOut}</span>
+                        </div>
                     </CardContent>
                 </Card>
             </div>
