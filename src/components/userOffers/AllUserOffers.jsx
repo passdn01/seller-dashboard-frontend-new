@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { Button } from "@/components/ui/button";
-import { RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import { RefreshCw, ChevronDown, ChevronUp, Filter } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -23,6 +23,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   useReactTable,
   getCoreRowModel,
   flexRender,
@@ -36,11 +49,14 @@ import OfferInTable from './OfferInTable';
 
 function AllUserOffers() {
   const [offers, setOffers] = useState([]);
+  const [allOffers, setAllOffers] = useState([]); // Store all offers for extracting unique types
+  const [uniqueTypes, setUniqueTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedOfferId, setExpandedOfferId] = useState(null);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [selectedOfferId, setSelectedOfferId] = useState(null);
+  const [selectedType, setSelectedType] = useState(null);
   
   // Pagination state
   const [pagination, setPagination] = useState({
@@ -50,15 +66,43 @@ function AllUserOffers() {
     pages: 0
   });
 
+  // Fetch all offers on initial load to extract unique types
+  useEffect(() => {
+    const fetchAllOffers = async () => {
+      try {
+        const response = await axios.get('https://vayu-backend-1.onrender.com/offers?limit=1000');
+        if (response.data.data && Array.isArray(response.data.data)) {
+          setAllOffers(response.data.data);
+          
+          // Extract unique offer types
+          const types = [...new Set(response.data.data.map(offer => offer.type))];
+          setUniqueTypes(types);
+        }
+      } catch (error) {
+        console.error('Error fetching all offers:', error);
+      }
+    };
+    
+    fetchAllOffers();
+  }, []);
+
   useEffect(() => {
     fetchOffers(pagination.page);
-  }, [pagination.page]);
+  }, [pagination.page, selectedType]);
 
   const fetchOffers = async (page = 1) => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://vayu-backend-1.onrender.com/offers?page=${page}&limit=${pagination.limit}`);
-      console.log(response.data);
+      // Build URL with query parameters
+      let url = `https://vayu-backend-1.onrender.com/offers?page=${page}&limit=${pagination.limit}`;
+      
+      // Add type filter if selected
+      if (selectedType) {
+        url += `&type=${selectedType}`;
+      }
+      
+      const response = await axios.get(url);
+      console.log('Fetched offers:', response.data);
       
       if (response.data.data && Array.isArray(response.data.data)) {
         setOffers(response.data.data);
@@ -81,6 +125,18 @@ function AllUserOffers() {
       setLoading(false);
     }
   };
+
+  const handleTypeChange = (type) => {
+    // Set selectedType to null when "all" is selected
+    setSelectedType(type === "all" ? null : type);
+    
+    // Reset to page 1 when filter changes
+    setPagination(prev => ({
+      ...prev,
+      page: 1
+    }));
+  };
+  
 
   const handleToggleStatusClick = (offerId, e) => {
     e.stopPropagation();
@@ -276,22 +332,56 @@ function AllUserOffers() {
       </CardHeader>
       <CardContent>
         <div className="flex justify-between items-center mb-6">
-          <Button 
-            variant="outline" 
-            onClick={() => fetchOffers(pagination.page)}
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <div className="animate-spin mr-2 h-4 w-4 border-b-2 border-green-500"></div>
-                Loading...
-              </>
-            ) : (
-              <>
-                <RefreshCw className="w-4 h-4 mr-2" /> Refresh
-              </>
+          <div className="flex items-center space-x-2">
+            <Button 
+              variant="outline" 
+              onClick={() => fetchOffers(pagination.page)}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin mr-2 h-4 w-4 border-b-2 border-green-500"></div>
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+                </>
+              )}
+            </Button>
+            
+            {/* Type Filter Select */}
+            <div className="flex items-center">
+            <Select value={selectedType || "all"} onValueChange={handleTypeChange}>
+              <SelectTrigger className="w-[200px]">
+                <div className="flex items-center">
+                  <Filter className="w-4 h-4 mr-2" />
+                  <SelectValue placeholder="Filter by Type" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                {uniqueTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type.replace(/_/g, ' ')}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+              
+            {selectedType && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => handleTypeChange("all")}
+                className="ml-2 text-blue-500"
+              >
+                Clear
+              </Button>
             )}
-          </Button>
+            </div>
+          </div>
+          
           <Dialog>
             <DialogTrigger asChild>
               <Button>
