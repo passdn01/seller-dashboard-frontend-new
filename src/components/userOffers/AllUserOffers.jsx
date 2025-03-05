@@ -51,12 +51,14 @@ function AllUserOffers() {
   const [offers, setOffers] = useState([]);
   const [allOffers, setAllOffers] = useState([]); // Store all offers for extracting unique types
   const [uniqueTypes, setUniqueTypes] = useState([]);
+  const [uniqueCities, setUniqueCities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedOfferId, setExpandedOfferId] = useState(null);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [selectedOfferId, setSelectedOfferId] = useState(null);
   const [selectedType, setSelectedType] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(null);
   
   // Pagination state
   const [pagination, setPagination] = useState({
@@ -66,7 +68,7 @@ function AllUserOffers() {
     pages: 0
   });
 
-  // Fetch all offers on initial load to extract unique types
+  // Fetch all offers on initial load to extract unique types and cities
   useEffect(() => {
     const fetchAllOffers = async () => {
       try {
@@ -77,6 +79,21 @@ function AllUserOffers() {
           // Extract unique offer types
           const types = [...new Set(response.data.data.map(offer => offer.type))];
           setUniqueTypes(types);
+          
+          // Extract unique cities with their IDs and names
+          const cities = response.data.data
+            .filter(offer => offer.city && offer.cityData)
+            .map(offer => ({
+              id: offer.city,
+              name: offer.cityData.name
+            }));
+          
+          // Remove duplicates based on city ID
+          const uniqueCities = Array.from(
+            new Map(cities.map(city => [city.id, city])).values()
+          );
+          
+          setUniqueCities(uniqueCities);
         }
       } catch (error) {
         console.error('Error fetching all offers:', error);
@@ -88,7 +105,7 @@ function AllUserOffers() {
 
   useEffect(() => {
     fetchOffers(pagination.page);
-  }, [pagination.page, selectedType]);
+  }, [pagination.page, selectedType, selectedCity]);
 
   const fetchOffers = async (page = 1) => {
     setLoading(true);
@@ -99,6 +116,11 @@ function AllUserOffers() {
       // Add type filter if selected
       if (selectedType) {
         url += `&type=${selectedType}`;
+      }
+      
+      // Add city filter if selected
+      if (selectedCity) {
+        url += `&city=${selectedCity}`;
       }
       
       const response = await axios.get(url);
@@ -137,6 +159,16 @@ function AllUserOffers() {
     }));
   };
   
+  const handleCityChange = (cityId) => {
+    // Set selectedCity to null when "all" is selected
+    setSelectedCity(cityId === "all" ? null : cityId);
+    
+    // Reset to page 1 when filter changes
+    setPagination(prev => ({
+      ...prev,
+      page: 1
+    }));
+  };
 
   const handleToggleStatusClick = (offerId, e) => {
     e.stopPropagation();
@@ -332,7 +364,7 @@ function AllUserOffers() {
       </CardHeader>
       <CardContent>
         <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button 
               variant="outline" 
               onClick={() => fetchOffers(pagination.page)}
@@ -352,34 +384,80 @@ function AllUserOffers() {
             
             {/* Type Filter Select */}
             <div className="flex items-center">
-            <Select value={selectedType || "all"} onValueChange={handleTypeChange}>
-              <SelectTrigger className="w-[200px]">
-                <div className="flex items-center">
-                  <Filter className="w-4 h-4 mr-2" />
-                  <SelectValue placeholder="Filter by Type" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {uniqueTypes.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type.replace(/_/g, ' ')}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <Select value={selectedType || "all"} onValueChange={handleTypeChange}>
+                <SelectTrigger className="w-[180px]">
+                  <div className="flex items-center">
+                    <Filter className="w-4 h-4 mr-2" />
+                    <SelectValue placeholder="Filter by Type" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  {uniqueTypes.map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type.replace(/_/g, ' ')}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               
-            {selectedType && (
+              {selectedType && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => handleTypeChange("all")}
+                  className="ml-2 text-blue-500"
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+            
+            {/* City Filter Select */}
+            <div className="flex items-center">
+              <Select value={selectedCity || "all"} onValueChange={handleCityChange}>
+                <SelectTrigger className="w-[180px]">
+                  <div className="flex items-center">
+                    <Filter className="w-4 h-4 mr-2" />
+                    <SelectValue placeholder="Filter by City" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Cities</SelectItem>
+                  {uniqueCities.map((city) => (
+                    <SelectItem key={city.id} value={city.id}>
+                      {city.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              {selectedCity && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => handleCityChange("all")}
+                  className="ml-2 text-blue-500"
+                >
+                  Clear
+                </Button>
+              )}
+            </div>
+            
+            {/* Clear all filters button if any filter is active */}
+            {(selectedType || selectedCity) && (
               <Button 
-                variant="ghost" 
+                variant="outline" 
                 size="sm" 
-                onClick={() => handleTypeChange("all")}
-                className="ml-2 text-blue-500"
+                onClick={() => {
+                  handleTypeChange("all");
+                  handleCityChange("all");
+                }}
+                className="text-red-500"
               >
-                Clear
+                Clear All Filters
               </Button>
             )}
-            </div>
           </div>
           
           <Dialog>
