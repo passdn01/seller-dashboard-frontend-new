@@ -252,10 +252,10 @@ const CreateOffer = ({ onSuccess }) => {
           <TabsList className={`grid w-full mb-6 ${offerType === 'LOCATION' ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="basic">Basic Info</TabsTrigger>
             <TabsTrigger value="details">Offer Details</TabsTrigger>
+            <TabsTrigger value="schedule">Schedule</TabsTrigger>
             {offerType === 'LOCATION' && (
               <TabsTrigger value="location">Location</TabsTrigger>
             )}
-            <TabsTrigger value="schedule">Schedule</TabsTrigger>
           </TabsList>
 
           <Form {...form}>
@@ -575,6 +575,77 @@ const CreateOffer = ({ onSuccess }) => {
                 </div>
               </TabsContent>
 
+
+              {/* Schedule Tab */}
+              <TabsContent value="schedule" className="mt-0">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="startDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Start Date</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="date" 
+                              {...field}
+                              value={field.value || today}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            When the offer becomes active
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="endDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>End Date</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="date" 
+                              {...field}
+                              value={field.value || nextMonthDate}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            When the offer expires
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="isActive"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-base">Active Status</FormLabel>
+                          <FormDescription>
+                            Toggle whether the offer is currently active
+                          </FormDescription>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={!!field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </TabsContent>
+
               {/* Location Tab - only rendered when offerType is LOCATION */}
               {offerType === 'LOCATION' && (
                 <TabsContent value="location" className="mt-0">
@@ -662,75 +733,6 @@ const CreateOffer = ({ onSuccess }) => {
                 </TabsContent>
               )}
 
-              {/* Schedule Tab */}
-              <TabsContent value="schedule" className="mt-0">
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="startDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Start Date</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="date" 
-                              {...field}
-                              value={field.value || today}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            When the offer becomes active
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="endDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>End Date</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="date" 
-                              {...field}
-                              value={field.value || nextMonthDate}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            When the offer expires
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="isActive"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">Active Status</FormLabel>
-                          <FormDescription>
-                            Toggle whether the offer is currently active
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={!!field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </TabsContent>
 
               <div className="flex justify-between pt-4 border-t">
                 <Button
