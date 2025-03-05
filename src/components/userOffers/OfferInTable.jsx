@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, Info, MapPin, Tag, Clock, Percent, Coins, Users, FileText, Award } from "lucide-react";
 import {
   Card,
@@ -13,9 +13,28 @@ import {
   TabsContent,
 } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import LocationSelected from './LocationSelected';
 
 const OfferInTable = ({ offer }) => {
   const [expandedTab, setExpandedTab] = useState('details');
+  const [availableTabs, setAvailableTabs] = useState(['details', 'json']);
+
+  // Set available tabs based on offer type
+  useEffect(() => {
+    if (!offer) return;
+    
+    const tabs = ['details', 'json'];
+    if (offer.type === 'LOCATION') {
+      tabs.splice(1, 0, 'location'); // Insert location tab between details and json
+    }
+    
+    setAvailableTabs(tabs);
+    
+    // If previously on location tab but type changed, switch to details
+    if (expandedTab === 'location' && offer.type !== 'LOCATION') {
+      setExpandedTab('details');
+    }
+  }, [offer, expandedTab]);
 
   if (!offer) return null;
 
@@ -70,13 +89,17 @@ const OfferInTable = ({ offer }) => {
   return (
     <div className="bg-gradient-to-b from-gray-50 to-white p-6 border-t border-gray-200 shadow-inner">
       <Tabs value={expandedTab} onValueChange={setExpandedTab} className="w-full">
-        <TabsList className="mb-4 w-full max-w-md mx-auto grid grid-cols-3 gap-1 bg-gray-100 p-1">
+        <TabsList className={`mb-4 w-full max-w-md mx-auto grid grid-cols-${availableTabs.length} gap-1 bg-gray-100 p-1`}>
           <TabsTrigger value="details" className="rounded-md">
             Details
           </TabsTrigger>
-          <TabsTrigger value="location" className="rounded-md">
-            Location
-          </TabsTrigger>
+          
+          {offer.type === 'LOCATION' && (
+            <TabsTrigger value="location" className="rounded-md">
+              Location
+            </TabsTrigger>
+          )}
+          
           <TabsTrigger value="json" className="rounded-md">
             JSON
           </TabsTrigger>
@@ -258,104 +281,24 @@ const OfferInTable = ({ offer }) => {
           </div>
         </TabsContent>
         
-        <TabsContent value="location" className="mt-4 animate-in fade-in-50 duration-300">
-          <Card className="border border-gray-200 shadow-sm overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 border-b pb-3">
-              <CardTitle className="flex items-center">
-                <MapPin className="w-5 h-5 mr-2 text-green-600" />
-                Location Information
-              </CardTitle>
-            </CardHeader>
-            
-            <CardContent className="p-0">
-              {offer.type === 'LOCATION' ? (
-                <div>
-                  {/* Location Coordinates */}
-                  {offer.location && offer.location.coordinate ? (
-                    <div className="p-6 border-b">
-                      <h4 className="text-base font-medium mb-4 flex items-center">
-                        <MapPin className="w-4 h-4 mr-2 text-green-500" />
-                        Location Coordinates
-                      </h4>
-                      
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="bg-gray-50 rounded-lg p-4 border">
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <p className="text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">Latitude</p>
-                              <p className="font-mono text-sm text-blue-800 bg-blue-50 p-2 rounded border border-blue-100">
-                                {offer.location.coordinate.lat}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">Longitude</p>
-                              <p className="font-mono text-sm text-blue-800 bg-blue-50 p-2 rounded border border-blue-100">
-                                {offer.location.coordinate.long}
-                              </p>
-                            </div>
-                          </div>
-                          
-                          <div className="mt-4">
-                            <p className="text-xs uppercase tracking-wider text-gray-500 font-medium mb-1">Radius</p>
-                            <div className="flex items-center">
-                              <div className="flex-1">
-                                <p className="font-mono text-sm text-green-800 bg-green-50 p-2 rounded border border-green-100">
-                                  {offer.location.radius || 'Not specified'} meters
-                                </p>
-                              </div>
-                              <div className="ml-2 relative flex items-center justify-center w-12 h-12">
-                                <div className="absolute w-12 h-12 rounded-full bg-green-100 opacity-20 animate-ping"></div>
-                                <div className="absolute w-8 h-8 rounded-full bg-green-200 opacity-40"></div>
-                                <div className="absolute w-4 h-4 rounded-full bg-green-500"></div>
-                                <div className="absolute w-1 h-1 rounded-full bg-white"></div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="rounded-lg overflow-hidden border bg-gray-100 flex flex-col">
-                          <div className="p-2 bg-gray-200 text-gray-700 text-xs font-medium">Map Preview</div>
-                          <div className="flex-1 relative bg-blue-50 p-8 flex items-center justify-center">
-                            <div className="relative">
-                              <div className="w-32 h-32 rounded-full bg-green-200 opacity-20 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-                              <div className="w-20 h-20 rounded-full bg-green-300 opacity-30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-                              <div className="w-10 h-10 rounded-full bg-green-400 opacity-40 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-                              <MapPin className="w-6 h-6 text-red-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 drop-shadow-md" />
-                            </div>
-                            <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
-                              Map visualization would appear here
-                            </div>
-                          </div>
-                          <div className="p-3 text-xs text-gray-500 border-t bg-white">
-                            Circular area with {offer.location.radius}m radius from specified coordinates
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="p-6 flex items-center justify-center text-amber-600 bg-amber-50 border-b">
-                      <Info className="w-5 h-5 mr-2" />
-                      <p>No location coordinates specified for this location-based offer.</p>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="p-6 flex items-center justify-center bg-gray-50">
-                  <div className="max-w-md text-center p-6">
-                    <div className="w-12 h-12 rounded-full bg-gray-100 mx-auto flex items-center justify-center mb-4">
-                      <Info className="w-6 h-6 text-gray-400" />
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-700 mb-2">No Location Data Required</h3>
-                    <p className="text-gray-500">
-                      This offer type (<span className="font-mono text-xs bg-gray-100 p-1 rounded">{offer.type}</span>) 
-                      does not require or contain location information.
-                    </p>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+        {/* Location Tab - Only shown when offer type is LOCATION */}
+        {offer.type === 'LOCATION' && (
+          <TabsContent value="location" className="mt-4 animate-in fade-in-50 duration-300">
+            <Card className="border border-gray-200 shadow-sm overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50 border-b pb-3">
+                <CardTitle className="flex items-center">
+                  <MapPin className="w-5 h-5 mr-2 text-green-600" />
+                  Location Information
+                </CardTitle>
+              </CardHeader>
+              
+              <CardContent className="p-6">
+                {/* Use the new LocationSelected component */}
+                <LocationSelected location={offer.location} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+        )}
         
         <TabsContent value="json" className="mt-4 animate-in fade-in-50 duration-300">
           <Card className="border border-gray-800 shadow-lg overflow-hidden">

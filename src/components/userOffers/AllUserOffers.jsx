@@ -245,7 +245,7 @@ function AllUserOffers() {
       header: 'Offer ID',
       cell: ({ row }) => (
         <div className="flex items-center">
-          <span className="font-medium ">{row.original._id}</span>
+          <span className="font-medium truncate max-w-[100px]">{row.original._id}</span>
           {expandedOfferId === row.original._id ? (
             <ChevronUp className="ml-2 h-4 w-4" />
           ) : (
@@ -257,7 +257,19 @@ function AllUserOffers() {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => <span className="font-medium">{row.original.title}</span>,
+      cell: ({ row }) => {
+        const title = row.original.title;
+        const displayTitle = title.length > 15 ? title.substring(0, 15) + '...' : title;
+        
+        return (
+          <span 
+            className="font-medium truncate" 
+            title={title} // Show full title on hover
+          >
+            {displayTitle}
+          </span>
+        );
+      },
     },
     {
       accessorKey: 'city',

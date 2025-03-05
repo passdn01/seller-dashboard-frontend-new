@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import LocationMapSelector from './LocationMapSelector';
 
 // Offer types based on your API schema
 const offerTypes = [
@@ -719,15 +720,18 @@ const CreateOffer = ({ onSuccess }) => {
                         />
                       </div>
                       
-                      {/* Placeholder for map component */}
-                      <div className="bg-slate-200 w-full h-[300px] rounded-md flex items-center justify-center mt-4">
-                        <p className="text-slate-500">Map integration would go here</p>
+                      {/* Map Component */}
+                      <div className="mt-4">
+                        <LocationMapSelector 
+                          initialLat={form.watch('location.coordinate.lat')}
+                          initialLng={form.watch('location.coordinate.long')}
+                          radius={form.watch('location.radius')}
+                          onChange={(coords) => {
+                            form.setValue('location.coordinate.lat', coords.lat);
+                            form.setValue('location.coordinate.long', coords.lng);
+                          }}
+                        />
                       </div>
-                      
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Note: In a production environment, this would include a map component 
-                        for selecting coordinates and defining boundaries.
-                      </p>
                     </div>
                   </div>
                 </TabsContent>
