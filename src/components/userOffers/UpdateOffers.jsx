@@ -353,10 +353,10 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
           <TabsList className={`grid w-full mb-6 ${offerType === 'LOCATION' ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="basic">Basic Info</TabsTrigger>
             <TabsTrigger value="details">Offer Details</TabsTrigger>
+            <TabsTrigger value="schedule">Schedule</TabsTrigger>
             {offerType === 'LOCATION' && (
               <TabsTrigger value="location">Location</TabsTrigger>
             )}
-            <TabsTrigger value="schedule">Schedule</TabsTrigger>
           </TabsList>
 
           <Form {...form}>
