@@ -52,7 +52,7 @@ function CityTable() {
   const fetchCities = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/city');
+      const response = await axios.get('https://vayu-backend-1.onrender.com/admin/city');
       if (response.data && Array.isArray(response.data)) {
         setCities(response.data);
       } else {

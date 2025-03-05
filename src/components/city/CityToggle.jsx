@@ -27,7 +27,7 @@ function CityToggle({ cityId, isOpen, onClose, onToggleComplete }) {
   const fetchCityDetails = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/city/${cityId}`);
+      const response = await axios.get(`https://vayu-backend-1.onrender.com/admin/city/${cityId}`);
       
       if (response.data) {
         setCity(response.data);
@@ -45,7 +45,7 @@ function CityToggle({ cityId, isOpen, onClose, onToggleComplete }) {
     try {
       setToggling(true);
       const response = await axios.put(
-        `https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/city/toggleCityStatus/${cityId}`
+        `https://vayu-backend-1.onrender.com/admin/city/toggleCityStatus/${cityId}`
       );
       
       if (response.data) {

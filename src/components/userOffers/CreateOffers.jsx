@@ -55,16 +55,16 @@ const formSchema = z.object({
   subtitle: z.string().min(3, "Subtitle must be at least 3 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   termsAndConditions: z.string().optional(),
-  minCoin: z.number().optional(),
+  minCoin: z.number().nullable().default(0),
   maxCoin: z.number().min(1, "Maximum coin value is required"),
-  percentage: z.number().optional(),
-  xRideFree: z.number().optional(),
+  percentage: z.number().nullable().default(0),
+  xRideFree: z.number().nullable().default(0),
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
   isMainPage: z.boolean().default(false),
   isActive: z.boolean().default(true),
   location: z.object({
-    radius: z.number().optional(),
+    radius: z.number().nullable().default(300),
     coordinate: z.object({
       lat: z.string().optional(),
       long: z.string().optional(),
@@ -73,7 +73,6 @@ const formSchema = z.object({
   navigationLink: z.string().optional(),
   image: z.string().optional(),
   posterImage: z.string().optional(),
-  status: z.string().default("A"),
 });
 
 const CreateOffer = ({ onSuccess }) => {
@@ -119,7 +118,6 @@ const CreateOffer = ({ onSuccess }) => {
       navigationLink: '',
       image: 'https://example.com/images/offer.jpg',
       posterImage: 'https://example.com/images/poster.jpg',
-      status: 'A',
     },
   });
 
@@ -127,7 +125,7 @@ const CreateOffer = ({ onSuccess }) => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await axios.get('https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/city');
+        const response = await axios.get('https://vayu-backend-1.onrender.com/admin/city');
         setCities(response.data || []);
       } catch (error) {
         console.error('Error fetching cities:', error);
@@ -142,15 +140,16 @@ const CreateOffer = ({ onSuccess }) => {
   const offerType = form.watch('type');
   
   // Handle form submission
-  const onSubmit = async (values) => {
+  const onSubmit = async (data) => {
     setLoading(true);
     setError(null);
     setSuccess(false);
     
     try {
-      // Remove fields that are not needed based on offer type
-      const formattedValues = { ...values };
+      // Create a copy of the data to avoid mutating it directly
+      const formattedValues = { ...data };
       
+      // Clean up unused fields based on offer type
       if (offerType !== 'LOCATION') {
         delete formattedValues.location;
       }
@@ -169,9 +168,10 @@ const CreateOffer = ({ onSuccess }) => {
 
       console.log('Submitting offer:', formattedValues);
 
-      const response = await axios.post('https://3n8qx2vb-8055.inc1.devtunnels.ms/offers', formattedValues);
+      const response = await axios.post('https://vayu-backend-1.onrender.com/offers', formattedValues);
       
       setSuccess(true);
+      form.reset(form.getValues()); // Reset form state but keep values
       
       // Call the onSuccess callback from parent
       if (onSuccess && typeof onSuccess === 'function') {
@@ -183,11 +183,6 @@ const CreateOffer = ({ onSuccess }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
-    form.handleSubmit(onSubmit)(e);
   };
   
   // Utility to get available tabs based on offer type
@@ -217,6 +212,16 @@ const CreateOffer = ({ onSuccess }) => {
       setActiveTab("details");
     }
   }, [offerType, activeTab]);
+
+  // Handle manual form submission when Create button is clicked
+  const handleFormSubmit = (e) => {
+    e.preventDefault(); // Prevent default form behavior
+    if (activeTab === availableTabs[availableTabs.length - 1]) {
+      form.handleSubmit(onSubmit)(e); // Only trigger form submission on the last tab
+    } else {
+      handleTabNavigation('next'); // Otherwise just navigate to next tab
+    }
+  };
 
   return (
     <Card className="border-0 shadow-none">
@@ -254,68 +259,70 @@ const CreateOffer = ({ onSuccess }) => {
           </TabsList>
 
           <Form {...form}>
-            <form noValidate onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleFormSubmit} className="space-y-6">
               {/* Basic Info Tab */}
               <TabsContent value="basic" className="mt-0">
                 <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a city" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {cities.map((city) => (
-                              <SelectItem key={city._id} value={city._id}>
-                                {city.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>City</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            value={field.value || ""}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a city" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {cities.map((city) => (
+                                <SelectItem key={city._id} value={city._id}>
+                                  {city.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Offer Type</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select offer type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {offerTypes.map((type) => (
-                              <SelectItem key={type} value={type}>
-                                {type.replace(/_/g, ' ')}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          The type of offer determines which fields are required
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Offer Type</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select offer type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {offerTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type.replace(/_/g, ' ')}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            The type of offer determines which fields are required
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -324,7 +331,7 @@ const CreateOffer = ({ onSuccess }) => {
                       <FormItem>
                         <FormLabel>Title</FormLabel>
                         <FormControl>
-                          <Input placeholder="15% Cashback on Every Ride" {...field} />
+                          <Input placeholder="15% Cashback on Every Ride" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -338,7 +345,7 @@ const CreateOffer = ({ onSuccess }) => {
                       <FormItem>
                         <FormLabel>Subtitle</FormLabel>
                         <FormControl>
-                          <Input placeholder="Limited time offer for downtown rides" {...field} />
+                          <Input placeholder="Limited time offer for downtown rides" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -356,6 +363,7 @@ const CreateOffer = ({ onSuccess }) => {
                             placeholder="Enjoy 15% cashback (up to ₹200) on all rides within downtown area..." 
                             className="min-h-[100px]" 
                             {...field} 
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -371,7 +379,7 @@ const CreateOffer = ({ onSuccess }) => {
                         <FormItem>
                           <FormLabel>Image URL</FormLabel>
                           <FormControl>
-                            <Input placeholder="https://example.com/images/offer.jpg" {...field} />
+                            <Input placeholder="https://example.com/images/offer.jpg" {...field} value={field.value || ""} />
                           </FormControl>
                           <FormDescription>
                             Main offer image URL
@@ -388,7 +396,7 @@ const CreateOffer = ({ onSuccess }) => {
                         <FormItem>
                           <FormLabel>Poster Image URL</FormLabel>
                           <FormControl>
-                            <Input placeholder="https://example.com/images/poster.jpg" {...field} />
+                            <Input placeholder="https://example.com/images/poster.jpg" {...field} value={field.value || ""} />
                           </FormControl>
                           <FormDescription>
                             Larger promotional image URL
@@ -406,7 +414,7 @@ const CreateOffer = ({ onSuccess }) => {
                       <FormItem>
                         <FormLabel>Navigation Link</FormLabel>
                         <FormControl>
-                          <Input placeholder="app://offers/cashback-downtown" {...field} />
+                          <Input placeholder="app://offers/cashback-downtown" {...field} value={field.value || ""} />
                         </FormControl>
                         <FormDescription>
                           Deep link for the mobile app
@@ -421,44 +429,45 @@ const CreateOffer = ({ onSuccess }) => {
               {/* Offer Details Tab */}
               <TabsContent value="details" className="mt-0">
                 <div className="space-y-4">
-                  {(offerType === 'EVERY_RIDE_CASHBACK_RIDE') && (
-                    <>
-                      <FormField
-                        control={form.control}
-                        name="minCoin"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Minimum Coin</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                placeholder="50" 
-                                {...field} 
-                                onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Minimum coins required to avail this offer
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {(offerType === 'EVERY_RIDE_CASHBACK_RIDE' || offerType === 'CASHBACK_OFFER') && (
+                    <FormField
+                      control={form.control}
+                      name="minCoin"
+                      render={({ field: { onChange, value, ...rest } }) => (
+                        <FormItem>
+                          <FormLabel>Minimum Coin</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              placeholder="50" 
+                              {...rest} 
+                              value={value === null ? '' : value}
+                              onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Minimum coins required to avail this offer
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
 
                   <FormField
                     control={form.control}
                     name="maxCoin"
-                    render={({ field }) => (
+                    render={({ field: { onChange, value, ...rest } }) => (
                       <FormItem>
                         <FormLabel>Maximum Coin</FormLabel>
                         <FormControl>
                           <Input 
                             type="number" 
                             placeholder="200" 
-                            {...field}
-                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)} 
+                            {...rest}
+                            value={value === null ? '' : value}
+                            onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                           />
                         </FormControl>
                         <FormDescription>
@@ -469,19 +478,20 @@ const CreateOffer = ({ onSuccess }) => {
                     )}
                   />
 
-                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION' || offerType === 'X_RIDE_AFTER_ONE_RIDE_FREE') && (
+                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION') && (
                     <FormField
                       control={form.control}
                       name="percentage"
-                      render={({ field }) => (
+                      render={({ field: { onChange, value, ...rest } }) => (
                         <FormItem>
                           <FormLabel>Percentage</FormLabel>
                           <FormControl>
                             <Input 
                               type="number" 
                               placeholder="50" 
-                              {...field}
-                              onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)} 
+                              {...rest}
+                              value={value === null ? '' : value}
+                              onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormDescription>
@@ -492,20 +502,22 @@ const CreateOffer = ({ onSuccess }) => {
                       )}
                     />
                   )}
+                  </div>
 
                   {offerType === 'X_RIDE_AFTER_ONE_RIDE_FREE' && (
                     <FormField
                       control={form.control}
                       name="xRideFree"
-                      render={({ field }) => (
+                      render={({ field: { onChange, value, ...rest } }) => (
                         <FormItem>
                           <FormLabel>X Rides Free</FormLabel>
                           <FormControl>
                             <Input 
                               type="number" 
                               placeholder="5" 
-                              {...field}
-                              onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)} 
+                              {...rest}
+                              value={value === null ? '' : value}
+                              onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormDescription>
@@ -532,6 +544,7 @@ const CreateOffer = ({ onSuccess }) => {
 * The company reserves the right to modify or terminate the offer at any time without prior notice." 
                             className="min-h-[150px]" 
                             {...field} 
+                            value={field.value || ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -552,7 +565,7 @@ const CreateOffer = ({ onSuccess }) => {
                         </div>
                         <FormControl>
                           <Switch
-                            checked={field.value}
+                            checked={!!field.value}
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
@@ -576,16 +589,16 @@ const CreateOffer = ({ onSuccess }) => {
                         <FormField
                           control={form.control}
                           name="location.radius"
-                          render={({ field }) => (
+                          render={({ field: { onChange, value, ...rest } }) => (
                             <FormItem>
                               <FormLabel>Radius (meters)</FormLabel>
                               <FormControl>
                                 <Input 
                                   type="number" 
                                   placeholder="300" 
-                                  {...field}
-                                  value={field.value || 300}
-                                  onChange={(e) => field.onChange(Number(e.target.value))} 
+                                  {...rest}
+                                  value={value === null ? '300' : value}
+                                  onChange={(e) => onChange(e.target.value === '' ? 300 : Number(e.target.value))}
                                 />
                               </FormControl>
                               <FormDescription>
@@ -608,6 +621,7 @@ const CreateOffer = ({ onSuccess }) => {
                                 <Input 
                                   placeholder="22.994877" 
                                   {...field}
+                                  value={field.value || ""}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -625,6 +639,7 @@ const CreateOffer = ({ onSuccess }) => {
                                 <Input 
                                   placeholder="72.567367" 
                                   {...field}
+                                  value={field.value || ""}
                                 />
                               </FormControl>
                               <FormMessage />
@@ -650,74 +665,49 @@ const CreateOffer = ({ onSuccess }) => {
               {/* Schedule Tab */}
               <TabsContent value="schedule" className="mt-0">
                 <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Start Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="date" 
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          When the offer becomes active
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="endDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>End Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="date" 
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          When the offer expires
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          defaultValue={field.value}
-                        >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="startDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Start Date</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
+                            <Input 
+                              type="date" 
+                              {...field}
+                              value={field.value || today}
+                            />
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="A">Active</SelectItem>
-                            <SelectItem value="I">Inactive</SelectItem>
-                            <SelectItem value="E">Expired</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          Set the initial status of the offer
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormDescription>
+                            When the offer becomes active
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="endDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>End Date</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="date" 
+                              {...field}
+                              value={field.value || nextMonthDate}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            When the offer expires
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -732,7 +722,7 @@ const CreateOffer = ({ onSuccess }) => {
                         </div>
                         <FormControl>
                           <Switch
-                            checked={field.value}
+                            checked={!!field.value}
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>

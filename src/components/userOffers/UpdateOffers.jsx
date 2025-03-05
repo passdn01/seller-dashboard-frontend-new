@@ -78,7 +78,6 @@ const formSchema = z.object({
   navigationLink: z.string().optional(),
   image: z.string().optional(),
   posterImage: z.string().optional(),
-  status: z.string().default("A"),
 });
 
 const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
@@ -90,7 +89,6 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
   const [fetchError, setFetchError] = useState(null);
   const [activeTab, setActiveTab] = useState("basic");
 
-  
   // Initialize form
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -101,10 +99,10 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
       subtitle: '',
       description: '',
       termsAndConditions: '',
-      minCoin: 50,
-      maxCoin: 200,
-      percentage: 50,
-      xRideFree: 0,
+      minCoin: null,
+      maxCoin: null,
+      percentage: null,
+      xRideFree: null,
       startDate: '',
       endDate: '',
       isMainPage: false,
@@ -123,7 +121,6 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
       navigationLink: '',
       image: '',
       posterImage: '',
-      status: 'A',
     },
   });
 
@@ -131,7 +128,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await axios.get('https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/city');
+        const response = await axios.get('https://vayu-backend-1.onrender.com/admin/city');
         setCities(response.data || []);
       } catch (error) {
         console.error('Error fetching cities:', error);
@@ -153,7 +150,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
     setFetchLoading(true);
     console.log('Fetching offer data for ID:', offerId);
     try {
-      const response = await axios.get(`https://3n8qx2vb-8055.inc1.devtunnels.ms/offers/${offerId}`);
+      const response = await axios.get(`https://vayu-backend-1.onrender.com/offers/${offerId}`);
       
       if (response.data.data) {
         const offerData = response.data.data;
@@ -195,7 +192,6 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
           navigationLink: offerData.navigationLink || '',
           image: offerData.image || '',
           posterImage: offerData.posterImage || '',
-          status: offerData.status || 'A',
         });
       } else {
         throw new Error('Failed to fetch offer data');
@@ -239,7 +235,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
 
       console.log('Updating offer:', formattedValues);
 
-      const response = await axios.put(`https://3n8qx2vb-8055.inc1.devtunnels.ms/offers/${offerId}`, formattedValues);
+      const response = await axios.put(`https://vayu-backend-1.onrender.com/offers/${offerId}`, formattedValues);
       
       setSuccess(true);
       
@@ -255,11 +251,6 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
-    form.handleSubmit(onSubmit)(e);
-  };
-
   // Utility to get available tabs based on offer type
   const getAvailableTabs = () => {
     const baseTabs = ["basic", "details", "schedule"];
@@ -268,6 +259,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
   
   const availableTabs = getAvailableTabs();
 
+  // Update handleTabNavigation to work with dynamic tabs
   const handleTabNavigation = (direction) => {
     const currentIndex = availableTabs.indexOf(activeTab);
     
@@ -286,6 +278,26 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
       setActiveTab("details");
     }
   }, [offerType, activeTab]);
+
+  // Handle manual form submission when Update button is clicked
+  const handleFormSubmit = (e) => {
+    e.preventDefault(); // Prevent default form behavior
+    if (activeTab === availableTabs[availableTabs.length - 1]) {
+      // The problem could be here - this might not be properly invoking the form submission
+      // Let's modify it to ensure it calls onSubmit with the form values
+      const values = form.getValues();
+      onSubmit(values);
+    } else {
+      handleTabNavigation('next'); // Otherwise just navigate to next tab
+    }
+  };
+  
+  
+  // // Separate function to handle direct update button click
+  // const handleUpdateClick = () => {
+  //   // Manually validate and submit the form
+  //   form.handleSubmit(onSubmit)();
+  // };
 
   if (fetchLoading) {
     return (
@@ -338,76 +350,80 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
         )}
         
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className={`grid w-full mb-6 ${offerType === 'LOCATION' ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="basic">Basic Info</TabsTrigger>
             <TabsTrigger value="details">Offer Details</TabsTrigger>
-            <TabsTrigger value="location">Location</TabsTrigger>
+            {offerType === 'LOCATION' && (
+              <TabsTrigger value="location">Location</TabsTrigger>
+            )}
             <TabsTrigger value="schedule">Schedule</TabsTrigger>
           </TabsList>
 
           <Form {...form}>
-            <form noValidate onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleFormSubmit} className="space-y-6">
               {/* Basic Info Tab */}
               <TabsContent value="basic" className="mt-0">
                 <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a city" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {cities.map((city) => (
-                              <SelectItem key={city._id} value={city._id}>
-                                {city.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="city"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>City</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a city" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {cities.map((city) => (
+                                <SelectItem key={city._id} value={city._id}>
+                                  {city.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Offer Type</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select offer type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {offerTypes.map((type) => (
-                              <SelectItem key={type} value={type}>
-                                {type.replace(/_/g, ' ')}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          The type of offer determines which fields are required
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Offer Type</FormLabel>
+                          <Select 
+                            onValueChange={field.onChange} 
+                            value={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select offer type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {offerTypes.map((type) => (
+                                <SelectItem key={type} value={type}>
+                                  {type.replace(/_/g, ' ')}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            The type of offer determines which fields are required
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -513,44 +529,45 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
               {/* Offer Details Tab */}
               <TabsContent value="details" className="mt-0">
                 <div className="space-y-4">
-                  {(offerType === 'EVERY_RIDE_CASHBACK_RIDE') && (
-                    <>
-                      <FormField
-                        control={form.control}
-                        name="minCoin"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Minimum Coin</FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="number" 
-                                placeholder="50" 
-                                {...field} 
-                                onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              Minimum coins required to avail this offer
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {(offerType === 'EVERY_RIDE_CASHBACK_RIDE' || offerType === 'CASHBACK_OFFER') && (
+                    <FormField
+                      control={form.control}
+                      name="minCoin"
+                      render={({ field: { onChange, value, ...rest } }) => (
+                        <FormItem>
+                          <FormLabel>Minimum Coin</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="number" 
+                              placeholder="50" 
+                              {...rest} 
+                              value={value === null ? '' : value}
+                              onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Minimum coins required to avail this offer
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   )}
 
                   <FormField
                     control={form.control}
                     name="maxCoin"
-                    render={({ field }) => (
+                    render={({ field: { onChange, value, ...rest } }) => (
                       <FormItem>
                         <FormLabel>Maximum Coin</FormLabel>
                         <FormControl>
                           <Input 
                             type="number" 
                             placeholder="200" 
-                            {...field}
-                            onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)} 
+                            {...rest}
+                            value={value === null ? '' : value}
+                            onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
                           />
                         </FormControl>
                         <FormDescription>
@@ -561,19 +578,20 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                     )}
                   />
 
-                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION' || offerType === 'X_RIDE_AFTER_ONE_RIDE_FREE') && (
+                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION') && (
                     <FormField
                       control={form.control}
                       name="percentage"
-                      render={({ field }) => (
+                      render={({ field: { onChange, value, ...rest } }) => (
                         <FormItem>
                           <FormLabel>Percentage</FormLabel>
                           <FormControl>
                             <Input 
                               type="number" 
                               placeholder="50" 
-                              {...field}
-                              onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)} 
+                              {...rest}
+                              value={value === null ? '' : value}
+                              onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormDescription>
@@ -584,20 +602,22 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                       )}
                     />
                   )}
+                  </div>
 
                   {offerType === 'X_RIDE_AFTER_ONE_RIDE_FREE' && (
                     <FormField
                       control={form.control}
                       name="xRideFree"
-                      render={({ field }) => (
+                      render={({ field: { onChange, value, ...rest } }) => (
                         <FormItem>
                           <FormLabel>X Rides Free</FormLabel>
                           <FormControl>
                             <Input 
                               type="number" 
                               placeholder="5" 
-                              {...field}
-                              onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)} 
+                              {...rest}
+                              value={value === null ? '' : value}
+                              onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormDescription>
@@ -644,7 +664,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                         </div>
                         <FormControl>
                           <Switch
-                            checked={field.value}
+                            checked={!!field.value}
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
@@ -654,9 +674,9 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                 </div>
               </TabsContent>
 
-              {/* Location Tab */}
+              {/* Location Tab - only rendered when offerType is LOCATION */}
               {offerType === 'LOCATION' && (
-              <TabsContent value="location" className="mt-0">
+                <TabsContent value="location" className="mt-0">
                   <div className="space-y-4">
                     <div className="bg-muted rounded-lg p-4">
                       <h3 className="text-base font-medium mb-2">Location Settings</h3>
@@ -668,16 +688,16 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                         <FormField
                           control={form.control}
                           name="location.radius"
-                          render={({ field }) => (
+                          render={({ field: { onChange, value, ...rest } }) => (
                             <FormItem>
                               <FormLabel>Radius (meters)</FormLabel>
                               <FormControl>
                                 <Input 
                                   type="number" 
                                   placeholder="300" 
-                                  {...field}
-                                  value={field.value || 300}
-                                  onChange={(e) => field.onChange(Number(e.target.value))} 
+                                  {...rest}
+                                  value={value === null ? '300' : value}
+                                  onChange={(e) => onChange(e.target.value === '' ? 300 : Number(e.target.value))}
                                 />
                               </FormControl>
                               <FormDescription>
@@ -735,81 +755,54 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                         for selecting coordinates and defining boundaries.
                       </p>
                     </div>
-                  </div>      
-                  </TabsContent>
-                )}
+                  </div>
+                </TabsContent>
+              )}
 
               {/* Schedule Tab */}
               <TabsContent value="schedule" className="mt-0">
                 <div className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Start Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="date" 
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          When the offer becomes active
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="endDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>End Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="date" 
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          When the offer expires
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Status</FormLabel>
-                        <Select 
-                          onValueChange={field.onChange} 
-                          value={field.value}
-                        >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="startDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Start Date</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
+                            <Input 
+                              type="date" 
+                              {...field}
+                            />
                           </FormControl>
-                          <SelectContent>
-                            <SelectItem value="A">Active</SelectItem>
-                            <SelectItem value="I">Inactive</SelectItem>
-                            <SelectItem value="E">Expired</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormDescription>
-                          Set the status of the offer
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                          <FormDescription>
+                            When the offer becomes active
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="endDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>End Date</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="date" 
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            When the offer expires
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
                   <FormField
                     control={form.control}
@@ -824,7 +817,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                         </div>
                         <FormControl>
                           <Switch
-                            checked={field.value}
+                            checked={!!field.value}
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
@@ -843,11 +836,11 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                     handleTabNavigation('prev');
                   }}
                   disabled={activeTab === availableTabs[0]}
-                  >
-                    Previous
-                  </Button>
-                  
-                  {activeTab !== availableTabs[availableTabs.length - 1] ? (
+                >
+                  Previous
+                </Button>
+                
+                {activeTab !== availableTabs[availableTabs.length - 1] ? (
                   <Button
                     type="button"
                     onClick={(e) => {
@@ -857,22 +850,24 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                   >
                     Next
                   </Button>
-                ) : (
-                  <div className="flex space-x-2">
-                    <Button 
-                      type="button"
-                      variant="outline"
-                      onClick={onClose}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      type="submit"
-                      disabled={loading}
-                    >
-                      {loading ? "Updating..." : "Update Offer"}
-                    </Button>
-                  </div>
+                  ) : (
+                    <div className="flex space-x-2">
+                      {onClose && (
+                        <Button 
+                          type="button"
+                          variant="outline"
+                          onClick={onClose}
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                      <Button 
+                        type="submit"
+                        disabled={loading}
+                      >
+                        {loading ? "Updating..." : "Update Offer"}
+                      </Button>
+                    </div>
                 )}
               </div>
             </form>

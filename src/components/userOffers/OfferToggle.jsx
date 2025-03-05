@@ -23,7 +23,7 @@ const OfferToggle = ({ offerId, isOpen, onClose, onToggleComplete }) => {
 
   const fetchOffer = async () => {
     try {
-      const response = await axios.get(`https://3n8qx2vb-8055.inc1.devtunnels.ms/offers/${offerId}`);
+      const response = await axios.get(`https://vayu-backend-1.onrender.com/offers/${offerId}`);
       setOffer(response.data.data);
     } catch (err) {
       setError('Failed to fetch offer details');
@@ -35,7 +35,7 @@ const OfferToggle = ({ offerId, isOpen, onClose, onToggleComplete }) => {
     setError(null);
     
     try {
-      const response = await axios.patch(`https://3n8qx2vb-8055.inc1.devtunnels.ms/offers/${offerId}`);
+      const response = await axios.patch(`https://vayu-backend-1.onrender.com/offers/${offerId}`);
       onToggleComplete(response.data.data);
       onClose();
     } catch (err) {

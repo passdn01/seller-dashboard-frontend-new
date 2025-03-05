@@ -25,7 +25,6 @@ import {
 import {
   useReactTable,
   getCoreRowModel,
-  getPaginationRowModel,
   flexRender,
 } from '@tanstack/react-table';
 import { Badge } from "@/components/ui/badge";
@@ -33,7 +32,7 @@ import { Badge } from "@/components/ui/badge";
 import CreateOffer from './CreateOffers';
 import OfferToggle from './OfferToggle';
 import UpdateOffer from './UpdateOffers';
-import OfferInTable from './OfferInTable'; // Import the new component
+import OfferInTable from './OfferInTable';
 
 function AllUserOffers() {
   const [offers, setOffers] = useState([]);
@@ -42,18 +41,37 @@ function AllUserOffers() {
   const [expandedOfferId, setExpandedOfferId] = useState(null);
   const [showStatusDialog, setShowStatusDialog] = useState(false);
   const [selectedOfferId, setSelectedOfferId] = useState(null);
+  
+  // Pagination state
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    pages: 0
+  });
 
   useEffect(() => {
-    fetchOffers();
-  }, []);
+    fetchOffers(pagination.page);
+  }, [pagination.page]);
 
-  const fetchOffers = async () => {
+  const fetchOffers = async (page = 1) => {
     setLoading(true);
     try {
-      const response = await axios.get('https://3n8qx2vb-8055.inc1.devtunnels.ms/offers');
-      console.log(response.data)
+      const response = await axios.get(`https://vayu-backend-1.onrender.com/offers?page=${page}&limit=${pagination.limit}`);
+      console.log(response.data);
+      
       if (response.data.data && Array.isArray(response.data.data)) {
         setOffers(response.data.data);
+        
+        // Update pagination state from backend response
+        if (response.data.pagination) {
+          setPagination({
+            total: response.data.pagination.total || 0,
+            page: response.data.pagination.page || 1,
+            limit: response.data.pagination.limit || 10,
+            pages: response.data.pagination.pages || 0
+          });
+        }
       } else {
         throw new Error('Failed to fetch offers: Invalid response format');
       }
@@ -122,6 +140,16 @@ function AllUserOffers() {
     return offers.find(offer => offer._id === expandedOfferId);
   };
 
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= pagination.pages) {
+      setPagination(prev => ({
+        ...prev,
+        page: newPage
+      }));
+    }
+  };
+
   // Define columns for Tanstack React Table
   const columns = useMemo(() => [
     {
@@ -129,7 +157,7 @@ function AllUserOffers() {
       header: 'Offer ID',
       cell: ({ row }) => (
         <div className="flex items-center">
-          <span className="font-medium truncate max-w-[100px]">{row.original._id}</span>
+          <span className="font-medium ">{row.original._id}</span>
           {expandedOfferId === row.original._id ? (
             <ChevronUp className="ml-2 h-4 w-4" />
           ) : (
@@ -142,6 +170,11 @@ function AllUserOffers() {
       accessorKey: 'title',
       header: 'Title',
       cell: ({ row }) => <span className="font-medium">{row.original.title}</span>,
+    },
+    {
+      accessorKey: 'city',
+      header: 'City',
+      cell: ({ row }) => <span className="font-medium">{row.original.cityName}</span>,
     },
     {
       accessorKey: 'type',
@@ -182,7 +215,7 @@ function AllUserOffers() {
               <Button variant="outline" size="sm">Edit</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
-              <UpdateOffer offerId={row.original._id} onSuccess={fetchOffers} />
+              <UpdateOffer offerId={row.original._id} onSuccess={() => fetchOffers(pagination.page)} />
             </DialogContent>
           </Dialog>
           <Button 
@@ -195,22 +228,17 @@ function AllUserOffers() {
         </div>
       ),
     },
-  ], [expandedOfferId]);
+  ], [expandedOfferId, pagination.page]);
 
-  // Initialize Tanstack Table
+  // Initialize Tanstack Table without internal pagination
   const table = useReactTable({
     data: offers,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: 10,
-      },
-    },
+    manualPagination: true, // We're handling pagination manually with the backend
   });
 
-  if (loading) {
+  if (loading && offers.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
@@ -218,7 +246,7 @@ function AllUserOffers() {
     );
   }
 
-  if (error) {
+  if (error && offers.length === 0) {
     return (
       <Card className="mx-auto my-8 max-w-4xl">
         <CardHeader className="bg-red-50">
@@ -226,7 +254,7 @@ function AllUserOffers() {
         </CardHeader>
         <CardContent className="pt-6">
           <p>{error}</p>
-          <Button onClick={fetchOffers} className="mt-4">
+          <Button onClick={() => fetchOffers(pagination.page)} className="mt-4">
             <RefreshCw className="w-4 h-4 mr-2" /> Try Again
           </Button>
         </CardContent>
@@ -236,6 +264,10 @@ function AllUserOffers() {
 
   const expandedOffer = getExpandedOfferData();
 
+  // Calculate start and end item numbers for display
+  const startItem = (pagination.page - 1) * pagination.limit + 1;
+  const endItem = Math.min(pagination.page * pagination.limit, pagination.total);
+
   return (
     <Card className="mx-4 my-4">
       <CardHeader>
@@ -244,8 +276,21 @@ function AllUserOffers() {
       </CardHeader>
       <CardContent>
         <div className="flex justify-between items-center mb-6">
-          <Button variant="outline" onClick={fetchOffers}>
-            <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+          <Button 
+            variant="outline" 
+            onClick={() => fetchOffers(pagination.page)}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <div className="animate-spin mr-2 h-4 w-4 border-b-2 border-green-500"></div>
+                Loading...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4 mr-2" /> Refresh
+              </>
+            )}
           </Button>
           <Dialog>
             <DialogTrigger asChild>
@@ -254,7 +299,7 @@ function AllUserOffers() {
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
-              <CreateOffer onSuccess={fetchOffers} />
+              <CreateOffer onSuccess={() => fetchOffers(1)} />
             </DialogContent>
           </Dialog>
         </div>
@@ -273,9 +318,11 @@ function AllUserOffers() {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows.length === 0 ? (
+              {offers.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="text-center py-6">No offers found</TableCell>
+                  <TableCell colSpan={columns.length} className="text-center py-6">
+                    {loading ? "Loading offers..." : "No offers found"}
+                  </TableCell>
                 </TableRow>
               ) : (
                 table.getRowModel().rows.map(row => (
@@ -294,7 +341,6 @@ function AllUserOffers() {
                     {expandedOfferId === row.original._id && expandedOffer && (
                       <TableRow>
                         <TableCell colSpan={columns.length} className="p-0 border-t-0">
-                          {/* Use the new OfferInTable component here */}
                           <OfferInTable offer={expandedOffer} />
                         </TableCell>
                       </TableRow>
@@ -308,25 +354,46 @@ function AllUserOffers() {
 
         <div className="flex items-center justify-between space-x-2 py-4">
           <div className="flex-1 text-sm text-muted-foreground">
-            Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to {Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, offers.length)} of {offers.length} offers
+            Showing {offers.length > 0 ? startItem : 0} to {endItem} of {pagination.total} offers
           </div>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Next
-            </Button>
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(1)}
+                disabled={pagination.page === 1 || loading}
+              >
+                First
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(pagination.page - 1)}
+                disabled={pagination.page === 1 || loading}
+              >
+                Previous
+              </Button>
+              <span className="mx-2">
+                Page {pagination.page} of {pagination.pages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(pagination.page + 1)}
+                disabled={pagination.page === pagination.pages || loading}
+              >
+                Next
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(pagination.pages)}
+                disabled={pagination.page === pagination.pages || loading}
+              >
+                Last
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
@@ -337,7 +404,10 @@ function AllUserOffers() {
           offerId={selectedOfferId} 
           isOpen={showStatusDialog} 
           onClose={() => setShowStatusDialog(false)}
-          onToggleComplete={handleStatusToggleComplete}
+          onToggleComplete={(updatedOffer) => {
+            handleStatusToggleComplete(updatedOffer);
+            fetchOffers(pagination.page);
+          }}
         />
       )}
     </Card>

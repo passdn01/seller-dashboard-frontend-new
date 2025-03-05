@@ -84,6 +84,7 @@ const OfferInTable = ({ offer }) => {
         
         <TabsContent value="details" className="mt-4 animate-in fade-in-50 duration-300">
           {/* Offer header with title and status */}
+          <h2 className="text-lg font-mono ml-2">{offer._id}</h2>
           <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center">
             <div className="flex items-center mb-2 sm:mb-0">
               {getOfferTypeIcon(offer.type)}
