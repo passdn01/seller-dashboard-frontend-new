@@ -230,7 +230,7 @@ function AllUserOffers() {
     {
       accessorKey: 'city',
       header: 'City',
-      cell: ({ row }) => <span className="font-medium">{row.original.cityName}</span>,
+      cell: ({ row }) => <span className="font-medium">{row.original?.cityData?.name}</span>,
     },
     {
       accessorKey: 'type',
