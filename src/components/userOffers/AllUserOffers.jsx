@@ -326,7 +326,8 @@ function AllUserOffers() {
     manualPagination: true, // We're handling pagination manually with the backend
   });
 
-  if (loading && offers.length === 0) {
+  // Only show full-page loader on initial load
+  if (loading && offers.length === 0 && !error && pagination.page === 1) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
@@ -368,18 +369,8 @@ function AllUserOffers() {
             <Button 
               variant="outline" 
               onClick={() => fetchOffers(pagination.page)}
-              disabled={loading}
             >
-              {loading ? (
-                <>
-                  <div className="animate-spin mr-2 h-4 w-4 border-b-2 border-green-500"></div>
-                  Loading...
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="w-4 h-4 mr-2" /> Refresh
-                </>
-              )}
+              <RefreshCw className="w-4 h-4 mr-2" /> Refresh
             </Button>
             
             {/* Type Filter Select */}
@@ -486,10 +477,43 @@ function AllUserOffers() {
               ))}
             </TableHeader>
             <TableBody>
-              {offers.length === 0 ? (
+              {loading ? (
+                // Skeleton loader rows
+                Array(5).fill(0).map((_, index) => (
+                  <TableRow key={`skeleton-${index}`} className="animate-pulse">
+                    <TableCell>
+                      <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-5 w-28 bg-gray-200 rounded-full"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-2">
+                        <div className="h-3 w-24 bg-gray-200 rounded"></div>
+                        <div className="h-3 w-24 bg-gray-200 rounded"></div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="h-5 w-16 bg-gray-200 rounded-full"></div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <div className="h-8 w-12 bg-gray-200 rounded"></div>
+                        <div className="h-8 w-20 bg-gray-200 rounded"></div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : offers.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="text-center py-6">
-                    {loading ? "Loading offers..." : "No offers found"}
+                    No offers found
                   </TableCell>
                 </TableRow>
               ) : (
@@ -521,48 +545,64 @@ function AllUserOffers() {
         </div>
 
         <div className="flex items-center justify-between space-x-2 py-4">
-          <div className="flex-1 text-sm text-muted-foreground">
-            Showing {offers.length > 0 ? startItem : 0} to {endItem} of {pagination.total} offers
-          </div>
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePageChange(1)}
-                disabled={pagination.page === 1 || loading}
-              >
-                First
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePageChange(pagination.page - 1)}
-                disabled={pagination.page === 1 || loading}
-              >
-                Previous
-              </Button>
-              <span className="mx-2">
-                Page {pagination.page} of {pagination.pages}
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePageChange(pagination.page + 1)}
-                disabled={pagination.page === pagination.pages || loading}
-              >
-                Next
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => handlePageChange(pagination.pages)}
-                disabled={pagination.page === pagination.pages || loading}
-              >
-                Last
-              </Button>
+          {loading ? (
+            // Skeleton loader for pagination
+            <div className="w-full flex justify-between animate-pulse">
+              <div className="h-4 w-40 bg-gray-200 rounded"></div>
+              <div className="flex space-x-2">
+                <div className="h-8 w-16 bg-gray-200 rounded"></div>
+                <div className="h-8 w-20 bg-gray-200 rounded"></div>
+                <div className="h-6 w-24 bg-gray-200 rounded mx-2"></div>
+                <div className="h-8 w-16 bg-gray-200 rounded"></div>
+                <div className="h-8 w-16 bg-gray-200 rounded"></div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="flex-1 text-sm text-muted-foreground">
+                Showing {offers.length > 0 ? startItem : 0} to {endItem} of {pagination.total} offers
+              </div>
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(1)}
+                    disabled={pagination.page === 1 || loading}
+                  >
+                    First
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    disabled={pagination.page === 1 || loading}
+                  >
+                    Previous
+                  </Button>
+                  <span className="mx-2">
+                    Page {pagination.page} of {pagination.pages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    disabled={pagination.page === pagination.pages || loading}
+                  >
+                    Next
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(pagination.pages)}
+                    disabled={pagination.page === pagination.pages || loading}
+                  >
+                    Last
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </CardContent>
 
