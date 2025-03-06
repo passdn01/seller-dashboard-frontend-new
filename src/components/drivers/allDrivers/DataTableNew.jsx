@@ -2,6 +2,8 @@ import { useEffect, useState, useRef } from 'react';
 import React from 'react'
 import axios from 'axios';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import * as XLSX from 'xlsx';
+import { Download } from "lucide-react";
 import {
     Dialog,
     DialogContent,
@@ -169,6 +171,7 @@ const DeleteDriverDialog = ({ isOpen, onClose, driverId, onDriverDeleted }) => {
     );
 };
 
+
 function DataTableNew() {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -181,6 +184,7 @@ function DataTableNew() {
     const [totalPages, setTotalPages] = useState(1);
     const [totalDrivers, setTotalDrivers] = useState(0)
     const [applyButton, setApplyButton] = useState(false);
+    const [exportLoading, setExportLoading] = useState(false);
 
     const [searchQuery, setSearchQuery] = useState("");
     const [categoryFilter, setCategoryFilter] = useState("ALL");
@@ -373,6 +377,138 @@ function DataTableNew() {
             },
         },
     ];
+
+    
+    const handleExportExcel = async () => {
+        try {
+        setExportLoading(true);
+        
+        // Prepare the filter parameters based on current filters
+        const exportParams = {
+            startDate,
+            endDate,
+            status: statusFilter !== "ALL" ? statusFilter : undefined,
+            categoryFilter: categoryFilter !== "ALL" ? categoryFilter : undefined,
+            verificationFilter: verificationFilter !== "ALL" ? verificationFilter : undefined,
+            missingDocsFilter: missingDocsFilter.length > 0 ? missingDocsFilter : undefined,
+            rcNumberPresent: rcNumberPresent ? 'true' : undefined,
+            searchQuery: searchQuery || undefined
+        };
+        
+        // Call the export API
+        const response = await axios.post(
+            `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/exportDriver`,
+            exportParams
+        );
+        
+        if (response.data.success) {
+            const driverData = response.data.data;
+            
+            // Format data for Excel
+            const worksheetData = driverData.map(driver => {
+            // Format category display
+            let category = driver.category;
+            if (category === "HATCHBACK") category = "CAB";
+            else if (category === "SEDAN") category = "ELITE";
+            
+            // Check verification status
+            let verificationStatus = "NOT";
+            if (driver.isCompleteRegistration) {
+                verificationStatus = "VERIFIED";
+            } else if (driver.licenseNumber && driver.vehicleNumber && driver.name && driver.name !== "null") {
+                if (driver.paymentTransactionId) verificationStatus = "PENDING";
+                else verificationStatus = "FEES PENDING";
+            }
+            
+            // Determine missing documents
+            const missingDocs = [];
+            if (!driver.drivingLicense) missingDocs.push("DL");
+            if (!driver.drivingLicenseBack) missingDocs.push("DLB");
+            if (!driver.registrationCertificate) missingDocs.push("RC");
+            if (!driver.registrationCertificateBack) missingDocs.push("RCB");
+            if (!driver.profileUrl) missingDocs.push("PF");
+            
+            return {
+                'ID': driver._id,
+                'Name': driver.name || 'N/A',
+                'Phone': driver.phone || 'N/A',
+                'Email': driver.email || 'N/A',
+                'RC Number': driver.vehicleNumber || 'N/A',
+                'License Number': driver.licenseNumber || 'N/A',
+                'Category': category || 'N/A',
+                'Status': driver.status || 'N/A',
+                'Verification Status': verificationStatus,
+                'Total Rides': driver.totalRides || 0,
+                'Total Earnings': driver.totalEarnings ? `₹${driver.totalEarnings}` : '₹0',
+                'Average Rating': driver.avgRating?.toFixed(1) || 'N/A',
+                'Missing Documents': missingDocs.length > 0 ? missingDocs.join(", ") : "None",
+                'DL Present': driver.drivingLicense ? 'Yes' : 'No',
+                'DL Back Present': driver.drivingLicenseBack ? 'Yes' : 'No',
+                'RC Present': driver.registrationCertificate ? 'Yes' : 'No',
+                'RC Back Present': driver.registrationCertificateBack ? 'Yes' : 'No',
+                'Profile Photo': driver.profileUrl ? 'Yes' : 'No',
+                'Created At': new Date(driver.createdAt).toLocaleString(),
+                'Updated At': new Date(driver.updatedAt).toLocaleString()
+            };
+            });
+            
+            // Create worksheet
+            const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+            
+            // Add column widths for better readability
+            const wscols = [
+            { wch: 24 }, // ID
+            { wch: 18 }, // Name
+            { wch: 15 }, // Phone
+            { wch: 25 }, // Email
+            { wch: 15 }, // RC Number
+            { wch: 15 }, // License Number
+            { wch: 12 }, // Category
+            { wch: 12 }, // Status
+            { wch: 15 }, // Verification Status
+            { wch: 12 }, // Total Rides
+            { wch: 15 }, // Total Earnings
+            { wch: 15 }, // Average Rating
+            { wch: 20 }, // Missing Documents
+            { wch: 12 }, // DL Present
+            { wch: 12 }, // DL Back Present
+            { wch: 12 }, // RC Present
+            { wch: 12 }, // RC Back Present
+            { wch: 15 }, // Profile Photo
+            { wch: 20 }, // Created At
+            { wch: 20 }  // Updated At
+            ];
+            worksheet['!cols'] = wscols;
+            
+            // Create workbook and add the worksheet
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, 'Drivers');
+            
+            // Generate Excel file
+            const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            
+            // Create a download link and trigger download
+            const today = new Date().toISOString().split('T')[0];
+            const fileName = `Drivers_Export_${today}.xlsx`;
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } else {
+            setError("Failed to export data");
+        }
+        } catch (err) {
+        console.error("Error exporting drivers:", err);
+        setError("Error exporting data");
+        } finally {
+        setExportLoading(false);
+        }
+    };
 
 
     const openDeleteDialog = (driverId) => {
@@ -625,6 +761,32 @@ function DataTableNew() {
                         >
                             <RefreshCw className="h-4 w-4" />
                             Reset Filters
+                        </Button>
+
+                        <Button
+                            onClick={handleExportExcel}
+                            variant="outline"
+                            className="flex items-center gap-1 bg-green-50 hover:bg-green-100 text-green-600 border-green-200"
+                            disabled={exportLoading}
+                        >
+                            {exportLoading ? (
+                                <>
+                                    <Oval
+                                        height={16}
+                                        width={16}
+                                        color="currentColor"
+                                        secondaryColor="rgba(0, 128, 0, 0.2)"
+                                        strokeWidth={3}
+                                        strokeWidthSecondary={3}
+                                    />
+                                    <span>Exporting...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <Download className="h-4 w-4" />
+                                    Export Excel
+                                </>
+                            )}
                         </Button>
                     </div>
                 </div>

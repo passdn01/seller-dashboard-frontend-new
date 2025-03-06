@@ -16,9 +16,6 @@ import {
     DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
-    // DropdownMenuItem,
-    // DropdownMenuLabel,
-    // DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
 import { Button } from "../../ui/button";
@@ -35,11 +32,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Oval } from "react-loader-spinner";
 import { useNavigate } from "react-router-dom";
 import { SELLER_URL_LOCAL } from "@/lib/utils";
+import IssueDetailExpandable from "../issueDetailInTable";
 
 const IssueSolver = () => {
+    const navigate = useNavigate();
     const [tickets, setTickets] = useState([]);
-    // const [solvers, setSolvers] = useState([]);
-    // const [selectedSolver, setSelectedSolver] = useState({});
     const [issueColumnFilters, setIssueColumnFilters] = useState([]);
     const [columnVisibility, setColumnVisibility] = useState({});
     const [rowSelection, setRowSelection] = useState({});
@@ -48,36 +45,37 @@ const IssueSolver = () => {
     const [sorting, setSorting] = useState([]);
     const [statusFilter, setStatusFilter] = useState("all");
     const [globalFilter, setGlobalFilter] = useState("");
+    const [selectedIssueId, setSelectedIssueId] = useState(null);
 
     const [ticketLoading, setTicketLoading] = useState(false);
-
 
     const userId = localStorage.getItem("userId");
 
     // Fetch all assigned tickets
     const fetchTickets = async () => {
-        setTicketLoading(true)
+        setTicketLoading(true);
         try {
-
             const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/assigned/${userId}`);
-            console.log(response, "response")
-
-
+            console.log(response, "response");
             setTickets(response.data);
-
         } catch (err) {
             setError("Failed to load tickets");
         } finally {
-            setTicketLoading(false)
-
+            setTicketLoading(false);
         }
     };
+
     useEffect(() => {
         fetchTickets();
     }, []);
 
     // mark issue as complete
-    const markComplete = async (ticketId) => {
+    const markComplete = async (ticketId, e) => {
+        // Prevent row click event when clicking the button
+        if (e) {
+            e.stopPropagation();
+        }
+        
         try {
             await axios.put(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`);
             // Refresh issue details after marking as complete
@@ -87,7 +85,14 @@ const IssueSolver = () => {
         }
     };
 
+    const handleRowClick = (issueId) => {
+        // Toggle the selected issue if clicking the same row again
+        setSelectedIssueId(prevId => prevId === issueId ? null : issueId);
+    };
 
+    const closeIssueDetail = () => {
+        setSelectedIssueId(null);
+    };
 
     // Define columns for the table
     const columns = [
@@ -167,10 +172,10 @@ const IssueSolver = () => {
             header: "Mark Complete",
             cell: ({ row }) => (
                 <Button
-                    onClick={() => markComplete(row.original._id)}
-                    disabled={loading}
+                    onClick={(e) => markComplete(row.original._id, e)}
+                    disabled={loading || row.original.status === "Completed"}
                 >
-                    {"Mark Complete"}
+                    {row.original.status === "Completed" ? "Completed" : "Mark Complete"}
                 </Button>
             ),
         },
@@ -179,26 +184,33 @@ const IssueSolver = () => {
             enableHiding: false,
             cell: ({ row }) => {
                 const tickets = row.original;
-                const navigate = useNavigate();
 
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
+                            <Button 
+                                variant="ghost" 
+                                className="h-8 w-8 p-0"
+                                onClick={(e) => e.stopPropagation()} // Prevent row click when clicking dropdown
+                            >
                                 <span className="sr-only">Open menu</span>
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            {/* <DropdownMenuItem
-                                    onClick={() => navigator.clipboard.writeText(.phone)}
-                                >
-                                    Copy Driver Phone
-                                </DropdownMenuItem> */}
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => navigate(`/issueDetail/${tickets._id}`)}>
-                                View issue Details
+                            <DropdownMenuItem onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/issueDetail/${tickets._id}`);
+                            }}>
+                                View issue Details (Full Page)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={(e) => {
+                                e.stopPropagation();
+                                handleRowClick(tickets._id);
+                            }}>
+                                {selectedIssueId === tickets._id ? "Hide Details" : "Show Details"}
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -258,6 +270,52 @@ const IssueSolver = () => {
 
     // Get unique status values for the filter
     const statusOptions = [...new Set(tickets.map(item => item.status))];
+
+    // Helper function to render rows with issue details
+    const renderRowsWithDetails = () => {
+        if (table.getRowModel().rows?.length === 0) {
+            return (
+                <TableRow>
+                    <TableCell colSpan={columns.length} className="h-24 text-center">
+                        {ticketLoading ? "Loading..." : "No results."}
+                    </TableCell>
+                </TableRow>
+            );
+        }
+
+        // Flatten to handle the detail rows
+        return table.getRowModel().rows.flatMap((row) => {
+            const isSelected = row.original?._id === selectedIssueId;
+            
+            const result = [
+                <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className={`${isSelected ? "bg-gray-100" : ""} cursor-pointer hover:bg-gray-100`}
+                    onClick={() => !ticketLoading && row.original?._id && handleRowClick(row.original._id)}
+                >
+                    {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                    ))}
+                </TableRow>
+            ];
+
+            // Add the detail row if this row is selected
+            if (isSelected && row.original?._id) {
+                result.push(
+                    <IssueDetailExpandable 
+                        key={`detail-${row.id}`}
+                        issueId={row.original._id} 
+                        onClose={closeIssueDetail} 
+                    />
+                );
+            }
+
+            return result;
+        });
+    };
 
     return (
         <div className="w-[90%] mx-12">
@@ -323,26 +381,7 @@ const IssueSolver = () => {
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    {ticketLoading ? "Loading..." : "No results."}
-                                </TableCell>
-                            </TableRow>
-                        )}
+                        {renderRowsWithDetails()}
                     </TableBody>
                 </Table>
             </div>
@@ -384,7 +423,6 @@ const IssueSolver = () => {
             </div>
         </div>
     );
-
 };
 
 export default IssueSolver;
