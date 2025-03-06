@@ -33,6 +33,7 @@ import OfferIndex from './components/offers/OfferIndex.jsx'
 import BlogEditor from './components/blogs/Blog.jsx'
 import BlogView from './components/blogs/BlogView.jsx'
 import CityIndex from './components/city/CityIndex.jsx'
+import TSPMessagesTable from './components/tsp/TSPMessagesTable.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -103,6 +104,9 @@ function App() {
 
           <Route path='/home/dashboard/img' element={<ProtectedRoute element={< ImageComponent />} />} />
           <Route path='/pricing' element={<ProtectedRoute element={< PriceSetterPage />} />} />
+          <Route path='/tspMessages' element={<ProtectedRoute element={< TSPMessagesTable />} />} />
+
+
 
 
 

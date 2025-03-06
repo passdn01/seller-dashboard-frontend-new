@@ -21,6 +21,7 @@ const IssueDetail = () => {
         `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${id}`
       );
       setIssue(response.data);
+      console.log(response.data, "issue data")
 
       if (response.data?.rideId) {
         fetchRideDetails(response.data.rideId);
@@ -133,7 +134,7 @@ const IssueDetail = () => {
         </CardHeader>
         <CardContent className="space-y-3">
           <p><strong>Name:</strong> {displayName}</p>
-          <p><strong>Phone:</strong> {issue.userInfo?.phone || "N/A"}</p>
+          <p><strong>Phone:</strong> {user?.phone || "N/A"}</p>
         </CardContent>
       </Card>
 

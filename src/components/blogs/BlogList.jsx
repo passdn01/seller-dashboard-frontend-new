@@ -1,18 +1,25 @@
-// src/components/BlogList.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Filter } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import axios from 'axios';
 
 export default function BlogList() {
     const [blogs, setBlogs] = useState([]);
+    const [filteredBlogs, setFilteredBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedSite, setSelectedSite] = useState(null);
     const navigate = useNavigate();
 
-    // Site labels mapping
+    // Site labels mapping (moved outside to be reusable)
     const siteLabels = {
         'vayuride': 'VayuRide',
         'tsp': 'TSP',
@@ -23,6 +30,7 @@ export default function BlogList() {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/api/blogs`);
                 setBlogs(response.data);
+                setFilteredBlogs(response.data);
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching blogs:', error);
@@ -32,6 +40,16 @@ export default function BlogList() {
 
         fetchBlogs();
     }, []);
+
+    // Filter blogs by site
+    useEffect(() => {
+        if (selectedSite) {
+            const filtered = blogs.filter(blog => blog.site === selectedSite);
+            setFilteredBlogs(filtered);
+        } else {
+            setFilteredBlogs(blogs);
+        }
+    }, [selectedSite, blogs]);
 
     const handleNewBlog = () => {
         navigate('/blogs/new');
@@ -47,6 +65,9 @@ export default function BlogList() {
         return doc.body.textContent || '';
     };
 
+    // Get unique sites from blogs
+    const availableSites = [...new Set(blogs.map(blog => blog.site).filter(Boolean))];
+
     if (loading) {
         return (
             <div className="w-full flex justify-center p-12">
@@ -57,22 +78,52 @@ export default function BlogList() {
 
     return (
         <div className="container mx-auto py-8">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">My Blogs</h1>
-                <Button onClick={handleNewBlog} className="flex items-center gap-2">
-                    <PlusCircle size={18} />
-                    New Blog
-                </Button>
+            <div className="flex justify-end items-center mb-6">
+                <div className="flex items-center gap-4">
+                    {/* filter */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="outline" className="flex items-center gap-2">
+                                <Filter size={18} />
+                                {selectedSite
+                                    ? `Site: ${siteLabels[selectedSite] || selectedSite}`
+                                    : 'Filter by Site'}
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => setSelectedSite(null)}>
+                                All Sites
+                            </DropdownMenuItem>
+                            {availableSites.map(site => (
+                                <DropdownMenuItem
+                                    key={site}
+                                    onClick={() => setSelectedSite(site)}
+                                >
+                                    {siteLabels[site] || site}
+                                </DropdownMenuItem>
+                            ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <Button onClick={handleNewBlog} className="flex items-center gap-2">
+                        <PlusCircle size={18} />
+                        New Blog
+                    </Button>
+                </div>
             </div>
 
-            {blogs.length === 0 ? (
+            {filteredBlogs.length === 0 ? (
                 <div className="text-center py-12">
-                    <p className="text-lg text-gray-500 mb-4">No blogs found</p>
+                    <p className="text-lg text-gray-500 mb-4">
+                        {selectedSite
+                            ? `No blogs found for ${siteLabels[selectedSite] || selectedSite}`
+                            : 'No blogs found'}
+                    </p>
                     <Button onClick={handleNewBlog}>Create your first blog</Button>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {blogs.map((blog) => (
+                    {filteredBlogs.map((blog) => (
                         <Card
                             key={blog._id}
                             className="cursor-pointer hover:shadow-lg transition-shadow overflow-hidden"
