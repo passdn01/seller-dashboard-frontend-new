@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import * as XLSX from 'xlsx';
 import {
     DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
     DropdownMenuTrigger
@@ -14,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Oval } from "react-loader-spinner";
 import { Card, CardContent } from "@/components/ui/card";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Download } from "lucide-react";
 
 import {
     flexRender,
@@ -88,6 +89,7 @@ const AllUserTableNew = () => {
 
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [exportLoading, setExportLoading] = useState(false);
     const [error, setError] = useState(null);
     const [page, setPage] = useState(1);
     const [goToPage, setGoToPage] = useState(1);
@@ -131,6 +133,97 @@ const AllUserTableNew = () => {
             setError("Error fetching data");
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Handle Excel Export functionality
+    const handleExportExcel = async () => {
+        try {
+            setExportLoading(true);
+            
+            // Prepare the filter parameters based on current filters
+            const exportParams = {
+                startDate: dateFilter.from || undefined,
+                endDate: dateFilter.to || undefined,
+                minCoins: coinRange.min > 0 ? coinRange.min : undefined,
+                maxCoins: coinRange.max < 1000000 ? coinRange.max : undefined,
+                gender: genderFilter !== "All" ? genderFilter : undefined
+            };
+            
+            // Call the export API
+            const response = await axios.post(
+                `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/exportUser`,
+                exportParams
+            );
+            
+            if (response.data.success) {
+                const userData = response.data.data;
+                
+                // Format data for Excel
+                const worksheetData = userData.map(user => ({
+                    'ID': user._id,
+                    'First Name': user.firstName,
+                    'Last Name': user.lastName || '',
+                    'Email': user.email || 'N/A',
+                    'Phone': user.phone || 'N/A',
+                    'Gender': user.gender || 'N/A',
+                    'Coins': user.coins || 0,
+                    'Date of Birth': user.dob ? new Date(user.dob).toLocaleDateString() : 'N/A',
+                    'Total Rides': user.rideCreated?.length || 0,
+                    'Referral Code': user.referralCode || 'N/A',
+                    'Account Status': user.isActive ? 'Active' : 'Inactive',
+                    'Created At': new Date(user.createdAt).toLocaleString(),
+                    'Last Updated': new Date(user.updatedAt).toLocaleString()
+                }));
+                
+                // Create worksheet
+                const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+                
+                // Add column widths for better readability
+                const wscols = [
+                    { wch: 24 }, // ID
+                    { wch: 15 }, // First Name
+                    { wch: 15 }, // Last Name
+                    { wch: 25 }, // Email
+                    { wch: 15 }, // Phone
+                    { wch: 10 }, // Gender
+                    { wch: 10 }, // Coins
+                    { wch: 15 }, // DOB
+                    { wch: 12 }, // Total Rides
+                    { wch: 15 }, // Referral Code
+                    { wch: 15 }, // Account Status
+                    { wch: 20 }, // Created At
+                    { wch: 20 }  // Updated At
+                ];
+                worksheet['!cols'] = wscols;
+                
+                // Create workbook and add the worksheet
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
+                
+                // Generate Excel file
+                const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                
+                // Create a download link and trigger download
+                const fileName = `Users_Export_${new Date().toISOString().split('T')[0]}.xlsx`;
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+            } else {
+                setError("Failed to export data");
+            }
+        } catch (err) {
+            console.error("Error exporting users:", err);
+            setError("Error exporting data");
+        } finally {
+            setExportLoading(false);
         }
     };
 
@@ -246,7 +339,7 @@ const AllUserTableNew = () => {
                         className="max-w-sm"
                     />
                     <Button onClick={handleSearch}>Search</Button>
-                    <div className="flex gap-x-4">
+                    <div className="flex gap-x-4 gap-y-2">
                         <Select value={genderFilter} onValueChange={setGenderFilter}>
                             <SelectTrigger className="w-44"><SelectValue placeholder="All Genders" /></SelectTrigger>
                             <SelectContent>
@@ -271,7 +364,25 @@ const AllUserTableNew = () => {
                         </div>
 
                         <Button onClick={handleApplyFilters}>Apply Filters</Button>
-                        <Button variant="outline" onClick={handleResetFilters}>Reset Filters</Button></div>
+                        <Button variant="outline" onClick={handleResetFilters}>Reset Filters</Button>
+                        
+                        {/* Export Excel Button */}
+                        <Button 
+                            variant="outline" 
+                            onClick={handleExportExcel} 
+                            className=" bg-green-50 hover:bg-green-100 text-green-600 border-green-200"
+                            disabled={exportLoading}
+                        >
+                            {exportLoading ? (
+                                <><Oval width={16} height={16} color="currentColor" className="mr-2" /> Exporting...</>
+                            ) : (
+                                <>
+                                    <Download className="w-4 h-4 mr-2" />
+                                    Export Excel
+                                </>
+                            )}
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Table */}
