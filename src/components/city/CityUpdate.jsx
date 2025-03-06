@@ -208,7 +208,7 @@ function CityUpdate({ cityId, onSuccess, onClose }) {
   const fetchCityData = async () => {
     try {
       setFetchLoading(true);
-      const response = await axios.get(`https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/city/${cityId}`);
+      const response = await axios.get(`https://vayu-backend-1.onrender.com/admin/city/${cityId}`);
       
       if (response.data) {
         setFormData({
@@ -329,7 +329,7 @@ function CityUpdate({ cityId, onSuccess, onClose }) {
     }
     
     try {
-      const response = await axios.put(`https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/city/${cityId}`, requestData);
+      const response = await axios.put(`https://vayu-backend-1.onrender.com/admin/city/${cityId}`, requestData);
       
       if (response.data) {
         setSuccess('City updated successfully!');

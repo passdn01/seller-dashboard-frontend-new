@@ -283,7 +283,7 @@ function CityCreate({ onSuccess }) {
       }
       
       try {
-        const response = await axios.post('https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/city', requestData);
+        const response = await axios.post('https://vayu-backend-1.onrender.com/admin/city', requestData);
         
         if (response.data) {
           setSuccess('City created successfully!');

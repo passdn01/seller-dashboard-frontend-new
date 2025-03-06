@@ -34,6 +34,7 @@ import BlogEditor from './components/blogs/Blog.jsx'
 import BlogView from './components/blogs/BlogView.jsx'
 import CityIndex from './components/city/CityIndex.jsx'
 import TSPMessagesTable from './components/tsp/TSPMessagesTable.jsx'
+import UserOfferIndex from './components/userOffers/UserOfferIndex.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -97,6 +98,7 @@ function App() {
           <Route path="/blogs/:id/edit" element={<ProtectedRoute element={<BlogEditor />} />} />
 
           <Route path='/users' element={<ProtectedRoute element={< AllUserPage />} />} />
+          <Route path='/allUsersOffers' element={<ProtectedRoute element={< UserOfferIndex />} />} />
           <Route path='/users/:id' element={<ProtectedRoute element={< UserInfoPage />} />} />
           <Route path='/admin' element={<ProtectedRoute element={< IAMUserPage />} />} />
 

@@ -123,8 +123,23 @@ function SideNavbar() {
         {
             id: "3",
             title: "Users",
-            link: '/users',
+            link: '',
+            submenu: true,
             icon: AgentIcon,
+            subMenuList: [
+                {
+                    id: '1',
+                    title: "Users",
+                    link: '/users',
+                    icon: '',
+                },
+                {
+                    id: '1',
+                    title: 'All User Offers',
+                    link: '/allUsersOffers',
+                    icon: '',
+                }
+            ]
         },
         {
             id: "4",
