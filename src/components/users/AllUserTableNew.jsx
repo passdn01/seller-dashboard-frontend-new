@@ -69,6 +69,12 @@ const AllUserTableNew = () => {
             header: "Referral Code",
         },
         {
+            accessorKey: "createdAt",
+            header: "Joining",
+            cell: ({ getValue }) => getValue() ? new Date(getValue()).toLocaleDateString() : 'N/A',
+
+        },
+        {
             accessorKey: "actions",
             header: "Actions",
             cell: ({ row }) => (
@@ -140,7 +146,7 @@ const AllUserTableNew = () => {
     const handleExportExcel = async () => {
         try {
             setExportLoading(true);
-            
+
             // Prepare the filter parameters based on current filters
             const exportParams = {
                 startDate: dateFilter.from || undefined,
@@ -149,16 +155,16 @@ const AllUserTableNew = () => {
                 maxCoins: coinRange.max < 1000000 ? coinRange.max : undefined,
                 gender: genderFilter !== "All" ? genderFilter : undefined
             };
-            
+
             // Call the export API
             const response = await axios.post(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/exportUser`,
                 exportParams
             );
-            
+
             if (response.data.success) {
                 const userData = response.data.data;
-                
+
                 // Format data for Excel
                 const worksheetData = userData.map(user => ({
                     'ID': user._id,
@@ -175,10 +181,10 @@ const AllUserTableNew = () => {
                     'Created At': new Date(user.createdAt).toLocaleString(),
                     'Last Updated': new Date(user.updatedAt).toLocaleString()
                 }));
-                
+
                 // Create worksheet
                 const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-                
+
                 // Add column widths for better readability
                 const wscols = [
                     { wch: 24 }, // ID
@@ -196,15 +202,15 @@ const AllUserTableNew = () => {
                     { wch: 20 }  // Updated At
                 ];
                 worksheet['!cols'] = wscols;
-                
+
                 // Create workbook and add the worksheet
                 const workbook = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(workbook, worksheet, 'Users');
-                
+
                 // Generate Excel file
                 const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
                 const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-                
+
                 // Create a download link and trigger download
                 const fileName = `Users_Export_${new Date().toISOString().split('T')[0]}.xlsx`;
                 const url = URL.createObjectURL(blob);
@@ -215,7 +221,7 @@ const AllUserTableNew = () => {
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
-                
+
             } else {
                 setError("Failed to export data");
             }
@@ -365,11 +371,11 @@ const AllUserTableNew = () => {
 
                         <Button onClick={handleApplyFilters}>Apply Filters</Button>
                         <Button variant="outline" onClick={handleResetFilters}>Reset Filters</Button>
-                        
+
                         {/* Export Excel Button */}
-                        <Button 
-                            variant="outline" 
-                            onClick={handleExportExcel} 
+                        <Button
+                            variant="outline"
+                            onClick={handleExportExcel}
                             className=" bg-green-50 hover:bg-green-100 text-green-600 border-green-200"
                             disabled={exportLoading}
                         >
