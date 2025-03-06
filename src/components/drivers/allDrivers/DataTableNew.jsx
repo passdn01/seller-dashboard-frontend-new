@@ -264,7 +264,7 @@ function DataTableNew() {
         {
             accessorKey: "verify",
             header: "Verify",
-            cell: ({ row }) => <div>{row.original?.isCompleteRegistration ? 'VERIFIED' : row.original?.licenseNumber ? row.original?.paymentTransactionId ? 'PENDING' : 'FEES PENDING' : 'NOT'}</div>,
+            cell: ({ row }) => <div>{row.original?.isCompleteRegistration ? 'VERIFIED' : row.original?.licenseNumber && row.original?.vehicleNumber && row.original?.name ? row.original?.paymentTransactionId ? 'PENDING' : 'FEES PENDING' : 'NOT'}</div>,
         },
         {
             accessorKey: "vehicleNumber",

@@ -37,6 +37,7 @@ import { Book, BookOpen, BookOpenText } from 'lucide-react';
 import { Link } from 'react-router-dom'
 import { User } from 'lucide-react';
 import blogs from '../assets/NavIcons/blogs.svg'
+import tsp from '../assets/NavIcons/tsp.svg'
 function SideNavbar() {
     const [hoveredItem, setHoveredItem] = useState(null);
     const [userRole, setUserRole] = React.useState(null);
@@ -193,6 +194,13 @@ function SideNavbar() {
             link: '/blogs',
             submenu: false,
             icon: blogs
+        },
+        {
+            id: "11",
+            title: "Tsp Messages",
+            link: '/tspMessages',
+            submenu: false,
+            icon: tsp
         }
     ];
 
