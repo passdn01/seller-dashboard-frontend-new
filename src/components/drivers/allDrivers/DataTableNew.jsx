@@ -584,21 +584,29 @@ function DataTableNew() {
         <div className='border-gray-200 border-2 rounded'>
             <div className="gap-4 p-4 mb-4">
                 <div className="flex gap-2 justify-between items-center">
-                    <div className='flex gap-2'>
-                        <Input
-                            placeholder="Search by name, phone..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-60"
-                        />
-                        <Button
-                            onClick={handleSearch}
-                            variant="default"
-                            className="flex items-center gap-1"
-                        >
-                            <Search className="h-4 w-4" />
-                            Search
-                        </Button></div>
+                    <div className='flex gap-x-6'>
+                        <div className='flex gap-2'>
+                            <Input
+                                placeholder="Search by name, phone..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-60"
+                            />
+                            <Button
+                                onClick={handleSearch}
+                                variant="default"
+                                className="flex items-center gap-1"
+                            >
+                                <Search className="h-4 w-4" />
+                                Search
+                            </Button></div>
+                        <div className='flex items-center gap-2'>
+                            <Label>Start Date</Label>
+                            <Input className='w-[132px] p-2' type="date" onChange={(e) => { setStartDate(e.target.value) }} value={startDate}></Input>
+
+                            <Label>End Date</Label>
+                            <Input className='w-[132px] p-2' type="date" onChange={(e) => { setEndDate(e.target.value) }} value={endDate}></Input>
+                        </div></div>
 
                     <div className='flex p-4 gap-x-2 justify-end pr-8'>
                         {/* Apply Filters Button */}
