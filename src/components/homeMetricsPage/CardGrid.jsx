@@ -561,7 +561,6 @@ function CardGrid() {
     const [activeTab, setActiveTab] = useState('today');
 
     return (
-    return (
         <>
             <div className="p-6">
                 {/* Tab Switcher */}
