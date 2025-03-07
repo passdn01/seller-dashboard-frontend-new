@@ -46,11 +46,11 @@ function CardGrid() {
 
     const d = [{
         group: 'Search/Completed Ride Ratio',
-        value: allTimeMetrics.completedRides / allTimeMetrics.searchRides || 0
+        value: (allTimeMetrics.completedRides / allTimeMetrics.searchRides) * 100 || 0
     }]
     const dToday = [{
         group: 'Search/Completed Ride Ratio',
-        value: todayMetrics.completedRides / todayMetrics.searchRides || 0
+        value: (todayMetrics.completedRides / todayMetrics.searchRides) * 100 || 0
     }]
 
     const op = {
@@ -560,6 +560,7 @@ function CardGrid() {
 
     const [activeTab, setActiveTab] = useState('today');
 
+    return (
     return (
         <>
             <div className="p-6">
