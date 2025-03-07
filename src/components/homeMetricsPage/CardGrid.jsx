@@ -46,11 +46,11 @@ function CardGrid() {
 
     const d = [{
         group: 'Search/Completed Ride Ratio',
-        value: allTimeMetrics.SearchRides / allTimeMetrics.completedRides || 0
+        value: allTimeMetrics.completedRides / allTimeMetrics.searchRides || 0
     }]
     const dToday = [{
         group: 'Search/Completed Ride Ratio',
-        value: todayMetrics.SearchRides / todayMetrics.completedRides || 0
+        value: todayMetrics.completedRides / todayMetrics.searchRides || 0
     }]
 
     const op = {
