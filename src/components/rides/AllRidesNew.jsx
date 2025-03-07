@@ -160,10 +160,15 @@ function AllRidesNew() {
             enableSorting: false,
         },
         {
+            accessorKey: "rideId",
+            header: "Ride Id",
+            cell: ({ row }) => <div>{row.original._id}</div>,
+        },
+        {
             accessorKey: "createdAt",
             header: ({ column }) => (
                 <div className="flex items-center gap-2">
-                    Created At
+                    Ride Date
                 </div>
             ),
             cell: ({ row }) => {
@@ -234,21 +239,21 @@ function AllRidesNew() {
                 )
             }
         },
-        {
-            accessorKey: "updatedAt",
-            header: ({ column }) => (
-                <div className="flex items-center gap-2">
-                    Updated
-                </div>
-            ),
-            cell: ({ row }) => {
-                const date = new Date(row.getValue("updatedAt")); // Convert to Date object
-                const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
-                const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
+        // {
+        //     accessorKey: "updatedAt",
+        //     header: ({ column }) => (
+        //         <div className="flex items-center gap-2">
+        //             Updated
+        //         </div>
+        //     ),
+        //     cell: ({ row }) => {
+        //         const date = new Date(row.getValue("updatedAt")); // Convert to Date object
+        //         const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
+        //         const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
 
-                return <div>{formattedDate}</div>; // Render the formatted date
-            },
-        },
+        //         return <div>{formattedDate}</div>; // Render the formatted date
+        //     },
+        // },
         {
             id: "actions",
             enableHiding: false,
