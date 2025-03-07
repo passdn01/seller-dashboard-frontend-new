@@ -168,7 +168,7 @@ function AllRidesNew() {
             accessorKey: "createdAt",
             header: ({ column }) => (
                 <div className="flex items-center gap-2">
-                    Created At
+                    Ride Date
                 </div>
             ),
             cell: ({ row }) => {
