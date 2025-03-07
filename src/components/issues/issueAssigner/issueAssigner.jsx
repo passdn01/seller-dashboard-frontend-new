@@ -9,7 +9,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Calendar, X } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
@@ -54,6 +54,10 @@ const IssueAssigner = () => {
     const [goToPage, setGoToPage] = useState("");
     const [applyButton, setApplyButton] = useState(false);
     const [selectedIssueId, setSelectedIssueId] = useState(null);
+    
+    // Date filter states using simple input type="date"
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
 
     const [ticketLoading, setTicketLoading] = useState(false);
     const [solverLoading, setSolverLoading] = useState(false);
@@ -68,8 +72,11 @@ const IssueAssigner = () => {
                 search: globalFilter || undefined,
                 page: page,
                 limit: 10,
-                sortby
+                sortby,
+                startDate: startDate || undefined,
+                endDate: endDate || undefined
             };
+            
             const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets`, { params });
             console.log(response.data, response)
             setTickets(response.data.tickets);
@@ -148,6 +155,26 @@ const IssueAssigner = () => {
         setSelectedIssueId(null);
     };
 
+    const handleReset = () => {
+        setStatusFilter("All");
+        setSortby("created at: desc");
+        setStartDate("");
+        setEndDate("");
+        setGlobalFilter("");
+        setPage(1);
+        fetchTickets();
+    }
+
+    // Helper function to format a date for display
+    const formatDateForDisplay = (dateString) => {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    };
 
     // Define columns for the table
     const columns = [
@@ -294,13 +321,6 @@ const IssueAssigner = () => {
         getPaginationRowModel: getPaginationRowModel(),
     });
 
-    const handleReset = () => {
-        setStatusFilter("All")
-        setSortby("created at: desc")
-        fetchTickets();
-    }
-
-
     if (loading) {
         return <div className="flex items-center justify-center min-h-screen">
             <Oval
@@ -321,7 +341,7 @@ const IssueAssigner = () => {
     }
 
     const statusOptions = ["All", "In Progress", "Pending", "Completed", "Active"];
-    const sortByOptions = ["created at: desc", "created at: asc", "updatedAt: desc", "updatedAt: asc"]
+    const sortByOptions = ["created at: desc", "created at: asc", "updatedAt: desc", "updatedAt: asc"];
 
     // Helper function to render rows with issue details
     const renderRowsWithDetails = () => {
@@ -371,10 +391,23 @@ const IssueAssigner = () => {
 
     return (
         <div className='p-6 text-sm'>
-            <div className="flex gap-x-8 px-4 pb-4 items-center ">
+                {/* Search Filter */}
+            <div className="flex px-4 pb-6">
+                <Input
+                    placeholder="Search tickets..."
+                    value={globalFilter}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
+                    className="w-[350px]"
+                />
+            </div>
+
+            <div className="flex flex-wrap gap-4 px-4 pb-6 items-end">
+
+                {/* Status Filter */}
                 <div>
-                    <Label>Status</Label><Select onValueChange={setStatusFilter} value={statusFilter}>
-                        <SelectTrigger className="w-[180px] mr-2">
+                    <Label>Status</Label>
+                    <Select onValueChange={setStatusFilter} value={statusFilter}>
+                        <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="Filter by status" />
                         </SelectTrigger>
                         <SelectContent>
@@ -386,9 +419,12 @@ const IssueAssigner = () => {
                         </SelectContent>
                     </Select>
                 </div>
+                
+                {/* Sort By Filter */}
                 <div>
-                    <Label>Sort by</Label><Select onValueChange={setSortby} value={sortby}>
-                        <SelectTrigger className="w-[180px] mr-2">
+                    <Label>Sort by</Label>
+                    <Select onValueChange={setSortby} value={sortby}>
+                        <SelectTrigger className="w-[180px]">
                             <SelectValue placeholder="created at: desc" />
                         </SelectTrigger>
                         <SelectContent>
@@ -400,12 +436,72 @@ const IssueAssigner = () => {
                         </SelectContent>
                     </Select>
                 </div>
+                
+                {/* Simple Date Filters */}
+                <div>
+                    <Label>Start Date</Label>
+                    <div className="relative">
+                        <Input 
+                            type="date" 
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            className="w-[180px] pl-9"
+                        />
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                        {startDate && (
+                            <button 
+                                onClick={() => setStartDate("")}
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        )}
+                    </div>
+                </div>
+                
+                <div>
+                    <Label>End Date</Label>
+                    <div className="relative">
+                        <Input 
+                            type="date" 
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            className="w-[180px] pl-9"
+                            min={startDate}
+                        />
+                        <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
+                        {endDate && (
+                            <button 
+                                onClick={() => setEndDate("")}
+                                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        )}
+                    </div>
+                </div>
 
-                <div className='mt-4 flex gap-x-4'>
-                    <Button onClick={() => setApplyButton(!applyButton)} disabled={loading ? true : false}>Apply filters</Button>
-                    <Button onClick={() => handleReset()} disabled={loading ? true : false}>Reset filters</Button>
+                {/* Action Buttons */}
+                <div className='flex gap-x-4'>
+                    <Button onClick={() => setApplyButton(!applyButton)} disabled={loading}>Apply filters</Button>
+                    <Button onClick={handleReset} variant="outline" disabled={loading}>Reset filters</Button>
                 </div>
             </div>
+            
+            {/* Date filter info */}
+            {(startDate || endDate) && (
+                <div className="mb-4 ml-4">
+                    <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded flex items-center text-sm">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        <span>
+                            Showing tickets from 
+                            {startDate ? ` ${formatDateForDisplay(startDate)}` : " all time"} 
+                            {endDate ? ` to ${formatDateForDisplay(endDate)}` : ""}
+                        </span>
+                    </div>
+                </div>
+            )}
+            
             <div className='border-gray-200 border-2 rounded'>
                 <Table>
                     <TableHeader>
