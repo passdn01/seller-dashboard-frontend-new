@@ -35,6 +35,7 @@ import CityCreate from './CityCreate';
 import CityToggle from './CityToggle';
 // import CityUpdate from './CityUpdate';
 import BoundariesDisplayMap from './BoundariesDisplayMap';
+import CityUpdate from './CityUpdate';
 
 function CityTable() {
   const [cities, setCities] = useState([]);
@@ -151,18 +152,18 @@ function CityTable() {
       header: 'Actions',
       cell: ({ row }) => (
         <div className="flex space-x-2" onClick={(e) => e.stopPropagation()}>
-          {/* <Dialog>
+          <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline" size="sm">Edit</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
-              <CityUpdate 
+              <CityUpdate
                 cityId={row.original._id}
                 onSuccess={fetchCities}
                 onClose={() => {}} 
               />
             </DialogContent>
-          </Dialog> */}
+          </Dialog>
           <Button 
             variant={row.original.isActive ? "destructive" : "outline"} 
             size="sm"

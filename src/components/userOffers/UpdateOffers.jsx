@@ -531,7 +531,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
               <TabsContent value="details" className="mt-0">
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {(offerType === 'EVERY_RIDE_CASHBACK_RIDE' || offerType === 'CASHBACK_OFFER') && (
+                  {(offerType === 'EVERY_RIDE_CASHBACK_RIDE') && (
                     <FormField
                       control={form.control}
                       name="minCoin"
@@ -579,7 +579,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                     )}
                   />
 
-                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION') && (
+                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION' || offerType === 'X_RIDE_AFTER_ONE_RIDE_FREE' ) && (
                     <FormField
                       control={form.control}
                       name="percentage"
