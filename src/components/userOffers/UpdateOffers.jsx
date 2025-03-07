@@ -579,7 +579,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                     )}
                   />
 
-                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION') && (
+                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION' || offerType === 'X_RIDE_AFTER_ONE_RIDE_FREE' ) && (
                     <FormField
                       control={form.control}
                       name="percentage"
