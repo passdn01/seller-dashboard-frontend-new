@@ -11,6 +11,7 @@ import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 
 const UserCashStatement = ({ userId, coinsAvailable }) => {
+    const [availCoins, setAvailCoins] = useState(coinsAvailable || 0)
     const [coinTransactions, setCoinTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -56,6 +57,8 @@ const UserCashStatement = ({ userId, coinsAvailable }) => {
                 setDialogOpen(false);
                 setCoins(0);
                 setTitle('');
+                setAvailCoins((prev) => coinAction === 'cut' ? Number(prev) - Number(coins) : (Number(prev) + Number(coins)));
+
                 window.alert("Changes made successfully successfully")
                 fetchCoinStatement();
             } else {
@@ -85,7 +88,7 @@ const UserCashStatement = ({ userId, coinsAvailable }) => {
     return (
         <div className="w-full p-4">
             <div className="text-xl font-semibold mb-4">User Coin Transaction Statement</div>
-            <h2 className='p-2'>Available Coins: {coinsAvailable}</h2>
+            <h2 className='p-2'>Available Coins: {availCoins}</h2>
             <div className="flex gap-x-4 w-full">
                 {/* Coins In Section */}
                 <Card className='w-full'>
