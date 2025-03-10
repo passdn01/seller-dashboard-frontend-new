@@ -11,6 +11,7 @@ const UserEditCard = ({ userData }) => {
     const userId = userData._id;
     const [formData, setFormData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [redeemedCoins, setRedeemedCoins] = useState(0)
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -41,6 +42,7 @@ const UserEditCard = ({ userData }) => {
                         profilePic: data?.data.profilePic || '',
                         isActive: data?.data.isActive || false
                     });
+                    setRedeemedCoins(data?.payoutCoins)
                 }
                 else {
                     window.alert(data.message)
@@ -143,11 +145,20 @@ const UserEditCard = ({ userData }) => {
 
                             {/* <Label htmlFor="upi">UPI ID</Label>
                             <Input id="upi" value={formData.upi} onChange={handleInputChange} placeholder="Enter UPI ID" /> */}
+                            <div>
+                                <Label>Available Coins</Label>
+                                <div className="flex items-center gap-2">
+                                    <div className="text-xl font-semibold">{formData.coins}</div>
+                                    <div className="text-sm text-gray-500">(₹{calculateWithdrawAmount(formData.coins)} withdrawable)</div>
+                                </div>
+                            </div>
 
-                            <Label>Available Coins</Label>
-                            <div className="flex items-center gap-2">
-                                <div className="text-xl font-semibold">{formData.coins}</div>
-                                <div className="text-sm text-gray-500">(₹{calculateWithdrawAmount(formData.coins)} withdrawable)</div>
+                            <div>
+                                <Label>Redeemed Coins</Label>
+                                <div className="flex items-center gap-2">
+                                    <div className="text-xl font-semibold">{redeemedCoins * 10}</div>
+                                    <div className="text-sm text-gray-500">(₹{redeemedCoins} withdrawed)</div>
+                                </div>
                             </div>
                         </div>
                     </div>
