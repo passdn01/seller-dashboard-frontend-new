@@ -81,7 +81,7 @@ const UserCashStatement = ({ userId }) => {
 
     return (
         <div className="w-full p-4">
-            <div className="text-xl font-semibold mb-4">Coin Transaction Statement</div>
+            <div className="text-xl font-semibold mb-4">User Coin Transaction Statement</div>
 
             <div className="flex gap-x-4 w-full">
                 {/* Coins In Section */}

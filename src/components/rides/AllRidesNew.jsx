@@ -41,6 +41,7 @@ import RideDetail from './RideDetail';
 import * as XLSX from 'xlsx';
 import { Label } from '../ui/label';
 import { useSearchParams } from 'react-router-dom';
+import UserCashStatement from '../users/UserCashStatement';
 
 function AllRidesNew() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -404,6 +405,8 @@ function AllRidesNew() {
         fetchRides();
     };
 
+    console.log("TABLE DATAAAA", tableData)
+
     return (
         <div className='p-6 text-sm'>
             {/* filters */}
@@ -514,6 +517,9 @@ function AllRidesNew() {
                                         <TableCell colSpan={columns.length} className="p-0">
                                             <div className="p-4 bg-gray-50">
                                                 <RideDetail dataFromTable={row.original}></RideDetail>
+                                                <div className='mx-10 p-4 border-2 text-sm '>
+                                                    <UserCashStatement userId={row.original.userId}></UserCashStatement>
+                                                </div>
 
                                             </div>
 
