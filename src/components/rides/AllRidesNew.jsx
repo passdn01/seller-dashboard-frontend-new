@@ -518,7 +518,7 @@ function AllRidesNew() {
                                             <div className="p-4 bg-gray-50">
                                                 <RideDetail dataFromTable={row.original}></RideDetail>
                                                 <div className='mx-10 p-4 border-2 text-sm '>
-                                                    <UserCashStatement userId={row.original.userId}></UserCashStatement>
+                                                    <UserCashStatement userId={row.original.userId} coinsAvailable={row.original?.userDetails?.coins}></UserCashStatement>
                                                 </div>
 
                                             </div>

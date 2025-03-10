@@ -58,6 +58,8 @@ function UserInfoPage() {
         }
     };
 
+    console.log("user data", data)
+
 
 
     if (loading) {
@@ -140,7 +142,7 @@ function UserInfoPage() {
                         <h1>Last 10 Rides</h1>
                         <UserLastRides userId={id} data={data}></UserLastRides>
                     </div>
-                    <UserCashStatement userId={id}></UserCashStatement>
+                    <UserCashStatement userId={id} coinsAvailable={data?.coins}></UserCashStatement>
                 </div>
             </div>
         </div>

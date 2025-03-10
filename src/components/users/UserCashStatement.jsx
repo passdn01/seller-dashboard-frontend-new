@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { SELLER_URL_LOCAL } from '@/lib/utils';
 
 
-const UserCashStatement = ({ userId }) => {
+const UserCashStatement = ({ userId, coinsAvailable }) => {
     const [coinTransactions, setCoinTransactions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -33,13 +33,14 @@ const UserCashStatement = ({ userId }) => {
     useEffect(() => {
         fetchCoinStatement();
     }, [userId]);
-
+    const [confirmLoading, setConfirmLoading] = useState(false)
     const handleConfirm = async () => {
         if (!coins) return;
         const amount = coins / 10;
         const isDebit = coinAction === 'cut';
 
         try {
+            setConfirmLoading(true)
             const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/modifyCoinBalance`, {
                 userId,
                 title,
@@ -62,6 +63,8 @@ const UserCashStatement = ({ userId }) => {
             }
         } catch (error) {
             console.error("Error modifying coin balance:", error);
+        } finally {
+            setConfirmLoading(false)
         }
     };
 
@@ -82,7 +85,7 @@ const UserCashStatement = ({ userId }) => {
     return (
         <div className="w-full p-4">
             <div className="text-xl font-semibold mb-4">User Coin Transaction Statement</div>
-
+            <h2 className='p-2'>Available Coins: {coinsAvailable}</h2>
             <div className="flex gap-x-4 w-full">
                 {/* Coins In Section */}
                 <Card className='w-full'>
@@ -96,7 +99,7 @@ const UserCashStatement = ({ userId }) => {
                                         Add Coins
                                     </Button>
                                 </DialogTrigger>
-                                <DialogContent className="w-96 h-96">
+                                <DialogContent className="w-96 h-96 z-50">
                                     <DialogHeader>
                                         <DialogTitle>{coinAction === 'add' ? "Add Coins" : "Cut Coins"}</DialogTitle>
                                     </DialogHeader>
@@ -114,7 +117,7 @@ const UserCashStatement = ({ userId }) => {
 
                                     <DialogFooter>
                                         <Button onClick={handleConfirm}>
-                                            {coinAction === 'add' ? "Add" : "Cut"}
+                                            afadsfa{confirmLoading ? "Modifying..." : coinAction === 'add' ? "Addasdfadsf" : "Cutsad"}
                                         </Button>
                                     </DialogFooter>
                                 </DialogContent>
@@ -178,8 +181,8 @@ const UserCashStatement = ({ userId }) => {
                                     </div>
 
                                     <DialogFooter>
-                                        <Button onClick={handleConfirm}>
-                                            {coinAction === 'add' ? "Add" : "Cut"}
+                                        <Button onClick={handleConfirm} disabled={confirmLoading ? true : false}>
+                                            {confirmLoading ? "Modifying..." : coinAction === 'add' ? "Add" : "Cut"}
                                         </Button>
                                     </DialogFooter>
                                 </DialogContent>

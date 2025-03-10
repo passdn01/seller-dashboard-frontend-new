@@ -63,8 +63,8 @@ function RideDetail({ dataFromTable = {} }) {
         <div className="p-4 max-w-5xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Left side - Map */}
-                <div className="bg-gray-100 rounded-lg h-[400px]">
-                    <MapContainer center={startCoords} zoom={13} className="h-full w-full rounded-lg">
+                <div className="bg-gray-100 rounded-lg h-[400px] z-20">
+                    <MapContainer center={startCoords} zoom={13} className="h-full w-full rounded-lg ">
                         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                         {startLocation && (
                             <Marker position={startCoords}>
