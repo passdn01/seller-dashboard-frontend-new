@@ -84,6 +84,8 @@ function AllRidesNew() {
         fetchRides(); // Fetch data with current filters
     };
 
+    const options = { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric' };
+
     const handleExportExcel = async () => {
         try {
             setExportLoading(true);
@@ -173,10 +175,23 @@ function AllRidesNew() {
             ),
             cell: ({ row }) => {
                 const date = new Date(row.getValue("createdAt")); // Convert to Date object
-                const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
                 const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
-
                 return <div>{formattedDate}</div>; // Render the formatted date
+            },
+        },
+        {
+            header: "Time Created",
+            cell: ({ row }) => {
+                const date = new Date(row.getValue("createdAt"));
+                const options = {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true
+                };
+
+                const formattedTime = date.toLocaleTimeString('en-US', options);
+
+                return <div>{formattedTime}</div>;
             },
         },
         {
