@@ -71,7 +71,8 @@ const AllUserTableNew = () => {
         {
             accessorKey: "createdAt",
             header: "Joining",
-            cell: ({ getValue }) => getValue() ? new Date(getValue()).toLocaleDateString() : 'N/A',
+            cell: ({ getValue }) => getValue() ? new Date(getValue()).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })
+                : 'N/A',
 
         },
         {

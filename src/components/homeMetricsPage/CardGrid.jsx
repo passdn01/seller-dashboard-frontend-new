@@ -347,7 +347,7 @@ export default function CardGrid() {
             icon: driverearning,
             number: `₹${formatNumber(allTimeMetrics.driversEarnings || 0)}`,
             title: "Driver's Earnings",
-            increase: formatNumber(todayMetrics.driversEarnings),
+            increase: todayMetrics.driversEarnings,
             hover: true,
             hoverData: {
                 title: "Driver's Earnings",
@@ -361,7 +361,7 @@ export default function CardGrid() {
             icon: savecommission,
             number: `₹${formatNumber(calculateCommission(allTimeMetrics.driversEarnings) || 0)}`,
             title: "Save Commission",
-            increase: formatNumber(calculateCommission(todayMetrics.driversEarnings)),
+            increase: calculateCommission(todayMetrics.driversEarnings),
             hover: true,
             hoverData: {
                 title: "Saved Commissions",
@@ -459,7 +459,7 @@ export default function CardGrid() {
             icon: userredeem,
             number: `₹${formatNumber(allTimeMetrics.userRedeemMoney || 0)}`,
             title: "User Redeem Money",
-            increase: formatNumber(todayMetrics.userRedeemMoney),
+            increase: todayMetrics.userRedeemMoney,
             hover: true,
             hoverData: {
                 title: "User Redeemed Money",
