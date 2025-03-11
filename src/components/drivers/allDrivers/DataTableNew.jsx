@@ -519,11 +519,13 @@ function DataTableNew() {
 
     //for syncing 
     const handleUpdateDriver = (updatedDriver) => {
-        setData((prevData) =>
-            prevData.map((driver) =>
-                driver._id === updatedDriver._id ? updatedDriver : driver
+        if (updatedDriver && updatedDriver?._id) {
+            setData((prevData) =>
+                prevData.map((driver) =>
+                    driver._id === updatedDriver._id ? updatedDriver : driver
+                )
             )
-        );
+        }
         // fetchDrivers();
     };
 

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronUp, MapPin, Calendar, Phone, User, TruckIcon, FileText, DollarSign, Navigation } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 // import MessagesCard from "./MessagesCard";
 
 const IssueDetailExpandable = ({ issueId, onClose }) => {
@@ -74,6 +75,7 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
       setError("Failed to mark the ticket as pending");
     }
   };
+  const navigate = useNavigate()
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -111,13 +113,21 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
 
   if (!issue) return null;
 
+
+
+
   const user = issue?.userId || {};
+  console.log(user, "issue.userId")
+
+  const handleUserNameClick = async () => (window.open(`/users/${user?._id}`, "_blank"));
   const displayName = user?.firstName ? `${user.firstName} ${user.lastName}` : "Unknown User";
   const formattedDate = issue.createdAt ? new Date(issue.createdAt).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
   }) : "N/A";
+
+
 
   return (
     <tr className="border-t border-b border-gray-200">
@@ -147,12 +157,12 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
                 className="border-yellow-500 text-yellow-600 hover:bg-yellow-50"
                 disabled={issue.status === "Pending"}
               >
-                {issue.status === "Pending" ? "Pending" : "Mark Pending"} 
+                {issue.status === "Pending" ? "Pending" : "Mark Pending"}
               </Button>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={onClose} 
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onClose}
                 className="text-gray-500 hover:text-gray-800"
               >
                 <ChevronUp className="h-5 w-5" />
@@ -206,7 +216,7 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
                 <CardContent className="space-y-3 text-sm pt-3">
                   <div>
                     <p className="text-gray-500 text-xs">NAME</p>
-                    <p className="font-medium">{displayName}</p>
+                    <p className="font-medium cursor-pointer underline" onClick={handleUserNameClick}>{displayName}</p>
                   </div>
                   <div>
                     <p className="text-gray-500 text-xs">PHONE</p>

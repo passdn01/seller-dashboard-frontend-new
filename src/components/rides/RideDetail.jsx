@@ -48,6 +48,8 @@ function RideDetail({ dataFromTable = {} }) {
         }
     };
 
+
+
     // Handle missing data gracefully
     if (!dataFromTable || Object.keys(dataFromTable).length === 0) {
         return <div className="p-4 text-center">No ride data available</div>;
@@ -58,6 +60,8 @@ function RideDetail({ dataFromTable = {} }) {
     const startCoords = startLocation?.gps?.split(",").map(Number) || [20.5937, 78.9629]; // Default to India coords
     const endCoords = endLocation?.gps?.split(",").map(Number) || [20.5937, 78.9629];
     const userInfo = dataFromTable.userDetails || {};
+
+    const handleUserNameClick = async () => (window.open(`/users/${userInfo?._id}`, "_blank"));
 
     return (
         <div className="p-4 max-w-5xl mx-auto">
@@ -159,7 +163,7 @@ function RideDetail({ dataFromTable = {} }) {
                         {/* User Details */}
                         <div>
                             <p className="text-sm font-semibold">User Name</p>
-                            <p>{userInfo?.firstName && userInfo?.lastName ? `${userInfo.firstName} ${userInfo.lastName}` : "N/A"}</p>
+                            <p onClick={handleUserNameClick}>{userInfo?.firstName && userInfo?.lastName ? `${userInfo.firstName} ${userInfo.lastName}` : "N/A"}</p>
                             <p className="text-sm font-semibold mt-2">Number:</p>
                             <p>{userInfo?.phone || "N/A"}</p>
                         </div>
