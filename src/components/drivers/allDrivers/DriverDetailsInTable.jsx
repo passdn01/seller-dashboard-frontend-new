@@ -44,8 +44,10 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
         balance: "",
         status: "",
         rejectReason: "NA",
+        rejectDate: "",
         aadharNumber: "",
         isCompleteRegistration: false,
+        missingDocuments: [],
     };
 
     const initialImageState = {
@@ -95,8 +97,10 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                     balance: driver.balance || "",
                     status: driver.status || "",
                     rejectReason: driver.rejectReason || "NA",
+                    rejectDate: driver?.rejectDate || "",
                     isCompleteRegistration: driver.isCompleteRegistration || false,
-                    aadharNumber: driver.aadharNumber
+                    aadharNumber: driver.aadharNumber,
+                    missingDocuments: driver.missingDocuments || []
                 });
 
                 setImageUrls({
@@ -129,18 +133,21 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
     };
 
     const handleSave = async () => {
+
         try {
             setSaveLoading(true)
+            const dataToSend = { ...formData, imageUrls, id: driverId };
+            console.log(dataToSend, "datatosend")
+            if (!dataToSend.rejectDate) {
+                delete dataToSend.rejectDate;
+            }
+
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverTableEdit`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    ...formData,
-                    imageUrls,
-                    id: driverId
-                }),
+                body: JSON.stringify(dataToSend),
             });
 
             if (response.ok) {
@@ -315,11 +322,35 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                                 { label: "License for bike", value: "license for Bike" },
                                 { label: "RC of bike", value: "rc of bike" },
                                 { label: "RC Number different", value: "rc number different" },
-                                { label: "License name is different", value: "license name is different than submitted" },
+                                { label: "License name is different", value: "license name is different" },
                                 { label: "Not Applicable", value: "NA" },
                             ]}
                             onChange={(val) => handleChange("rejectReason", val)}
                         />
+
+                        <LabelField
+                            label="Reject Date"
+                            type="date"
+                            value={formData.rejectDate}
+                            onChange={(val) => handleChange("rejectDate", val)}
+                        />
+
+                        <MultiSelectField
+                            label="Missing Documents if rejected"
+                            selectedValues={formData.missingDocuments.map(doc => doc.documentType)}
+                            options={[
+                                { label: "Driving License", value: "DRIVING_LICENSE" },
+                                { label: "Registration Certificate", value: "REGISTRATION_CERTIFICATE" },
+                                { label: "Aadhar Card", value: "AADHAR_CARD" },
+                                { label: "Profile", value: "PROFILE" }
+                            ]}
+                            onChange={(values) => handleChange("missingDocuments", values.map(val => ({
+                                documentType: val,
+                                requiredDate: new Date().toISOString(),
+                                isUploaded: false
+                            })))}
+                        />
+
 
                         <CheckboxField
                             label="Complete Registration"
@@ -397,6 +428,39 @@ const CheckboxField = ({ label, checked, onChange }) => (
         <Label>{label}</Label>
     </div>
 );
+
+const MultiSelectField = ({ label, selectedValues, options, onChange }) => {
+    const handleCheckboxChange = (value) => {
+        onChange(selectedValues.includes(value)
+            ? selectedValues.filter(item => item !== value)
+            : [...selectedValues, value]);
+    };
+
+    return (
+        <div>
+            <Label>{label}</Label>
+            <Select>
+                <SelectTrigger className="mt-1">
+                    <SelectValue placeholder={`Select ${label}`} />
+                </SelectTrigger>
+                <SelectContent>
+                    {options.map((opt) => (
+                        <div key={opt.value} className="flex items-center space-x-2 p-2">
+                            <input
+                                type="checkbox"
+                                checked={selectedValues.includes(opt.value)}
+                                onChange={() => handleCheckboxChange(opt.value)}
+                                className="h-4 w-4"
+                            />
+                            <Label>{opt.label}</Label>
+                        </div>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
+    );
+};
+
 
 
 export default DriverDetails;
