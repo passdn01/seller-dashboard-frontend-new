@@ -201,7 +201,14 @@ function SideNavbar() {
             link: '/tspMessages',
             submenu: false,
             icon: tsp
-        }
+        },
+        {
+            id: "13",
+            title: "Notification",
+            link: "/notification",
+            submenu: false,
+            icon: OfferIcon,
+        },
     ];
 
     console.log(menuList)
