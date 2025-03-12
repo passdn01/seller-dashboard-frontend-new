@@ -3,6 +3,9 @@ import '@carbon/charts-react/styles.css';
 // import { AlluvialChart } from '@carbon/charts-react';
 import { Calendar, Search } from 'lucide-react';
 import SankeyChart from './SankeyChart';
+import moment from 'moment-timezone';
+
+const IST_TIMEZONE = "Asia/Kolkata";
 
 const RideJourney = () => {
   const [flowData, setFlowData] = useState([]);
@@ -10,8 +13,8 @@ const RideJourney = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [dateRange, setDateRange] = useState({
-    start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    end: new Date().toISOString().split('T')[0]
+    start: moment().tz(IST_TIMEZONE).subtract(30, 'days').format('YYYY-MM-DD'),
+    end: moment().tz(IST_TIMEZONE).format('YYYY-MM-DD')
   });
 
   const fetchRideData = async () => {
@@ -45,11 +48,11 @@ const RideJourney = () => {
   };
 
   const handlePresetClick = async (preset) => {
-    const end = new Date().toISOString().split('T')[0];
+    const end = moment().tz(IST_TIMEZONE).format('YYYY-MM-DD');
     let start;
 
     if (preset === 'last30') {
-      start = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+      start = moment().tz(IST_TIMEZONE).subtract(30, 'days').format('YYYY-MM-DD');
     } else if (preset === 'today') {
       start = end;
     }
