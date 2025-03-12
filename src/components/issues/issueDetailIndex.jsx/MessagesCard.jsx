@@ -39,7 +39,7 @@ const MessagesCard = ({ issue, issueId }) => {
     };
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/adminTicketChat`, {
+      const response = await fetch(`https://airshare.co.in/adminTicketChat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -119,7 +119,23 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
   const user = issue?.userId || {};
   console.log(user, "issue.userId")
 
-  const handleUserNameClick = async () => (window.open(`/users/${user?._id}`, "_blank"));
+  const handleUserNameClick = async () => {
+    if (user?._id) {
+      window.open(`/users/${user?._id}`, "_blank")
+    }
+  };
+
+  const handleRideClick = async () => {
+    if (ride?.transaction_id) {
+      window.open(`/rides/allRides/${ride?.transaction_id}`, "_blank")
+    }
+  };
+
+  const handleDriverClick = async () => {
+    if (ride?.driverId) {
+      window.open(`/drivers/allDrivers/${ride?.driverId}`, "_blank")
+    }
+  }
   const displayName = user?.firstName ? `${user.firstName} ${user.lastName}` : "Unknown User";
   const formattedDate = issue.createdAt ? new Date(issue.createdAt).toLocaleDateString('en-US', {
     day: 'numeric',
@@ -127,7 +143,7 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
     year: 'numeric'
   }) : "N/A";
 
-
+  console.log(ride, "ride")
 
   return (
     <tr className="border-t border-b border-gray-200">
@@ -210,13 +226,13 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
                 <CardHeader className="pb-2 bg-gray-50 border-b">
                   <CardTitle className="text-base font-medium flex items-center">
                     <User className="h-4 w-4 mr-2 text-blue-500" />
-                    User Information
+                    <p className={`font-medium ${user?._id ? "cursor-pointer underline" : ""}`} onClick={handleUserNameClick}>User Information</p>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3 text-sm pt-3">
                   <div>
                     <p className="text-gray-500 text-xs">NAME</p>
-                    <p className="font-medium cursor-pointer underline" onClick={handleUserNameClick}>{displayName}</p>
+                    <p className='font-medium'>{displayName}</p>
                   </div>
                   <div>
                     <p className="text-gray-500 text-xs">PHONE</p>
@@ -232,6 +248,7 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
                     </div>
                   )}
                 </CardContent>
+                {ride?.driverId && <span className=" cursor-pointer p-2 bg-blue-200 rounded m-4 mt-16" onClick={handleDriverClick}>View Driver Info Page</span>}
               </Card>
 
               {/* Ride Information */}
@@ -241,7 +258,7 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
                     <div className="flex justify-between items-center">
                       <CardTitle className="text-base font-medium flex items-center">
                         <TruckIcon className="h-4 w-4 mr-2 text-blue-500" />
-                        Ride Information
+                        <p className={`font-medium ${ride?.transaction_id ? "cursor-pointer underline" : ""}`} onClick={handleRideClick}>Ride Information</p>
                       </CardTitle>
                       <Badge className={getStatusColor(ride.status)}>
                         {ride.status || "Unknown"}

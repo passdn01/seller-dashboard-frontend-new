@@ -83,7 +83,7 @@ function App() {
           <Route path='/drivers/allVerified/:id' element={<ProtectedRoute element={<Driver />} />} />
 
           <Route path='/rides/allRides' element={<ProtectedRoute element={<AllRides />} />} />
-          <Route path='/rides/allRides/:id' element={<ProtectedRoute element={<RideInfo />} />} />
+          <Route path='/rides/allRides/:transaction_id' element={<ProtectedRoute element={<RideInfo />} />} />
 
           <Route path='/agents/allAgents' element={<ProtectedRoute element={<AllAgents />} />} />
           <Route path='/agents/allAgents/:id' element={<ProtectedRoute element={<Agent />} />} />

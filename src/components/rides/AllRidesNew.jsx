@@ -288,7 +288,7 @@ function AllRidesNew() {
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => window.open(`/rides/allRides/${ride._id}`, "_blank", "noopener,noreferrer")}>
+                            <DropdownMenuItem onClick={() => window.open(`/rides/allRides/${ride.transaction_id}`, "_blank", "noopener,noreferrer")}>
                                 View Ride Details
                             </DropdownMenuItem>
                         </DropdownMenuContent>

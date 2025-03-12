@@ -78,7 +78,7 @@ const UserCashStatement = ({ userId, coinsAvailable }) => {
         .toFixed(2);
 
     const totalCashOut = coinTransactions
-        .filter(tx => tx.isDebit)
+        .filter(tx => tx.isDebit && tx?.status === "SUCCESS" || tx?.status === "PENDING")
         .reduce((sum, tx) => sum + (parseFloat(tx.amount) || 0), 0)
         .toFixed(2);
 
@@ -191,22 +191,24 @@ const UserCashStatement = ({ userId, coinsAvailable }) => {
                                 </DialogContent>
                             </Dialog>
                         </div>
-                        <div className=' justify-between border-b-2 grid-cols-3 grid gap-x-32'>
+                        <div className=' justify-between border-b-2 grid-cols-4 grid gap-x-24'>
                             <span>Date</span>
                             <span>Title</span>
                             <span>Amount</span>
+                            <span>Status</span>
                         </div>
                         {/* Transactions List */}
                         <ScrollArea className="h-64">
                             {coinTransactions.filter(tx => tx.isDebit).length > 0 ? (
                                 coinTransactions.filter(tx => tx.isDebit).map((tx) => (
-                                    <div key={tx._id} className="grid grid-cols-3 justify-between items-center py-2 border-b gap-x-32">
+                                    <div key={tx._id} className="grid grid-cols-4 justify-between items-center py-2 border-b gap-x-20 ">
                                         <span className="text-sm text-gray-600 flex-col flex">
                                             <span>{format(new Date(tx.createdAt), "MMM d, yyyy")}</span>
                                             <span className='text-sm muted'>{format(new Date(tx.createdAt), "HH:mm")}</span>
                                         </span>
                                         <span>{tx.title || "Transaction"}</span>
                                         <div className="font-medium text-red-600">-{tx.amount}</div>
+                                        <div className="text-xs">{tx.status}</div>
                                     </div>
                                 ))
                             ) : (

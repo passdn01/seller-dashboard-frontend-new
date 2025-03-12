@@ -16,7 +16,8 @@ import backArrow from '../../assets/backArrow.svg'
 import RideInfoCard from './RideInfoCard'
 
 function RideInfo() {
-    const { id } = useParams();
+    const { transaction_id } = useParams();
+    console.log("transactrion id", transaction_id)
     const [data, setData] = useState({})
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
@@ -28,7 +29,7 @@ function RideInfo() {
             try {
                 // Use a safer way to access environment variables
                 const baseUrl = import.meta.env.VITE_SELLER_URL_LOCAL || '';
-                const response = await axios.post(`${baseUrl}/dashboard/api/seller/getRide`, { id: id })
+                const response = await axios.post(`${baseUrl}/dashboard/api/seller/getRide`, { transaction_id: transaction_id })
 
                 if (response?.data?.success) {
                     setData(response.data.data)
@@ -44,10 +45,10 @@ function RideInfo() {
             }
         }
 
-        if (id) {
+        if (transaction_id) {
             fetchRideInfo()
         }
-    }, [id])
+    }, [transaction_id])
 
     return (
         <div className='flex'>

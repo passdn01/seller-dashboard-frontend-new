@@ -9,6 +9,7 @@ import { SELLER_URL_LOCAL } from "@/lib/utils";
 
 function RideDetail({ dataFromTable = {} }) {
     // Add a default empty object to prevent destructuring errors
+    console.log("data from table ", dataFromTable)
     const driverDetails = dataFromTable?.driverDetails || [];
     const driver = driverDetails.length > 0 ? driverDetails[driverDetails.length - 1] : null;
     const locations = dataFromTable?.locations || [];
@@ -61,7 +62,9 @@ function RideDetail({ dataFromTable = {} }) {
     const endCoords = endLocation?.gps?.split(",").map(Number) || [20.5937, 78.9629];
     const userInfo = dataFromTable.userDetails || {};
 
-    const handleUserNameClick = async () => (window.open(`/users/${userInfo?._id}`, "_blank"));
+    const handleUserNameClick = async () => {
+        if (userInfo?._id) { window.open(`/users/${userInfo?._id}`, "_blank") }
+    }
 
     return (
         <div className="p-4 max-w-5xl mx-auto">
@@ -163,7 +166,7 @@ function RideDetail({ dataFromTable = {} }) {
                         {/* User Details */}
                         <div>
                             <p className="text-sm font-semibold">User Name</p>
-                            <p onClick={handleUserNameClick}>{userInfo?.firstName && userInfo?.lastName ? `${userInfo.firstName} ${userInfo.lastName}` : "N/A"}</p>
+                            <p onClick={handleUserNameClick} className={`font-medium ${userInfo?._id ? "cursor-pointer underline" : ""}`}>{userInfo?.firstName && userInfo?.lastName ? `${userInfo.firstName} ${userInfo.lastName}` : "N/A"}  </p>
                             <p className="text-sm font-semibold mt-2">Number:</p>
                             <p>{userInfo?.phone || "N/A"}</p>
                         </div>
