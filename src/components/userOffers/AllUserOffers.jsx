@@ -72,7 +72,7 @@ function AllUserOffers() {
   useEffect(() => {
     const fetchAllOffers = async () => {
       try {
-        const response = await axios.get('https://vayu-backend-1.onrender.com/offers?limit=1000');
+        const response = await axios.get('https://airshare.co.in/offers?limit=1000');
         if (response.data.data && Array.isArray(response.data.data)) {
           setAllOffers(response.data.data);
           
@@ -111,7 +111,7 @@ function AllUserOffers() {
     setLoading(true);
     try {
       // Build URL with query parameters
-      let url = `https://vayu-backend-1.onrender.com/offers?page=${page}&limit=${pagination.limit}`;
+      let url = `https://airshare.co.in/offers?page=${page}&limit=${pagination.limit}`;
       
       // Add type filter if selected
       if (selectedType) {

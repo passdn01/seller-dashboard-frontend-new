@@ -129,7 +129,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await axios.get('https://vayu-backend-1.onrender.com/admin/city');
+        const response = await axios.get('https://airshare.co.in/admin/city');
         setCities(response.data || []);
       } catch (error) {
         console.error('Error fetching cities:', error);
@@ -151,7 +151,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
     setFetchLoading(true);
     console.log('Fetching offer data for ID:', offerId);
     try {
-      const response = await axios.get(`https://vayu-backend-1.onrender.com/offers/${offerId}`);
+      const response = await axios.get(`https://airshare.co.in/offers/${offerId}`);
       
       if (response.data.data) {
         const offerData = response.data.data;
@@ -236,7 +236,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
 
       console.log('Updating offer:', formattedValues);
 
-      const response = await axios.put(`https://vayu-backend-1.onrender.com/offers/${offerId}`, formattedValues);
+      const response = await axios.put(`https://airshare.co.in/offers/${offerId}`, formattedValues);
       
       setSuccess(true);
       

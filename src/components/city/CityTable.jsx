@@ -53,7 +53,7 @@ function CityTable() {
   const fetchCities = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('https://vayu-backend-1.onrender.com/admin/city');
+      const response = await axios.get('https://airshare.co.in/admin/city');
       if (response.data && Array.isArray(response.data)) {
         setCities(response.data);
       } else {

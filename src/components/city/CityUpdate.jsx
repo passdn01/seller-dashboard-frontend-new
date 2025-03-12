@@ -42,7 +42,7 @@ function CityUpdate({ cityId, onSuccess, onClose }) {
   const fetchCityData = async () => {
     setFetchLoading(true);
     try {
-      const response = await axios.get(`https://vayu-backend-1.onrender.com/admin/city/${cityId}`);
+      const response = await axios.get(`https://airshare.co.in/admin/city/${cityId}`);
       
       if (response.data) {
         // Set city data from fetched city
@@ -93,7 +93,7 @@ function CityUpdate({ cityId, onSuccess, onClose }) {
     };
     
     try {
-      const response = await axios.put(`https://vayu-backend-1.onrender.com/admin/city/${cityId}`, requestData);
+      const response = await axios.put(`https://airshare.co.in/admin/city/${cityId}`, requestData);
       
       if (response.data) {
         setSuccess('City boundaries updated successfully!');

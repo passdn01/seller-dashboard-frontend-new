@@ -126,7 +126,7 @@ const CreateOffer = ({ onSuccess }) => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await axios.get('https://vayu-backend-1.onrender.com/admin/city');
+        const response = await axios.get('https://airshare.co.in/admin/city');
         setCities(response.data || []);
       } catch (error) {
         console.error('Error fetching cities:', error);
@@ -169,7 +169,7 @@ const CreateOffer = ({ onSuccess }) => {
 
       console.log('Submitting offer:', formattedValues);
 
-      const response = await axios.post('https://vayu-backend-1.onrender.com/offers', formattedValues);
+      const response = await axios.post('https://airshare.co.in/offers', formattedValues);
       
       setSuccess(true);
       form.reset(form.getValues()); // Reset form state but keep values

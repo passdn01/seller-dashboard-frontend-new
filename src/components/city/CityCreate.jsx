@@ -283,7 +283,7 @@ function CityCreate({ onSuccess }) {
       }
       
       try {
-        const response = await axios.post('https://vayu-backend-1.onrender.com/admin/city', requestData);
+        const response = await axios.post('https://airshare.co.in/admin/city', requestData);
         
         if (response.data) {
           setSuccess('City created successfully!');

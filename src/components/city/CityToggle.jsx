@@ -27,7 +27,7 @@ function CityToggle({ cityId, isOpen, onClose, onToggleComplete }) {
   const fetchCityDetails = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`https://vayu-backend-1.onrender.com/admin/city/${cityId}`);
+      const response = await axios.get(`https://airshare.co.in/admin/city/${cityId}`);
       
       if (response.data) {
         setCity(response.data);
@@ -45,7 +45,7 @@ function CityToggle({ cityId, isOpen, onClose, onToggleComplete }) {
     try {
       setToggling(true);
       const response = await axios.put(
-        `https://vayu-backend-1.onrender.com/admin/city/toggleCityStatus/${cityId}`
+        `https://airshare.co.in/admin/city/toggleCityStatus/${cityId}`
       );
       
       if (response.data) {

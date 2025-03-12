@@ -37,7 +37,7 @@ const CityMapSelector = ({
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await fetch('https://vayu-backend-1.onrender.com/admin/city');
+        const response = await fetch('https://airshare.co.in/admin/city');
         if (!response.ok) {
           throw new Error('Failed to fetch cities');
         }
