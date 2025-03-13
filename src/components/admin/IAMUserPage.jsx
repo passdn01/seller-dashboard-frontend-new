@@ -35,7 +35,8 @@ function IAMUserPage() {
         "issueAssigner",
         "verifierAndIssueAssigner",
         "verifier",
-        "UserExplore"
+        "UserExplore",
+        "onlyNotifs"
     ]
 
     useEffect(() => {

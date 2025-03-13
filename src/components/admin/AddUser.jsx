@@ -9,7 +9,8 @@ const ROLES = [
     "issueAssigner",
     "issueAssignerAndVerifier",
     "verifier",
-    "UserExplore"
+    "UserExplore",
+    "onlyNotifs"
 ];
 
 const AddUser = ({ onUserAdded }) => {

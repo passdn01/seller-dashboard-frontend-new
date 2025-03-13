@@ -34,7 +34,8 @@ const roleOptions = [
     "issueAssigner",
     "verifierAndIssueAssigner",
     "verifier",
-    "UserExplore"
+    "UserExplore",
+    "onlyNotifs"
 ];
 
 const RoleCard = ({ data, onUserDeleted, onUserEdited }) => {

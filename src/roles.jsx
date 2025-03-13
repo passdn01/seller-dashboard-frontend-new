@@ -65,6 +65,7 @@ const roleRoutes = {
     issueAssigner: ["/home/dashboard", "/issueAssigner", "/issueDetail", "/issueSolver"],
     issueSolver: ["/home/dashboard", "/issueSolver", "/issueDetail"],
     guest: ["/home/dashboard"],
+    onlyNotifs: ['/home/dashboard', "/notification"],
 };
 
 export default roleRoutes;
