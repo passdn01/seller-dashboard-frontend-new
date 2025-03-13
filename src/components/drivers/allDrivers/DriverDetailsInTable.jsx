@@ -97,7 +97,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                     balance: driver.balance || "",
                     status: driver.status || "",
                     rejectReason: driver.rejectReason || "NA",
-                    rejectDate: driver?.rejectDate || "",
+                    rejectDate: driver?.rejectionDate || "",
                     isCompleteRegistration: driver.isCompleteRegistration || false,
                     aadharNumber: driver.aadharNumber,
                     missingDocuments: driver.missingDocuments || []

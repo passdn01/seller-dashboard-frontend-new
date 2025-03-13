@@ -42,7 +42,7 @@ export default function FarePricing() {
     const fetchPricingData = async () => {
         setLoading(true);
         try {
-            // const response = await axios.get(`https://airshare.co.in/api/pricing`);
+            // const response = await axios.get(`https://airshare.co.in/pricing`);
             const response = await axios.get(`https://jwkxs7nc-8055.inc1.devtunnels.ms/pricing`);
             const data = response.data.data;
 
@@ -116,7 +116,7 @@ export default function FarePricing() {
         try {
             setLoading(true);
             await axios.patch(
-                // `https://airshare.co.in/api/pricing/${category}`,
+                // `https://airshare.co.in/pricing/${category}`,
                 `https://jwkxs7nc-8055.inc1.devtunnels.ms/pricing/${category}`,
                 changedFields[category]
             );
