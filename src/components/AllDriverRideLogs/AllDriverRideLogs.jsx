@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
-import { 
-    Card, 
-    CardContent, 
-    CardHeader, 
-    CardTitle 
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Oval } from 'react-loader-spinner';
@@ -57,12 +57,14 @@ const AllDriverRideLogs = () => {
 
         try {
             // Fetch ride logs
+            const token = localStorage.getItem("token");
             const rideResponse = await axios.post(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/allDriverRideLogs`,
                 {
                     startDate: formattedStartDate,
                     endDate: formattedEndDate
-                }
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             // Fetch session data
@@ -71,7 +73,8 @@ const AllDriverRideLogs = () => {
                 {
                     startDate: formattedStartDate,
                     endDate: formattedEndDate
-                }
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             setRideLogsData(rideResponse.data);
@@ -119,30 +122,30 @@ const AllDriverRideLogs = () => {
                 <div className='flex justify-between items-center'>
                     <CardTitle className="text-xl mb-4">All Drivers Ride Logs</CardTitle>
                     <div className="flex flex-wrap items-center gap-2">
-                        <Button 
+                        <Button
                             size="sm"
-                            variant={dateRange === 'today' ? 'default' : 'outline'} 
+                            variant={dateRange === 'today' ? 'default' : 'outline'}
                             onClick={() => handleDateRangeChange('today')}
                         >
                             Today
                         </Button>
-                        <Button 
+                        <Button
                             size="sm"
-                            variant={dateRange === 'last30' ? 'default' : 'outline'} 
+                            variant={dateRange === 'last30' ? 'default' : 'outline'}
                             onClick={() => handleDateRangeChange('last30')}
                         >
                             Last 30 Days
                         </Button>
-                        <Button 
+                        <Button
                             size="sm"
-                            variant={dateRange === 'allTime' ? 'default' : 'outline'} 
+                            variant={dateRange === 'allTime' ? 'default' : 'outline'}
                             onClick={() => handleDateRangeChange('allTime')}
                         >
                             All Time
                         </Button>
-                        <Button 
+                        <Button
                             size="sm"
-                            variant={dateRange === 'custom' ? 'default' : 'outline'} 
+                            variant={dateRange === 'custom' ? 'default' : 'outline'}
                             onClick={() => handleDateRangeChange('custom')}
                         >
                             Custom
@@ -150,8 +153,8 @@ const AllDriverRideLogs = () => {
                         {dateRange === 'custom' && (
                             <div className="flex items-center gap-2">
                                 <div className="relative">
-                                    <input 
-                                        type="date" 
+                                    <input
+                                        type="date"
                                         value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
                                         className="border rounded px-2 py-1 pl-8 text-sm"
@@ -159,16 +162,16 @@ const AllDriverRideLogs = () => {
                                     <Calendar className="absolute left-2 top-2 h-4 w-4 text-gray-500" />
                                 </div>
                                 <div className="relative">
-                                    <input 
-                                        type="date" 
+                                    <input
+                                        type="date"
                                         value={endDate}
                                         onChange={(e) => setEndDate(e.target.value)}
                                         className="border rounded px-2 py-1 pl-8 text-sm"
                                     />
                                     <Calendar className="absolute left-2 top-2 h-4 w-4 text-gray-500" />
                                 </div>
-                                <Button 
-                                    size="sm" 
+                                <Button
+                                    size="sm"
                                     variant="outline"
                                     onClick={handleSearch}
                                     className="flex items-center gap-2"
@@ -249,13 +252,13 @@ const AllDriverRideLogs = () => {
                                     {sessionData?.totalDuration?.hours || 0}h {sessionData?.totalDuration?.minutes || 0}m
                                 </p>
                                 <p className="text-xs text-indigo-500">
-                                    Avg: 
+                                    Avg:
                                     {sessionData?.averageDuration?.days > 0 && `${sessionData?.averageDuration?.days}d `}
                                     {sessionData?.averageDuration?.hours || 0}h {sessionData?.averageDuration?.minutes || 0}m
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="p-4 rounded-lg border">
                                 <h3 className="text-md font-medium text-gray-700 mb-2">Acceptance Rate</h3>

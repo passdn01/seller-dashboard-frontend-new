@@ -55,7 +55,8 @@ const IssueSolver = () => {
     const fetchTickets = async () => {
         setTicketLoading(true);
         try {
-            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/assigned/${userId}`);
+            const token = localStorage.getItem("token");
+            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/assigned/${userId}`, { headers: { Authorization: `Bearer ${token}` } });
             console.log(response, "response");
             setTickets(response.data);
         } catch (err) {
@@ -75,9 +76,10 @@ const IssueSolver = () => {
         if (e) {
             e.stopPropagation();
         }
-        
+
         try {
-            await axios.put(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`);
+            const token = localStorage.getItem("token");
+            await axios.put(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`, {}, { headers: { Authorization: `Bearer ${token}` } });
             // Refresh issue details after marking as complete
             fetchTickets();
         } catch (err) {
@@ -136,6 +138,13 @@ const IssueSolver = () => {
             }
         },
         {
+            header: "User Number",
+            cell: ({ row }) => {
+                const user = row.original.userId;
+                return <div>{user ? `${user.phone}` : "N/A"}</div>;
+            }
+        },
+        {
             accessorKey: "status",
             header: "Status",
             cell: ({ row }) => <div>{row.getValue("status")}</div>,
@@ -188,8 +197,8 @@ const IssueSolver = () => {
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button 
-                                variant="ghost" 
+                            <Button
+                                variant="ghost"
                                 className="h-8 w-8 p-0"
                                 onClick={(e) => e.stopPropagation()} // Prevent row click when clicking dropdown
                             >
@@ -286,7 +295,7 @@ const IssueSolver = () => {
         // Flatten to handle the detail rows
         return table.getRowModel().rows.flatMap((row) => {
             const isSelected = row.original?._id === selectedIssueId;
-            
+
             const result = [
                 <TableRow
                     key={row.id}
@@ -305,10 +314,10 @@ const IssueSolver = () => {
             // Add the detail row if this row is selected
             if (isSelected && row.original?._id) {
                 result.push(
-                    <IssueDetailExpandable 
+                    <IssueDetailExpandable
                         key={`detail-${row.id}`}
-                        issueId={row.original._id} 
-                        onClose={closeIssueDetail} 
+                        issueId={row.original._id}
+                        onClose={closeIssueDetail}
                     />
                 );
             }

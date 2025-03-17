@@ -58,7 +58,8 @@ function AllOffers() {
   const fetchOffers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/offers`);
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/offers`, { headers: { Authorization: `Bearer ${token}` } });
       if (response.data.success) {
         setOffers(response.data.data);
       } else {
@@ -137,8 +138,8 @@ function AllOffers() {
               <UpdateOffer offer={row.original} onSuccess={fetchOffers} />
             </DialogContent>
           </Dialog>
-          <Button 
-            variant="destructive" 
+          <Button
+            variant="destructive"
             size="sm"
             onClick={(e) => handleDeleteClick(row.original._id, e)}
           >
@@ -230,8 +231,8 @@ function AllOffers() {
               ) : (
                 table.getRowModel().rows.map(row => (
                   <>
-                    <TableRow 
-                      key={row.id} 
+                    <TableRow
+                      key={row.id}
                       className={`cursor-pointer ${expandedOfferId === row.original._id ? 'bg-gray-50' : ''}`}
                       onClick={() => toggleExpandOffer(row.original._id)}
                     >
@@ -284,9 +285,9 @@ function AllOffers() {
 
       {/* Delete Confirmation Dialog */}
       {showDeleteDialog && (
-        <DeleteOffer 
-          offerId={selectedOfferId} 
-          isOpen={showDeleteDialog} 
+        <DeleteOffer
+          offerId={selectedOfferId}
+          isOpen={showDeleteDialog}
           onClose={() => setShowDeleteDialog(false)}
           onDeleteComplete={handleDeleteComplete}
         />

@@ -22,7 +22,8 @@ const UserCashStatement = ({ userId, coinsAvailable }) => {
 
     const fetchCoinStatement = async () => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/getUserCoinStatement`, { userId });
+            const token = localStorage.getItem("token");
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/getUserCoinStatement`, { userId }, { headers: { Authorization: `Bearer ${token}` } });
             setCoinTransactions(response.data.coinTransactions || []);
             setLoading(false);
         } catch (err) {
@@ -42,6 +43,7 @@ const UserCashStatement = ({ userId, coinsAvailable }) => {
 
         try {
             setConfirmLoading(true)
+            const token = localStorage.getItem("token");
             const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/modifyCoinBalance`, {
                 userId,
                 title,
@@ -49,7 +51,7 @@ const UserCashStatement = ({ userId, coinsAvailable }) => {
                 amount,
                 isDebit,
                 coinAction
-            });
+            }, { headers: { Authorization: `Bearer ${token}` } });
 
             console.log(response);
 

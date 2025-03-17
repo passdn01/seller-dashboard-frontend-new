@@ -27,7 +27,7 @@ function UpdateOffer({ offer, onSuccess }) {
     terms: offer.terms,
     reward: offer.reward
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -75,11 +75,13 @@ function UpdateOffer({ offer, onSuccess }) {
     };
 
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.post(
         `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/offers/${offer._id}`,
-        submissionData
+        submissionData,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      
+
       if (response.data.success) {
         onSuccess();
         // Close dialog
@@ -100,15 +102,15 @@ function UpdateOffer({ offer, onSuccess }) {
       <DialogHeader className="space-y-1">
         <DialogTitle className="text-xl font-semibold">Edit Offer</DialogTitle>
       </DialogHeader>
-      
+
       <div className="flex-1 overflow-y-auto pr-2 py-4 -mr-2">
         <div className="grid gap-6 pb-2">
           {/* Basic Information Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Basic Information</h3>
-            
+
             <div className="grid grid-cols-1 gap-4">
-            
+
               <div className="space-y-1.5">
                 <Label htmlFor="offerName">Offer Name</Label>
                 <Input
@@ -120,7 +122,7 @@ function UpdateOffer({ offer, onSuccess }) {
                   required
                 />
               </div>
-            
+
               <div className="space-y-1.5">
                 <Label htmlFor="offerDescription">Description</Label>
                 <Textarea
@@ -164,12 +166,12 @@ function UpdateOffer({ offer, onSuccess }) {
           {/* Offer Criteria Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Offer Criteria</h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="offerCriteria.type">Offer Type</Label>
-                <Select 
-                  value={formData.offerCriteria.type} 
+                <Select
+                  value={formData.offerCriteria.type}
                   onValueChange={handleSelectChange}
                 >
                   <SelectTrigger id="offerCriteria.type">
@@ -194,9 +196,9 @@ function UpdateOffer({ offer, onSuccess }) {
                   required
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.offerCriteria.type === 'rides' ? 'Number of rides required' : 
-                   formData.offerCriteria.type === 'online' ? 'Number of sessions required' : 
-                   'Number of referrals required'}
+                  {formData.offerCriteria.type === 'rides' ? 'Number of rides required' :
+                    formData.offerCriteria.type === 'online' ? 'Number of sessions required' :
+                      'Number of referrals required'}
                 </p>
               </div>
             </div>
@@ -222,7 +224,7 @@ function UpdateOffer({ offer, onSuccess }) {
           {/* Reward Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Reward & Terms</h3>
-            
+
             <div className="space-y-1.5">
               <Label htmlFor="reward">Reward Amount (₹)</Label>
               <Input
@@ -259,11 +261,11 @@ function UpdateOffer({ offer, onSuccess }) {
           )}
         </div>
       </div>
-      
+
       <DialogFooter className="pt-4 border-t mt-4">
-        <Button 
-          type="submit" 
-          disabled={loading} 
+        <Button
+          type="submit"
+          disabled={loading}
           className="px-8"
         >
           {loading ? 'Updating...' : 'Update Offer'}

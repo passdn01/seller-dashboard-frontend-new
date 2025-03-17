@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 
 import MetricCard from './MetricCardComponent';
 import { MeterChart } from '@carbon/charts-react'
+import { Button } from '../ui/button';
 
 //icon imports
 import auto from '../../assets/CardGridIcons/auto.png'
@@ -24,6 +25,7 @@ import subscriptiontrans from '../../assets/CardGridIcons/subscriptiontrans.png'
 import totalsubscription from '../../assets/CardGridIcons/totalsubscription.png'
 import user from '../../assets/CardGridIcons/user.png'
 import userredeem from '../../assets/CardGridIcons/userredeem.png'
+import CustomTimeCardGrid from './CustomTimeCardGrid';
 
 export default function CardGrid() {
     const [todayMetrics, setTodayMetrics] = useState({})
@@ -36,6 +38,7 @@ export default function CardGrid() {
         return typeof earnings === 'number' ? earnings * 0.25 : 0;
     };
 
+    console.log(todayMetrics, "todayMetrics")
     const formatNumber = (num) => {
         if (!num && num !== 0) return "0"; // Handle undefined or null gracefully
         if (num >= 10000000) return `${(num / 10000000).toFixed(2)}CR`;
@@ -567,6 +570,11 @@ export default function CardGrid() {
     ];
 
     const [activeTab, setActiveTab] = useState('today');
+    const [customButton, setCustomButton] = useState(false)
+
+    const handleCustomButtonClick = async () => {
+        setCustomButton(!customButton)
+    }
 
     return (
         <>
@@ -616,6 +624,9 @@ export default function CardGrid() {
                         <MeterChart data={dToday} options={op}></MeterChart> : <MeterChart data={d} options={op}></MeterChart>}
                 </div>
             </div>
+
+            <Button className='mx-8 mb-4' onClick={handleCustomButtonClick}>{customButton ? "Hide other data" : "Show other Data"}</Button>
+            <CustomTimeCardGrid customButton={customButton}></CustomTimeCardGrid>
 
         </>
     )

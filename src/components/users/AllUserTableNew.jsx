@@ -118,6 +118,7 @@ const AllUserTableNew = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
+            const token = localStorage.getItem("token");
             const response = await axios.get(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/getAllUsersNew`,
                 {
@@ -130,8 +131,10 @@ const AllUserTableNew = () => {
                         toDate: dateFilter.to,
                         page,
                         limit: 10,
-                    }
-                }
+                    },
+                    headers: { Authorization: `Bearer ${token}` }
+                },
+
             );
             setUsers(response.data.users);
             setTotalPages(response.data.totalPages);
@@ -158,9 +161,11 @@ const AllUserTableNew = () => {
             };
 
             // Call the export API
+            const token = localStorage.getItem("token");
             const response = await axios.post(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/exportUser`,
-                exportParams
+                exportParams,
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             if (response.data.success) {

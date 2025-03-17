@@ -9,7 +9,8 @@ const ROLES = [
     "issueAssigner",
     "issueAssignerAndVerifier",
     "verifier",
-    "UserExplore"
+    "UserExplore",
+    "onlyNotifs"
 ];
 
 const AddUser = ({ onUserAdded }) => {
@@ -54,11 +55,14 @@ const AddUser = ({ onUserAdded }) => {
         setError(null);
         setSuccess(false);
 
+        const token = localStorage.getItem('token')
+
         try {
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/addDashboardUser`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(formData),
             });

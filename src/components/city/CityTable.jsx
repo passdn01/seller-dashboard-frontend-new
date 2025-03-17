@@ -73,7 +73,7 @@ function CityTable() {
   };
 
   const handleStatusToggleComplete = (updatedCity) => {
-    setCities(cities.map(city => 
+    setCities(cities.map(city =>
       city._id === updatedCity._id ? updatedCity : city
     ));
     setShowStatusDialog(false);
@@ -160,12 +160,12 @@ function CityTable() {
               <CityUpdate
                 cityId={row.original._id}
                 onSuccess={fetchCities}
-                onClose={() => {}} 
+                onClose={() => { }}
               />
             </DialogContent>
           </Dialog>
-          <Button 
-            variant={row.original.isActive ? "destructive" : "outline"} 
+          <Button
+            variant={row.original.isActive ? "destructive" : "outline"}
             size="sm"
             onClick={(e) => handleToggleStatusClick(row.original._id, e)}
           >
@@ -259,8 +259,8 @@ function CityTable() {
               ) : (
                 table.getRowModel().rows.map(row => (
                   <>
-                    <TableRow 
-                      key={row.id} 
+                    <TableRow
+                      key={row.id}
                       className={`cursor-pointer hover:bg-gray-50 ${expandedCityId === row.original._id ? 'bg-gray-100' : ''}`}
                       onClick={() => toggleExpandCity(row.original._id)}
                     >
@@ -280,7 +280,7 @@ function CityTable() {
                                 <TabsTrigger value="map">Map View</TabsTrigger>
                                 <TabsTrigger value="json">JSON Data</TabsTrigger>
                               </TabsList>
-                              
+
                               <TabsContent value="details" className="mt-0">
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                   <Card>
@@ -308,7 +308,7 @@ function CityTable() {
                                       </dl>
                                     </CardContent>
                                   </Card>
-                                  
+
                                   <Card>
                                     <CardHeader className="pb-2">
                                       <CardTitle className="text-sm font-medium">Location</CardTitle>
@@ -333,7 +333,7 @@ function CityTable() {
                                       </dl>
                                     </CardContent>
                                   </Card>
-                                  
+
                                   <Card>
                                     <CardHeader className="pb-2">
                                       <CardTitle className="text-sm font-medium">Timestamps</CardTitle>
@@ -351,7 +351,7 @@ function CityTable() {
                                       </dl>
                                     </CardContent>
                                   </Card>
-                                  
+
                                   <Card className="md:col-span-3">
                                     <CardHeader className="pb-2">
                                       <CardTitle className="text-sm font-medium">Boundaries Information</CardTitle>
@@ -379,21 +379,21 @@ function CityTable() {
                                   </Card>
                                 </div>
                               </TabsContent>
-                              
+
                               <TabsContent value="map" className="mt-0">
                                 <div className="bg-white rounded-lg border p-4">
                                   <h3 className="text-lg font-medium mb-2">{expandedCity.name} - Map View</h3>
                                   <div className="h-[500px] w-full">
                                     {expandedCity.location?.coordinates && (
                                       <BoundariesDisplayMap
-                                        center={expandedCity.location.coordinates} 
+                                        center={expandedCity.location.coordinates}
                                         boundaries={expandedCity.boundaries}
                                       />
                                     )}
                                   </div>
                                 </div>
                               </TabsContent>
-                              
+
                               <TabsContent value="json" className="mt-0">
                                 <div className="bg-gray-900 text-white p-4 rounded-lg overflow-auto max-h-[500px]">
                                   <pre className="text-xs">
@@ -440,9 +440,9 @@ function CityTable() {
 
       {/* Status Toggle Dialog */}
       {showStatusDialog && (
-        <CityToggle 
-          cityId={selectedCityId} 
-          isOpen={showStatusDialog} 
+        <CityToggle
+          cityId={selectedCityId}
+          isOpen={showStatusDialog}
           onClose={() => setShowStatusDialog(false)}
           onToggleComplete={handleStatusToggleComplete}
         />

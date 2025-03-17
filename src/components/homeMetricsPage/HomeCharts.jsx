@@ -20,9 +20,18 @@ const HomeCharts = () => {
             setError(null);
 
             try {
+                const token = localStorage.getItem('token')
                 const [rideResponse, buyerResponse] = await Promise.all([
-                    fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/homeCharts?type=${type}`),
-                    fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/homeCharts?type=${type}`)
+                    fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/homeCharts?type=${type}`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    }),
+                    fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/homeCharts?type=${type}`, {
+                        headers: {
+                            "Authorization": `Bearer ${token}`
+                        }
+                    })
                 ]);
 
                 if (!rideResponse.ok || !buyerResponse.ok) {

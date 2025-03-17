@@ -113,7 +113,7 @@ function SideNavbar() {
                     icon: '',
                 },
                 {
-                    id: '1',
+                    id: '2',
                     title: 'All Offers',
                     link: '/drivers/allOffers',
                     icon: '',
@@ -134,7 +134,7 @@ function SideNavbar() {
                     icon: '',
                 },
                 {
-                    id: '1',
+                    id: '2',
                     title: 'All User Offers',
                     link: '/allUsersOffers',
                     icon: '',
@@ -189,14 +189,14 @@ function SideNavbar() {
             icon: pricing
         },
         {
-            id: "10",
+            id: "11",
             title: "Blogs",
             link: '/blogs',
             submenu: false,
             icon: blogs
         },
         {
-            id: "11",
+            id: "12",
             title: "Tsp Messages",
             link: '/tspMessages',
             submenu: false,
@@ -243,7 +243,8 @@ function SideNavbar() {
         try {
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/logout`, {
                 method: 'POST',
-                credentials: 'include'
+                credentials: 'include',
+
             });
 
             const data = await response.json();

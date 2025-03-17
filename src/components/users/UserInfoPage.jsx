@@ -44,7 +44,8 @@ function UserInfoPage() {
 
     const fetchUserData = async () => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/users/${id}`);
+            const token = localStorage.getItem("token");
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/users/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } });
             if (response.data.success) {
                 setData(response.data.data);
                 setCompleteStatus(response.data.data.isComplete || false);

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { 
-  DialogHeader, 
-  DialogTitle, 
-  DialogDescription 
+import {
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
 } from '@/components/ui/dialog';
 import {
   Tabs,
@@ -28,7 +28,7 @@ function CityUpdate({ cityId, onSuccess, onClose }) {
     boundaries: null,
     isActive: true
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [error, setError] = useState('');
@@ -43,7 +43,7 @@ function CityUpdate({ cityId, onSuccess, onClose }) {
     setFetchLoading(true);
     try {
       const response = await axios.get(`https://airshare.co.in/admin/city/${cityId}`);
-      
+
       if (response.data) {
         // Set city data from fetched city
         setCityData({
@@ -86,18 +86,19 @@ function CityUpdate({ cityId, onSuccess, onClose }) {
     setLoading(true);
     setError('');
     setSuccess('');
-    
+
     // Format request data - only sending boundaries update
     const requestData = {
       boundaries: cityData.boundaries
     };
-    
+
     try {
-      const response = await axios.put(`https://airshare.co.in/admin/city/${cityId}`, requestData);
-      
+      const token = localStorage.getItem("token");
+      const response = await axios.put(`https://airshare.co.in/admin/city/${cityId}`, requestData, { headers: { Authorization: `Bearer ${token}` } });
+
       if (response.data) {
         setSuccess('City boundaries updated successfully!');
-        
+
         // Call the success callback after a short delay to show success message
         setTimeout(() => {
           if (onSuccess) onSuccess();
@@ -113,10 +114,10 @@ function CityUpdate({ cityId, onSuccess, onClose }) {
     }
   };
 
-  const hasBoundaries = cityData.boundaries && 
-                        cityData.boundaries.coordinates && 
-                        cityData.boundaries.coordinates[0] && 
-                        cityData.boundaries.coordinates[0].length > 0;
+  const hasBoundaries = cityData.boundaries &&
+    cityData.boundaries.coordinates &&
+    cityData.boundaries.coordinates[0] &&
+    cityData.boundaries.coordinates[0].length > 0;
 
   // Format coordinates as a readable string
   const formatCoordinates = (coordinates) => {
@@ -159,22 +160,22 @@ function CityUpdate({ cityId, onSuccess, onClose }) {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-muted/50 p-3 rounded-md">
           <h3 className="text-sm font-medium mb-1">Instructions:</h3>
           <p className="text-sm text-muted-foreground">
-            Use the drawing tools on the top right side of the map to update the city boundaries. 
+            Use the drawing tools on the top right side of the map to update the city boundaries.
             You can edit existing boundaries or create new ones if none exist.
           </p>
         </div>
-        
+
         {/* Using the Leaflet-based map component */}
-        <BoundariesMap 
-          initialCenter={cityData.location.coordinates} 
+        <BoundariesMap
+          initialCenter={cityData.location.coordinates}
           boundaries={cityData.boundaries}
           onBoundariesChange={handleBoundariesChange}
         />
-        
+
         <div className="flex items-center gap-2">
           <div className="flex-1">
             {hasBoundaries ? (
@@ -193,30 +194,30 @@ function CityUpdate({ cityId, onSuccess, onClose }) {
               </Alert>
             )}
           </div>
-          
-          <Button 
-            type="button" 
-            variant="outline" 
-            size="sm" 
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
             onClick={handleClearBoundaries}
             disabled={!hasBoundaries}
           >
             <Trash className="w-4 h-4 mr-1" /> Clear
           </Button>
         </div>
-        
+
         <div className="flex justify-between pt-2">
-          <Button 
-            type="button" 
-            variant="outline" 
+          <Button
+            type="button"
+            variant="outline"
             onClick={onClose}
           >
             Cancel
           </Button>
-          
-          <Button 
-            type="button" 
-            onClick={handleSubmit} 
+
+          <Button
+            type="button"
+            onClick={handleSubmit}
             disabled={loading}
           >
             {loading ? (

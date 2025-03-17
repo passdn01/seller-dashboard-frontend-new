@@ -22,8 +22,9 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
   const fetchIssueDetails = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem("token");
       const response = await axios.get(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${issueId}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${issueId}`, { headers: { Authorization: `Bearer ${token}` } }
       );
       setIssue(response.data);
 
@@ -42,8 +43,9 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
 
   const fetchRideDetails = async (rideId) => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.post(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/rideTransaction/${rideId}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/rideTransaction/${rideId}`, {}, { headers: { Authorization: `Bearer ${token}` } }
       );
       setRide(response.data.data.ride);
       setLoading(false);
@@ -56,8 +58,9 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
 
   const markComplete = async (ticketId) => {
     try {
+      const token = localStorage.getItem("token");
       await axios.put(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`, {}, { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchIssueDetails();
     } catch (err) {
@@ -67,8 +70,9 @@ const IssueDetailExpandable = ({ issueId, onClose }) => {
 
   const markPending = async (ticketId) => {
     try {
+      const token = localStorage.getItem("token");
       await axios.put(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/pending`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/pending`, {}, { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchIssueDetails();
     } catch (err) {

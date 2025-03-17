@@ -152,17 +152,17 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
     console.log('Fetching offer data for ID:', offerId);
     try {
       const response = await axios.get(`https://airshare.co.in/offers/${offerId}`);
-      
+
       if (response.data.data) {
         const offerData = response.data.data;
-        
+
         // Format dates for HTML date input (YYYY-MM-DD)
         const formatDate = (dateString) => {
           if (!dateString) return '';
           const date = new Date(dateString);
           return date.toISOString().split('T')[0];
         };
-        
+
         // Set form values
         form.reset({
           city: offerData.city || '',
@@ -212,11 +212,11 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
     setLoading(true);
     setError(null);
     setSuccess(false);
-    
+
     try {
       // Remove fields that are not needed based on offer type
       const formattedValues = { ...values };
-      
+
       if (offerType !== 'LOCATION') {
         delete formattedValues.locationBoundaries;
         delete formattedValues.location;
@@ -237,9 +237,9 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
       console.log('Updating offer:', formattedValues);
 
       const response = await axios.put(`https://airshare.co.in/offers/${offerId}`, formattedValues);
-      
+
       setSuccess(true);
-      
+
       // Call the onSuccess callback from parent
       if (onSuccess && typeof onSuccess === 'function') {
         onSuccess();
@@ -257,20 +257,20 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
     const baseTabs = ["basic", "details", "schedule"];
     return offerType === 'LOCATION' ? [...baseTabs, "location"] : baseTabs;
   };
-  
+
   const availableTabs = getAvailableTabs();
 
   // Update handleTabNavigation to work with dynamic tabs
   const handleTabNavigation = (direction) => {
     const currentIndex = availableTabs.indexOf(activeTab);
-    
+
     if (direction === 'next' && currentIndex < availableTabs.length - 1) {
       setActiveTab(availableTabs[currentIndex + 1]);
     } else if (direction === 'prev' && currentIndex > 0) {
       setActiveTab(availableTabs[currentIndex - 1]);
     }
   };
-  
+
   // When offer type changes, check if we need to change the active tab
   useEffect(() => {
     // If current active tab is "location" but offer type is not LOCATION
@@ -292,8 +292,8 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
       handleTabNavigation('next'); // Otherwise just navigate to next tab
     }
   };
-  
-  
+
+
   // // Separate function to handle direct update button click
   // const handleUpdateClick = () => {
   //   // Manually validate and submit the form
@@ -341,7 +341,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
             </AlertDescription>
           </Alert>
         )}
-        
+
         {error && (
           <Alert className="mb-6 bg-red-50 text-red-700 border-red-200">
             <AlertDescription>
@@ -349,7 +349,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
             </AlertDescription>
           </Alert>
         )}
-        
+
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className={`grid w-full mb-6 ${offerType === 'LOCATION' ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <TabsTrigger value="basic">Basic Info</TabsTrigger>
@@ -372,8 +372,8 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>City</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
+                          <Select
+                            onValueChange={field.onChange}
                             value={field.value}
                           >
                             <FormControl>
@@ -400,8 +400,8 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Offer Type</FormLabel>
-                          <Select 
-                            onValueChange={field.onChange} 
+                          <Select
+                            onValueChange={field.onChange}
                             value={field.value}
                           >
                             <FormControl>
@@ -461,10 +461,10 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                       <FormItem>
                         <FormLabel>Description</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="Enjoy 15% cashback (up to ₹200) on all rides within downtown area..." 
-                            className="min-h-[100px]" 
-                            {...field} 
+                          <Textarea
+                            placeholder="Enjoy 15% cashback (up to ₹200) on all rides within downtown area..."
+                            className="min-h-[100px]"
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />
@@ -531,78 +531,78 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
               <TabsContent value="details" className="mt-0">
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {(offerType === 'EVERY_RIDE_CASHBACK_RIDE') && (
-                    <FormField
-                      control={form.control}
-                      name="minCoin"
-                      render={({ field: { onChange, value, ...rest } }) => (
-                        <FormItem>
-                          <FormLabel>Minimum Coin</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="50" 
-                              {...rest} 
-                              value={value === null ? '' : value}
-                              onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            Minimum coins required to avail this offer
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-
-                  <FormField
-                    control={form.control}
-                    name="maxCoin"
-                    render={({ field: { onChange, value, ...rest } }) => (
-                      <FormItem>
-                        <FormLabel>Maximum Coin</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="number" 
-                            placeholder="200" 
-                            {...rest}
-                            value={value === null ? '' : value}
-                            onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          Maximum coins that can be earned in this offer
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
+                    {(offerType === 'EVERY_RIDE_CASHBACK_RIDE') && (
+                      <FormField
+                        control={form.control}
+                        name="minCoin"
+                        render={({ field: { onChange, value, ...rest } }) => (
+                          <FormItem>
+                            <FormLabel>Minimum Coin</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="50"
+                                {...rest}
+                                value={value === null ? '' : value}
+                                onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Minimum coins required to avail this offer
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                     )}
-                  />
 
-                  {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION' || offerType === 'X_RIDE_AFTER_ONE_RIDE_FREE' ) && (
                     <FormField
                       control={form.control}
-                      name="percentage"
+                      name="maxCoin"
                       render={({ field: { onChange, value, ...rest } }) => (
                         <FormItem>
-                          <FormLabel>Percentage</FormLabel>
+                          <FormLabel>Maximum Coin</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="50" 
+                            <Input
+                              type="number"
+                              placeholder="200"
                               {...rest}
                               value={value === null ? '' : value}
                               onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
                             />
                           </FormControl>
                           <FormDescription>
-                            Cashback percentage for this offer
+                            Maximum coins that can be earned in this offer
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                  )}
+
+                    {(offerType === 'CASHBACK_OFFER' || offerType === 'LOCATION' || offerType === 'X_RIDE_AFTER_ONE_RIDE_FREE') && (
+                      <FormField
+                        control={form.control}
+                        name="percentage"
+                        render={({ field: { onChange, value, ...rest } }) => (
+                          <FormItem>
+                            <FormLabel>Percentage</FormLabel>
+                            <FormControl>
+                              <Input
+                                type="number"
+                                placeholder="50"
+                                {...rest}
+                                value={value === null ? '' : value}
+                                onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
+                              />
+                            </FormControl>
+                            <FormDescription>
+                              Cashback percentage for this offer
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
                   </div>
 
                   {offerType === 'X_RIDE_AFTER_ONE_RIDE_FREE' && (
@@ -613,9 +613,9 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                         <FormItem>
                           <FormLabel>X Rides Free</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="number" 
-                              placeholder="5" 
+                            <Input
+                              type="number"
+                              placeholder="5"
                               {...rest}
                               value={value === null ? '' : value}
                               onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
@@ -637,14 +637,14 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                       <FormItem>
                         <FormLabel>Terms and Conditions</FormLabel>
                         <FormControl>
-                          <Textarea 
+                          <Textarea
                             placeholder="* Offer valid only for rides starting or ending in downtown area.
 * Maximum cashback amount is ₹200 per ride.
 * Cashback will be credited to your wallet within 24 hours of completing the ride.
 * Offer cannot be combined with other ongoing promotions.
-* The company reserves the right to modify or terminate the offer at any time without prior notice." 
-                            className="min-h-[150px]" 
-                            {...field} 
+* The company reserves the right to modify or terminate the offer at any time without prior notice."
+                            className="min-h-[150px]"
+                            {...field}
                           />
                         </FormControl>
                         <FormMessage />
@@ -684,7 +684,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                       <p className="text-sm text-muted-foreground mb-4">
                         Define the geographical boundaries for this location-based offer.
                       </p>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <FormField
                           control={form.control}
@@ -693,9 +693,9 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                             <FormItem>
                               <FormLabel>Radius (meters)</FormLabel>
                               <FormControl>
-                                <Input 
-                                  type="number" 
-                                  placeholder="300" 
+                                <Input
+                                  type="number"
+                                  placeholder="300"
                                   {...rest}
                                   value={value === null ? '300' : value}
                                   onChange={(e) => onChange(e.target.value === '' ? 300 : Number(e.target.value))}
@@ -709,7 +709,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                           )}
                         />
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                           control={form.control}
@@ -718,8 +718,8 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                             <FormItem>
                               <FormLabel>Latitude</FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder="22.994877" 
+                                <Input
+                                  placeholder="22.994877"
                                   {...field}
                                   value={field.value || ""}
                                 />
@@ -728,7 +728,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                             </FormItem>
                           )}
                         />
-                        
+
                         <FormField
                           control={form.control}
                           name="location.coordinate.long"
@@ -736,8 +736,8 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                             <FormItem>
                               <FormLabel>Longitude</FormLabel>
                               <FormControl>
-                                <Input 
-                                  placeholder="72.567367" 
+                                <Input
+                                  placeholder="72.567367"
                                   {...field}
                                   value={field.value || ""}
                                 />
@@ -747,7 +747,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                           )}
                         />
                       </div>
-                      
+
                       {/* Map Component */}
                       <div className="mt-4">
                         <LocationMapSelector
@@ -776,8 +776,8 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                         <FormItem>
                           <FormLabel>Start Date</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="date" 
+                            <Input
+                              type="date"
                               {...field}
                             />
                           </FormControl>
@@ -796,8 +796,8 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                         <FormItem>
                           <FormLabel>End Date</FormLabel>
                           <FormControl>
-                            <Input 
-                              type="date" 
+                            <Input
+                              type="date"
                               {...field}
                             />
                           </FormControl>
@@ -845,7 +845,7 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                 >
                   Previous
                 </Button>
-                
+
                 {activeTab !== availableTabs[availableTabs.length - 1] ? (
                   <Button
                     type="button"
@@ -856,24 +856,24 @@ const UpdateOffer = ({ offerId, onSuccess, onClose }) => {
                   >
                     Next
                   </Button>
-                  ) : (
-                    <div className="flex space-x-2">
-                      {onClose && (
-                        <Button 
-                          type="button"
-                          variant="outline"
-                          onClick={onClose}
-                        >
-                          Cancel
-                        </Button>
-                      )}
-                      <Button 
-                        type="submit"
-                        disabled={loading}
+                ) : (
+                  <div className="flex space-x-2">
+                    {onClose && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={onClose}
                       >
-                        {loading ? "Updating..." : "Update Offer"}
+                        Cancel
                       </Button>
-                    </div>
+                    )}
+                    <Button
+                      type="submit"
+                      disabled={loading}
+                    >
+                      {loading ? "Updating..." : "Update Offer"}
+                    </Button>
+                  </div>
                 )}
               </div>
             </form>

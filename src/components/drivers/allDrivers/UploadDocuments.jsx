@@ -55,12 +55,14 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', profileUrl); // Attach the file
 
         try {
+            const token = localStorage.getItem('token')
             const response = await axios.post(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/profile-image`,
                 formData,
                 {
                     headers: {
                         'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${token}`
                     },
                 }
             );
@@ -86,9 +88,11 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicense);
 
         try {
+            const token = localStorage.getItem('token')
             const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-dl`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    "Authorization": `Bearer ${token}`
                 },
             });
             alert(response.data.message); // Alert on success
@@ -111,9 +115,11 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', drivingLicenseBack);
 
         try {
+            const token = localStorage.getItem('token')
             const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-dl-back`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
                 },
             });
             alert(response.data.message); // Alert on success
@@ -136,9 +142,11 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', RCBack);
 
         try {
+            const token = localStorage.getItem('token')
             const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-rc-back`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
                 },
             });
             alert(response.data.message); // Alert on success
@@ -161,9 +169,11 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', registrationCertificate);
 
         try {
+            const token = localStorage.getItem('token')
             const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-rc`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
                 },
             });
             alert(response.data.message); // Alert on success
@@ -186,9 +196,11 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', aadharCard);
 
         try {
+            const token = localStorage.getItem("token");
             const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-aadhar`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${token}`
                 },
             });
             alert(response.data.message);
@@ -211,9 +223,11 @@ const UploadDocuments = ({ id }) => {
         formData.append('file', aadharCardBack);
 
         try {
+            const token = localStorage.getItem("token");
             const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/edit-aadhar-back`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${token}`
                 },
             });
             alert(response.data.message);

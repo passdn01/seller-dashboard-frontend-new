@@ -236,7 +236,7 @@ export default function RideTable() {
         try {
             // Show loading state
             setLoading(true);
-    
+
             // Prepare query parameters based on current filters
             const exportParams = {
                 startDate: startDate || undefined,
@@ -245,15 +245,17 @@ export default function RideTable() {
             };
 
             console.log(exportParams)
-    
+
             // Call the export API
+            const token = localStorage.getItem("token");
             const response = await axios.post(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/exportRide`,
-                exportParams
+                exportParams,
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             console.log(response.data.data.length)
-    
+
             if (response.data.success) {
                 // Process the data for Excel
                 const excelData = response.data.data.map(ride => ({
@@ -271,25 +273,25 @@ export default function RideTable() {
                     'Status': ride.status || '',
                     'Last Updated': new Date(ride.updatedAt).toLocaleDateString()
                 }));
-    
+
                 // Create workbook and worksheet
                 const workbook = XLSX.utils.book_new();
                 const worksheet = XLSX.utils.json_to_sheet(excelData);
-    
+
                 // Add worksheet to workbook
                 XLSX.utils.book_append_sheet(workbook, worksheet, 'Rides');
-    
+
                 // Generate Excel file
                 const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
                 const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-    
+
                 // Create download link
                 const url = window.URL.createObjectURL(blob);
                 const link = document.createElement('a');
                 link.href = url;
                 link.download = `rides_export_${new Date().toISOString().split('T')[0]}.xlsx`;
                 link.click();
-    
+
                 // Cleanup
                 window.URL.revokeObjectURL(url);
             } else {

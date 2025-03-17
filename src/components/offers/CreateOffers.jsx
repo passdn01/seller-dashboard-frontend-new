@@ -63,11 +63,13 @@ function CreateOffer({ onSuccess }) {
     setError(null);
 
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.post(
         `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/offers`,
-        formData
+        formData,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      
+
       if (response.data.success) {
         onSuccess();
         // Reset form or close dialog
@@ -87,13 +89,13 @@ function CreateOffer({ onSuccess }) {
       <DialogHeader className="space-y-1">
         <DialogTitle className="text-xl font-semibold">Create New Offer</DialogTitle>
       </DialogHeader>
-      
+
       <div className="flex-1 overflow-y-auto py-4 -mr-2">
         <div className="grid gap-6 pb-2">
           {/* Basic Information Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Basic Information</h3>
-            
+
             <div className="grid grid-cols-1 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="offerName">Offer Name</Label>
@@ -106,7 +108,7 @@ function CreateOffer({ onSuccess }) {
                   required
                 />
               </div>
-            
+
               <div className="space-y-1.5">
                 <Label htmlFor="offerDescription">Description</Label>
                 <Textarea
@@ -150,12 +152,12 @@ function CreateOffer({ onSuccess }) {
           {/* Offer Criteria Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Offer Criteria</h3>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="offerCriteria.type">Offer Type</Label>
-                <Select 
-                  value={formData.offerCriteria.type} 
+                <Select
+                  value={formData.offerCriteria.type}
                   onValueChange={handleSelectChange}
                 >
                   <SelectTrigger id="offerCriteria.type">
@@ -203,7 +205,7 @@ function CreateOffer({ onSuccess }) {
           {/* Reward Section */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Reward & Terms</h3>
-            
+
             <div className="space-y-1.5">
               <Label htmlFor="reward">Reward Amount (₹)</Label>
               <Input
@@ -240,7 +242,7 @@ function CreateOffer({ onSuccess }) {
           )}
         </div>
       </div>
-      
+
       <DialogFooter className="pt-4 border-t mt-4">
         <Button type="submit" disabled={loading} className="px-8">
           {loading ? 'Creating...' : 'Create Offer'}

@@ -19,7 +19,7 @@ import {
     Route,
     Ruler,
     Calculator,
-    Gauge
+    Gauge,
 } from "lucide-react";
 
 const VEHICLE_TYPES = {
@@ -34,6 +34,8 @@ export default function FarePricing() {
     const [loading, setLoading] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(VEHICLE_TYPES.AUTO);
     const [saveStatus, setSaveStatus] = useState({ type: null, message: null });
+
+    const [cityId, setCityId] = useState("60d21b4667d0d8992e610c85");
 
     useEffect(() => {
         fetchPricingData();
@@ -51,6 +53,10 @@ export default function FarePricing() {
                 hatchback: data.find((item) => item.vehicleType === "HATCHBACK") || null,
                 sedan: data.find((item) => item.vehicleType === "SEDAN") || null,
             };
+
+            if (formattedData.auto) {
+                setCityId(formattedData.auto.cityId);
+            }
 
             setPricingData(formattedData);
             setChangedFields({});
@@ -103,6 +109,43 @@ export default function FarePricing() {
         }));
     };
 
+    const handleDistanceRangeChange = (category, index, value) => {
+        setPricingData((prev) => {
+            const updatedRanges = [...prev[category].distanceRanges];
+            updatedRanges[index] = {
+                ...updatedRanges[index],
+                pricePerKm: value
+            };
+
+            return {
+                ...prev,
+                [category]: {
+                    ...prev[category],
+                    distanceRanges: updatedRanges
+                }
+            };
+        });
+
+        setChangedFields((prev) => {
+            const updatedRanges = [
+                ...(prev[category]?.distanceRanges || pricingData[category]?.distanceRanges || [])
+            ];
+            updatedRanges[index] = {
+                ...updatedRanges[index],
+                pricePerKm: value
+            };
+
+            return {
+                ...prev,
+                [category]: {
+                    ...prev[category],
+                    distanceRanges: updatedRanges
+                }
+            };
+        });
+    };
+
+
     const handleSave = async (category) => {
         if (!changedFields[category] || Object.keys(changedFields[category]).length === 0) {
             setSaveStatus({
@@ -115,10 +158,12 @@ export default function FarePricing() {
 
         try {
             setLoading(true);
+            const token = localStorage.getItem("token");
             await axios.patch(
-                // `https://airshare.co.in/pricing/${category}`,
-                `https://jwkxs7nc-8055.inc1.devtunnels.ms/pricing/${category}`,
-                changedFields[category]
+                // `https://airshare.co.in/pricing/${category}?cityId=${cityId}`,
+                `https://jwkxs7nc-8055.inc1.devtunnels.ms/pricing/${category}?cityId=${cityId}`,
+                changedFields[category],
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             setSaveStatus({
                 type: "success",
@@ -201,7 +246,7 @@ export default function FarePricing() {
                                         className="mt-1 border-blue-200 focus:border-blue-500"
                                     />
                                 </div>
-                                <div>
+                                {/* <div>
                                     <Label className="text-sm font-medium flex items-center text-gray-700">
                                         <Route className="mr-1 h-4 w-4 text-blue-500" />
                                         Per Km After
@@ -212,7 +257,7 @@ export default function FarePricing() {
                                         onChange={(e) => handleChange(category, "perKmAfter", e.target.value)}
                                         className="mt-1 border-blue-200 focus:border-blue-500"
                                     />
-                                </div>
+                                </div> */}
                                 <div>
                                     <Label className="text-sm font-medium flex items-center text-gray-700">
                                         <Ruler className="mr-1 h-4 w-4 text-blue-500" />
@@ -283,6 +328,56 @@ export default function FarePricing() {
                                         className="mt-1 border-blue-200 focus:border-blue-500"
                                     />
                                 </div>
+                            </div>
+                        </div>
+
+                        <div className="border border-blue-100 rounded-md p-4 bg-white">
+                            <h3 className="text-lg font-semibold mb-4 border-b border-blue-100 pb-2 flex items-center">
+                                <Route className="mr-2 h-5 w-5 text-blue-600" />
+                                Distance Ranges
+                            </h3>
+                            <div className="space-y-4">
+                                {data.distanceRanges?.map((range, index) => (
+                                    <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-2 bg-blue-50/50 rounded-md">
+                                        <div>
+                                            <Label className="text-sm font-medium flex items-center text-gray-700">
+                                                <Ruler className="mr-1 h-4 w-4 text-blue-500" />
+                                                Min Distance
+                                            </Label>
+                                            <Input
+                                                type="number"
+                                                value={range.minDistance}
+                                                disabled={true}
+                                                className="mt-1 border-blue-200 focus:border-blue-500 bg-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium flex items-center text-gray-700">
+                                                <Ruler className="mr-1 h-4 w-4 text-blue-500" />
+                                                Max Distance
+                                            </Label>
+                                            <Input
+                                                type="number"
+                                                value={range.maxDistance}
+                                                disabled={true}
+                                                className="mt-1 border-blue-200 focus:border-blue-500 bg-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Label className="text-sm font-medium flex items-center text-gray-700">
+                                                <DollarSign className="mr-1 h-4 w-4 text-blue-500" />
+                                                Price Per Km
+                                            </Label>
+                                            <Input
+                                                type="number"
+                                                step="0.1"
+                                                value={range.pricePerKm}
+                                                onChange={(e) => handleDistanceRangeChange(category, index, e.target.value)}
+                                                className="mt-1 border-blue-200 focus:border-blue-500"
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
 

@@ -17,8 +17,9 @@ const IssueDetail = () => {
 
   const fetchIssueDetails = async () => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.get(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${id}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${id}`, { headers: { Authorization: `Bearer ${token}` } }
       );
       setIssue(response.data);
       console.log(response.data, "issue data")
@@ -36,8 +37,9 @@ const IssueDetail = () => {
 
   const fetchRideDetails = async (rideId) => {
     try {
+      const token = localStorage.getItem("token");
       const response = await axios.post(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/rideTransaction/${rideId}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/rideTransaction/${rideId}`, {}, { headers: { Authorization: `Bearer ${token}` } }
       );
       setRide(response.data.data.ride);
     } catch (error) {
@@ -48,8 +50,9 @@ const IssueDetail = () => {
 
   const markComplete = async (ticketId) => {
     try {
+      const token = localStorage.getItem("token");
       await axios.put(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/solve`, {}, { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchIssueDetails();
     } catch (err) {
@@ -59,8 +62,9 @@ const IssueDetail = () => {
 
   const markPending = async (ticketId) => {
     try {
+      const token = localStorage.getItem("token");
       await axios.put(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/pending`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/${ticketId}/pending`, {}, { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchIssueDetails();
     } catch (err) {

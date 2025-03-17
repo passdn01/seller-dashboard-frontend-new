@@ -29,7 +29,8 @@ function RideInfo() {
             try {
                 // Use a safer way to access environment variables
                 const baseUrl = import.meta.env.VITE_SELLER_URL_LOCAL || '';
-                const response = await axios.post(`${baseUrl}/dashboard/api/seller/getRide`, { transaction_id: transaction_id })
+                const token = localStorage.getItem("token");
+                const response = await axios.post(`${baseUrl}/dashboard/api/seller/getRide`, { transaction_id: transaction_id }, { headers: { Authorization: `Bearer ${token}` } })
 
                 if (response?.data?.success) {
                     setData(response.data.data)

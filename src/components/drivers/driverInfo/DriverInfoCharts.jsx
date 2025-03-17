@@ -20,11 +20,13 @@ const DriverInfoCharts = ({ data }) => {
             setIsLoading(true);
             setError(null);
 
+            const token = localStorage.getItem('token')
             try {
                 const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverInfoCharts`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         driverId,

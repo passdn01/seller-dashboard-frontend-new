@@ -27,8 +27,9 @@ function CityToggle({ cityId, isOpen, onClose, onToggleComplete }) {
   const fetchCityDetails = async () => {
     try {
       setLoading(true);
+
       const response = await axios.get(`https://airshare.co.in/admin/city/${cityId}`);
-      
+
       if (response.data) {
         setCity(response.data);
       } else {
@@ -44,10 +45,11 @@ function CityToggle({ cityId, isOpen, onClose, onToggleComplete }) {
   const handleToggleStatus = async () => {
     try {
       setToggling(true);
+      const token = localStorage.getItem("token");
       const response = await axios.put(
-        `https://airshare.co.in/admin/city/toggleCityStatus/${cityId}`
+        `https://airshare.co.in/admin/city/toggleCityStatus/${cityId}`, {}, { headers: { Authorization: `Bearer ${token}` } }
       );
-      
+
       if (response.data) {
         // Call the success callback with the updated city
         if (onToggleComplete) {
@@ -89,11 +91,11 @@ function CityToggle({ cityId, isOpen, onClose, onToggleComplete }) {
                 <div className="space-y-4">
                   <p>
                     Are you sure you want to {city?.isActive ? 'deactivate' : 'activate'} <span className="font-semibold">{city?.name}</span>?
-                    {city?.isActive 
-                      ? ' This will make the city unavailable for new services.' 
+                    {city?.isActive
+                      ? ' This will make the city unavailable for new services.'
                       : ' This will make the city available for services.'}
                   </p>
-                  
+
                   <div className="p-3 bg-gray-50 rounded-md text-sm">
                     <h4 className="font-medium mb-2">City Details</h4>
                     <div className="grid grid-cols-2 gap-2">
@@ -121,7 +123,7 @@ function CityToggle({ cityId, isOpen, onClose, onToggleComplete }) {
             )}
           </AlertDialogDescription>
         </AlertDialogHeader>
-        
+
         <AlertDialogFooter>
           <AlertDialogCancel disabled={loading || toggling}>Cancel</AlertDialogCancel>
           <AlertDialogAction

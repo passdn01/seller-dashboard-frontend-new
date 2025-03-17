@@ -34,7 +34,8 @@ const roleOptions = [
     "issueAssigner",
     "verifierAndIssueAssigner",
     "verifier",
-    "UserExplore"
+    "UserExplore",
+    "onlyNotifs"
 ];
 
 const RoleCard = ({ data, onUserDeleted, onUserEdited }) => {
@@ -49,12 +50,18 @@ const RoleCard = ({ data, onUserDeleted, onUserEdited }) => {
 
     const [showPassword, setShowPassword] = useState(false);
 
+    const token = localStorage.getItem('token')
+
     const handleDeleteRole = async () => {
         setIsLoading(true);
         try {
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/deleteDashboardUser`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                },
+
                 body: JSON.stringify({ userId: data._id })
             });
 
@@ -84,11 +91,13 @@ const RoleCard = ({ data, onUserDeleted, onUserEdited }) => {
 
     const handleSaveChanges = async () => {
         setIsLoading(true);
+        const token = localStorage.getItem('token')
         try {
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/editDashboardUser`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     ...editedData,

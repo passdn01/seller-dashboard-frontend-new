@@ -40,7 +40,8 @@ function Ride() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/ride/${id}`)
+        const token = localStorage.getItem("token");
+        axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/ride/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } })
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);

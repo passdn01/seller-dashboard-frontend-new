@@ -49,7 +49,8 @@ const RideStatistics = () => {
     // Fetch data for both total rides, drivers, cancelled rides, and earnings
     const fetchData = async () => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/totalStatsData`, { period });
+            const token = localStorage.getItem("token");
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/totalStatsData`, { period }, { headers: { Authorization: `Bearer ${token}` } });
             const result = response.data;
 
             const formattedRideData = [

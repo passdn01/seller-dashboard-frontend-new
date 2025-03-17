@@ -27,9 +27,10 @@ function RideDetail({ dataFromTable = {} }) {
 
         try {
             // Make both requests simultaneously
+            const token = localStorage.getItem("token");
             const [response1, response2] = await Promise.all([
-                axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideStatusUpdate`, { transactionId, status }),
-                axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/rideStatusUpdate`, { transactionId, status })
+                axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideStatusUpdate`, { transactionId, status }, { headers: { Authorization: `Bearer ${token}` } }),
+                axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/rideStatusUpdate`, { transactionId, status }, { headers: { Authorization: `Bearer ${token}` } })
             ]);
 
             if (response1.data.success && response2.data.success) {
