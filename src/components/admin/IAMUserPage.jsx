@@ -41,8 +41,13 @@ function IAMUserPage() {
 
     useEffect(() => {
         try {
+            const token = localStorage.getItem('token')
             setLoading(true)
-            fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/getDashboardUsers`)
+            fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/getDashboardUsers`, {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     const filtered = data.data.filter((role) => role.username !== username)

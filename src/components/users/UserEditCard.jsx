@@ -16,9 +16,13 @@ const UserEditCard = ({ userData }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
+                const token = localStorage.getItem('token')
                 const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/userDetail`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        "Authorization": `Bearer ${token}`
+                    },
                     body: JSON.stringify({ userId: userId })
                 });
 
@@ -68,10 +72,14 @@ const UserEditCard = ({ userData }) => {
 
     const handleSubmit = async () => {
         try {
+            const token = localStorage.getItem('token')
             setIsLoading(true);
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/updateUser`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify(formData)
             });
 

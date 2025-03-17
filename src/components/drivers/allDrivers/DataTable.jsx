@@ -251,10 +251,11 @@ export default function DriverTable() {
         if (!driverToDelete) return;
 
         try {
-            const response = await axios.delete(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverToDelete}`);
+            const token = localStorage.getItem("token");
+            const response = await axios.delete(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverToDelete}`, { headers: { Authorization: `Bearer ${token}` } });
             if (response.data.success) {
                 // Refetch data after deletion
-                const newResponse = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/allDrivers`);
+                const newResponse = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/allDrivers`, {}, { headers: { Authorization: `Bearer ${token}` } });
                 if (newResponse.data.success) {
                     const updatedData = newResponse.data.data;
                     setData(updatedData);
@@ -276,9 +277,10 @@ export default function DriverTable() {
 
     const handleStatusUpdate = async (driverId, currentStatus) => {
         try {
+            const token = localStorage.getItem('token')
             await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverId}/completeEdit`, {
                 completeStatus: !currentStatus // Toggle the status
-            });
+            }, { headers: { Authorization: `Bearer ${token}` } });
 
             const updatedData = data.map(driver => driver._id === driverId ? { ...driver, isCompleteRegistration: !currentStatus } : driver);
             setData(updatedData);
@@ -293,10 +295,11 @@ export default function DriverTable() {
 
     const handleStatusRejectUpdate = async (driverId, currentStatus) => {
         try {
+            const token = localStorage.getItem('token')
             currentStatus = currentStatus == "REJECTED" ? 'OFFLINE' : 'REJECTED'
             await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverId}/completeEdit`, {
                 status: currentStatus // Toggle the status
-            });
+            }, { headers: { Authorization: `Bearer ${token}` } });
 
             const updatedData = data.map(driver => driver._id === driverId ? { ...driver, status: currentStatus } : driver);
             setData(updatedData);
@@ -535,7 +538,7 @@ export default function DriverTable() {
                 setCurrentPage(newState.pageIndex);
             }
         },
-    
+
     });
 
     useEffect(() => {

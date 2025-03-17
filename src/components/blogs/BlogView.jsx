@@ -25,7 +25,8 @@ export default function BlogView() {
     useEffect(() => {
         async function fetchBlog() {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/api/blogs/${blogId}`);
+                const token = localStorage.getItem("token");
+                const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/api/blogs/${blogId}`, { headers: { Authorization: `Bearer ${token}` } });
                 setBlog(response.data);
                 setLoading(false);
             } catch (error) {
@@ -50,7 +51,8 @@ export default function BlogView() {
         setDeleting(true);
 
         try {
-            await axios.delete(`${import.meta.env.VITE_SELLER_URL_LOCAL}/api/blogs/${blogId}`);
+            const token = localStorage.getItem("token");
+            await axios.delete(`${import.meta.env.VITE_SELLER_URL_LOCAL}/api/blogs/${blogId}`, { headers: { Authorization: `Bearer ${token}` } });
             navigate('/blogs', { replace: true });
         } catch (error) {
             console.error('Error deleting blog:', error);

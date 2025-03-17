@@ -54,7 +54,7 @@ const IssueAssigner = () => {
     const [goToPage, setGoToPage] = useState("");
     const [applyButton, setApplyButton] = useState(false);
     const [selectedIssueId, setSelectedIssueId] = useState(null);
-    
+
     // Date filter states using simple input type="date"
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
@@ -76,8 +76,8 @@ const IssueAssigner = () => {
                 startDate: startDate || undefined,
                 endDate: endDate || undefined
             };
-            
-            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets`, { params });
+            const token = localStorage.getItem("token");
+            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets`, { ...params, headers: { Authorization: `Bearer ${token}` } });
             console.log(response.data, response)
             setTickets(response.data.tickets);
             setTotalPages(response.data.totalPages);
@@ -93,7 +93,8 @@ const IssueAssigner = () => {
         const fetchSolvers = async () => {
             setSolverLoading(true);
             try {
-                const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/solvers`);
+                const token = localStorage.getItem("token");
+                const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/solvers`, { headers: { Authorization: `Bearer ${token}` } });
                 if (response?.data) {
                     setSolvers(response.data);
                 }
@@ -122,11 +123,12 @@ const IssueAssigner = () => {
 
         try {
             setLoading(true);
+            const token = localStorage.getItem("token");
             await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets/assign`, {
                 assignerId: userId,
                 ticketId,
                 solverId
-            });
+            }, { headers: { Authorization: `Bearer ${token}` } });
 
             // Find the full solver object by ID
             const assignedSolver = solvers.find(solver => solver._id === solverId);
@@ -169,10 +171,10 @@ const IssueAssigner = () => {
     const formatDateForDisplay = (dateString) => {
         if (!dateString) return "";
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         });
     };
 
@@ -266,8 +268,8 @@ const IssueAssigner = () => {
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button 
-                                variant="ghost" 
+                            <Button
+                                variant="ghost"
                                 className="h-8 w-8 p-0"
                                 onClick={(e) => e.stopPropagation()} // Prevent row click when clicking dropdown
                             >
@@ -358,7 +360,7 @@ const IssueAssigner = () => {
         // Flatten to handle the detail rows
         return table.getRowModel().rows.flatMap((row) => {
             const isSelected = row.original?._id === selectedIssueId;
-            
+
             const result = [
                 <TableRow
                     key={row.id}
@@ -377,10 +379,10 @@ const IssueAssigner = () => {
             // Add the detail row if this row is selected
             if (isSelected && row.original?._id) {
                 result.push(
-                    <IssueDetailExpandable 
+                    <IssueDetailExpandable
                         key={`detail-${row.id}`}
-                        issueId={row.original._id} 
-                        onClose={closeIssueDetail} 
+                        issueId={row.original._id}
+                        onClose={closeIssueDetail}
                     />
                 );
             }
@@ -391,7 +393,7 @@ const IssueAssigner = () => {
 
     return (
         <div className='p-6 text-sm'>
-                {/* Search Filter */}
+            {/* Search Filter */}
             <div className="flex px-4 pb-6">
                 <Input
                     placeholder="Search tickets..."
@@ -419,7 +421,7 @@ const IssueAssigner = () => {
                         </SelectContent>
                     </Select>
                 </div>
-                
+
                 {/* Sort By Filter */}
                 <div>
                     <Label>Sort by</Label>
@@ -436,20 +438,20 @@ const IssueAssigner = () => {
                         </SelectContent>
                     </Select>
                 </div>
-                
+
                 {/* Simple Date Filters */}
                 <div>
                     <Label>Start Date</Label>
                     <div className="relative">
-                        <Input 
-                            type="date" 
+                        <Input
+                            type="date"
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                             className="w-[180px] pl-9"
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                         {startDate && (
-                            <button 
+                            <button
                                 onClick={() => setStartDate("")}
                                 className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                             >
@@ -458,12 +460,12 @@ const IssueAssigner = () => {
                         )}
                     </div>
                 </div>
-                
+
                 <div>
                     <Label>End Date</Label>
                     <div className="relative">
-                        <Input 
-                            type="date" 
+                        <Input
+                            type="date"
                             value={endDate}
                             onChange={(e) => setEndDate(e.target.value)}
                             className="w-[180px] pl-9"
@@ -471,7 +473,7 @@ const IssueAssigner = () => {
                         />
                         <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
                         {endDate && (
-                            <button 
+                            <button
                                 onClick={() => setEndDate("")}
                                 className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                             >
@@ -487,21 +489,21 @@ const IssueAssigner = () => {
                     <Button onClick={handleReset} variant="outline" disabled={loading}>Reset filters</Button>
                 </div>
             </div>
-            
+
             {/* Date filter info */}
             {(startDate || endDate) && (
                 <div className="mb-4 ml-4">
                     <div className="bg-blue-50 text-blue-700 px-4 py-2 rounded flex items-center text-sm">
                         <Calendar className="h-4 w-4 mr-2" />
                         <span>
-                            Showing tickets from 
-                            {startDate ? ` ${formatDateForDisplay(startDate)}` : " all time"} 
+                            Showing tickets from
+                            {startDate ? ` ${formatDateForDisplay(startDate)}` : " all time"}
                             {endDate ? ` to ${formatDateForDisplay(endDate)}` : ""}
                         </span>
                     </div>
                 </div>
             )}
-            
+
             <div className='border-gray-200 border-2 rounded'>
                 <Table>
                     <TableHeader>

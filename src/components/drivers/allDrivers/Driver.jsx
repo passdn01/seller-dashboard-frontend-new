@@ -45,9 +45,9 @@ function Driver() {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false); // State for delete dialog
     const [driverToDelete, setDriverToDelete] = useState(null); // State for driver ID to delete
     const navigate = useNavigate();
-
+    const token = localStorage.getItem('token')
     useEffect(() => {
-        axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}`)
+        axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } })
             .then((response) => {
                 if (response.data.success) {
                     setData(response.data.data);
@@ -65,14 +65,15 @@ function Driver() {
 
     const handleStatusUpdate = async () => {
         try {
+            const token = localStorage.getItem('token')
             await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
-            });
+            }, { headers: { Authorization: `Bearer ${token}` } });
             await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/send-notification`, {
                 driverId: data.driverInfo._id // Toggle the status,
                 , title: "Your Account has been approved ✅",
                 body: "Rides are waiting for you 🛺"
-            });
+            }, { headers: { Authorization: `Bearer ${token}` } });
             // Optionally, update local state
             setCompleteStatus(!completeStatus);
         } catch (error) {
@@ -83,7 +84,8 @@ function Driver() {
 
     const handleDeleteDriver = async () => {
         try {
-            const response = await axios.delete(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverToDelete}`);
+            const token = localStorage.getItem('token')
+            const response = await axios.delete(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverToDelete}`, { headers: { Authorization: `Bearer ${token}` } });
             if (response.data.success) {
                 alert('Driver deleted successfully');
                 navigate('/drivers/allDrivers'); // Redirect after deletion
@@ -245,14 +247,15 @@ function VDriver() {
 
     const handleStatusUpdate = async () => {
         try {
+            const token = localStorage.getItem('token')
             await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${id}/completeEdit`, {
                 completeStatus: !completeStatus // Toggle the status
-            });
+            }, { headers: { Authorization: `Bearer ${token}` } });
             await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/send-notification`, {
                 driverId: data.driverInfo._id // Toggle the status,
                 , title: "Your Account has been approved ✅",
                 body: "Rides are waiting for you 🛺"
-            });
+            }, { headers: { Authorization: `Bearer ${token}` } });
             // Optionally, update local state
             setCompleteStatus(!completeStatus);
         } catch (error) {
@@ -263,7 +266,8 @@ function VDriver() {
 
     const handleDeleteDriver = async () => {
         try {
-            const response = await axios.delete(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverToDelete}`);
+            const token = localStorage.getItem('token')
+            const response = await axios.delete(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driver/${driverToDelete}`, { headers: { Authorization: `Bearer ${token}` } });
             if (response.data.success) {
                 alert('Driver deleted successfully');
                 navigate('/drivers/allDrivers'); // Redirect after deletion

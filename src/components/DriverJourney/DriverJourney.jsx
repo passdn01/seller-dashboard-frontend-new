@@ -18,8 +18,13 @@ const DriverJourney = () => {
   const fetchDriverData = async () => {
     setIsLoading(true);
     try {
+      const token = localStorage.getItem('token')
       const response = await fetch(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverJourney?start=${dateRange.start}&end=${dateRange.end}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverJourney?start=${dateRange.start}&end=${dateRange.end}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
       );
       const data = await response.json();
 
@@ -47,24 +52,29 @@ const DriverJourney = () => {
 
   const handlePresetClick = async (preset) => {
     const end = moment().tz(IST_TIMEZONE).format('YYYY-MM-DD');
-      let start;
-  
-      if (preset === 'last30') {
-        start = moment().tz(IST_TIMEZONE).subtract(30, 'days').format('YYYY-MM-DD');
-      } else if (preset === 'today') {
-        start = end;
-      }
-      else if (preset === 'allTime') {
-        start = '2024-01-01';
-      }
-  
-      setDateRange({ start, end });
-    
+    let start;
+
+    if (preset === 'last30') {
+      start = moment().tz(IST_TIMEZONE).subtract(30, 'days').format('YYYY-MM-DD');
+    } else if (preset === 'today') {
+      start = end;
+    }
+    else if (preset === 'allTime') {
+      start = '2024-01-01';
+    }
+
+    setDateRange({ start, end });
+
     // Fetch data immediately after setting date range
     setIsLoading(true);
     try {
+      const token = localStorage.getItem('token')
       const response = await fetch(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverJourney?start=${start}&end=${end}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverJourney?start=${start}&end=${end}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
       );
       const data = await response.json();
 
@@ -92,7 +102,7 @@ const DriverJourney = () => {
       cabDrivers: 0,
       eliteDrivers: 0
     };
-  
+
     return {
       totalDrivers: metricsData.totalDrivers || 0,
       verifiedDrivers: metricsData.verifiedDrivers || 0,
@@ -133,7 +143,7 @@ const DriverJourney = () => {
       <div className="mb-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
           <h2 className="text-xl font-bold text-gray-800">Driver Analysis</h2>
-          
+
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center w-full md:w-auto">
             <div className="flex gap-2">
               <button
@@ -155,7 +165,7 @@ const DriverJourney = () => {
                 All Time
               </button>
             </div>
-            
+
             <div className="flex items-center gap-2 w-full md:w-auto">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-gray-500" />
@@ -189,20 +199,20 @@ const DriverJourney = () => {
 
         {(flowData.length > 0 || error) && (
           <div className="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2">
-            <MetricCard 
-              label="Total LogIn Drivers" 
+            <MetricCard
+              label="Total LogIn Drivers"
               value={metrics.totalDrivers}
             />
-            <MetricCard 
-              label="Verified Drivers" 
+            <MetricCard
+              label="Verified Drivers"
               value={metrics.verifiedDrivers}
             />
-            <MetricCard 
-              label="Auto Drivers" 
+            <MetricCard
+              label="Auto Drivers"
               value={metrics.autoDrivers}
             />
-            <MetricCard 
-              label="Elite Drivers" 
+            <MetricCard
+              label="Elite Drivers"
               value={metrics.eliteDrivers}
             />
           </div>
@@ -219,9 +229,9 @@ const DriverJourney = () => {
         </div>
       ) : flowData.length > 0 ? (
         <div className="w-[1200px] h-[500px]">
-          <SankeyChart 
-            data={flowData} 
-            options={options} 
+          <SankeyChart
+            data={flowData}
+            options={options}
           />
         </div>
       ) : (

@@ -12,9 +12,9 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
 });
 
-const CityMapSelector = ({ 
-  initialLat = "", 
-  initialLng = "", 
+const CityMapSelector = ({
+  initialLat = "",
+  initialLng = "",
   onChange,
   radius = 300
 }) => {
@@ -23,12 +23,12 @@ const CityMapSelector = ({
   const markerRef = useRef(null);
   const circleRef = useRef(null);
   const polygonRef = useRef(null);
-  
+
   const [position, setPosition] = useState({
     lat: initialLat ? parseFloat(initialLat) : 22.994877,
     lng: initialLng ? parseFloat(initialLng) : 72.567367
   });
-  
+
   const [cities, setCities] = useState([]);
   const [selectedCity, setSelectedCity] = useState("");
   const [loading, setLoading] = useState(true);
@@ -37,7 +37,12 @@ const CityMapSelector = ({
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const response = await fetch('https://airshare.co.in/admin/city');
+        const token = localStorage.getItem('token')
+        const response = await fetch('https://airshare.co.in/admin/city', {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
         if (!response.ok) {
           throw new Error('Failed to fetch cities');
         }
@@ -60,24 +65,24 @@ const CityMapSelector = ({
         lat: initialLat ? parseFloat(initialLat) : 22.994877,
         lng: initialLng ? parseFloat(initialLng) : 72.567367
       };
-      
+
       // Create map
       mapRef.current = L.map(mapContainerRef.current).setView(
-        [defaultPosition.lat, defaultPosition.lng], 
+        [defaultPosition.lat, defaultPosition.lng],
         13
       );
-      
+
       // Add tile layer (OpenStreetMap)
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(mapRef.current);
-      
+
       // Add marker if initial coordinates are provided
       if (initialLat && initialLng) {
         markerRef.current = L.marker([defaultPosition.lat, defaultPosition.lng], {
           draggable: true
         }).addTo(mapRef.current);
-        
+
         // Add circle to represent radius
         circleRef.current = L.circle([defaultPosition.lat, defaultPosition.lng], {
           radius: radius,
@@ -86,7 +91,7 @@ const CityMapSelector = ({
           color: '#3b82f6',
           weight: 1
         }).addTo(mapRef.current);
-        
+
         // Update position when marker is dragged
         markerRef.current.on('dragend', (e) => {
           const marker = e.target;
@@ -94,13 +99,13 @@ const CityMapSelector = ({
           updatePosition(position.lat, position.lng);
         });
       }
-      
+
       // Add click event to map for placing marker
       mapRef.current.on('click', (e) => {
         updatePosition(e.latlng.lat, e.latlng.lng);
       });
     }
-    
+
     // Cleanup function
     return () => {
       if (mapRef.current) {
@@ -122,7 +127,7 @@ const CityMapSelector = ({
     if (initialLat && initialLng && mapRef.current) {
       const newLat = parseFloat(initialLat);
       const newLng = parseFloat(initialLng);
-      
+
       if (newLat !== position.lat || newLng !== position.lng) {
         updatePosition(newLat, newLng);
       }
@@ -132,7 +137,7 @@ const CityMapSelector = ({
   // Function to update position and trigger onChange
   const updatePosition = (lat, lng) => {
     setPosition({ lat, lng });
-    
+
     // Update marker position
     if (markerRef.current) {
       markerRef.current.setLatLng([lat, lng]);
@@ -140,7 +145,7 @@ const CityMapSelector = ({
       markerRef.current = L.marker([lat, lng], {
         draggable: true
       }).addTo(mapRef.current);
-      
+
       // Add drag event listener
       markerRef.current.on('dragend', (e) => {
         const marker = e.target;
@@ -148,7 +153,7 @@ const CityMapSelector = ({
         updatePosition(position.lat, position.lng);
       });
     }
-    
+
     // Update circle position
     if (circleRef.current) {
       circleRef.current.setLatLng([lat, lng]);
@@ -161,7 +166,7 @@ const CityMapSelector = ({
         weight: 1
       }).addTo(mapRef.current);
     }
-    
+
     // Call the onChange callback with updated coordinates
     if (onChange) {
       onChange({
@@ -193,28 +198,28 @@ const CityMapSelector = ({
   // Handle city selection
   const handleCityChange = (cityId) => {
     setSelectedCity(cityId);
-    
+
     // Find the selected city
     const city = cities.find(c => c._id === cityId);
-    
+
     if (city && city.location && city.location.coordinates) {
       // Navigate to city coordinates
       const [lng, lat] = city.location.coordinates;
-      
+
       // Update marker position and view
       updatePosition(lat, lng);
       mapRef.current.setView([lat, lng], 13);
-      
+
       // Draw city boundaries if available
       if (city.boundaries && city.boundaries.coordinates && city.boundaries.coordinates[0]) {
         // Remove previous polygon if it exists
         if (polygonRef.current) {
           mapRef.current.removeLayer(polygonRef.current);
         }
-        
+
         // Convert coordinates from [lng, lat] to [lat, lng] format for Leaflet
         const convertedCoordinates = city.boundaries.coordinates[0].map(coord => [coord[1], coord[0]]);
-        
+
         // Create new polygon
         polygonRef.current = L.polygon(convertedCoordinates, {
           color: '#10b981',
@@ -222,7 +227,7 @@ const CityMapSelector = ({
           fillColor: '#10b981',
           fillOpacity: 0.1
         }).addTo(mapRef.current);
-        
+
         // Fit map to polygon bounds
         mapRef.current.fitBounds(polygonRef.current.getBounds());
       }
@@ -233,8 +238,8 @@ const CityMapSelector = ({
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-2">
         <div className="w-full sm:w-64">
-          <Select 
-            value={selectedCity} 
+          <Select
+            value={selectedCity}
             onValueChange={handleCityChange}
             disabled={loading}
           >
@@ -250,26 +255,26 @@ const CityMapSelector = ({
             </SelectContent>
           </Select>
         </div>
-        
-        <Button 
-          type="button" 
-          variant="outline" 
+
+        <Button
+          type="button"
+          variant="outline"
           onClick={getCurrentLocation}
           className="text-sm"
         >
           Use My Current Location
         </Button>
-        
+
         <div className="text-sm text-muted-foreground">
           Click on map to place marker or drag marker to adjust position
         </div>
       </div>
-      
-      <div 
-        ref={mapContainerRef} 
+
+      <div
+        ref={mapContainerRef}
         className="h-[400px] w-full rounded-md border"
       ></div>
-      
+
       <div className="grid grid-cols-2 gap-4 mt-2">
         <div>
           <p className="text-sm font-medium mb-1">Selected Latitude</p>

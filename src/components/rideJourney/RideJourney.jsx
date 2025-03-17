@@ -19,9 +19,15 @@ const RideJourney = () => {
 
   const fetchRideData = async () => {
     setIsLoading(true);
+    const token = localStorage.getItem('token')
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideJourney?start=${dateRange.start}&end=${dateRange.end}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideJourney?start=${dateRange.start}&end=${dateRange.end}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+
+        }
+      }
       );
       const data = await response.json();
 
@@ -61,12 +67,17 @@ const RideJourney = () => {
     }
 
     setDateRange({ start, end });
-    
+
     // Fetch data immediately after setting date range
     setIsLoading(true);
     try {
+      const token = localStorage.getItem('token')
       const response = await fetch(
-        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideJourney?start=${start}&end=${end}`
+        `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/rideJourney?start=${start}&end=${end}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
       );
       const data = await response.json();
 
@@ -93,7 +104,7 @@ const RideJourney = () => {
       notAcceptedRides: 0,
       cancelledRides: 0
     };
-  
+
     return {
       totalSearches: metricsData.totalRideSearch || 0,
       autoSearches: metricsData.autoSearch || 0,
@@ -134,8 +145,8 @@ const RideJourney = () => {
         <div class="p-2 bg-white shadow-lg rounded">
           <p class="font-bold">${data.source} → ${data.target}</p>
           <p>Count: ${data.value.toLocaleString()}</p>
-          ${data.target === 'Completed' || data.target === 'Not Completed' || data.target === 'Cancelled' ? 
-            `<p class="text-sm text-gray-600">Final Status</p>` : ''}
+          ${data.target === 'Completed' || data.target === 'Not Completed' || data.target === 'Cancelled' ?
+          `<p class="text-sm text-gray-600">Final Status</p>` : ''}
         </div>
       `
     }
@@ -148,7 +159,7 @@ const RideJourney = () => {
       <div className="mb-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
           <h2 className="text-xl font-bold text-gray-800">Analysis</h2>
-          
+
           <div className="flex flex-col md:flex-row gap-4 items-start md:items-center w-full md:w-auto">
             <div className="flex gap-2">
               <button
@@ -170,7 +181,7 @@ const RideJourney = () => {
                 All Time
               </button>
             </div>
-            
+
             <div className="flex items-center gap-2 w-full md:w-auto">
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-gray-500" />
@@ -204,24 +215,24 @@ const RideJourney = () => {
 
         {(flowData.length > 0 || error) && (
           <div className="mt-2 grid grid-cols-2 md:grid-cols-5 gap-2">
-            <MetricCard 
-              label="Total Searches" 
+            <MetricCard
+              label="Total Searches"
               value={metrics.totalSearches}
             />
-            <MetricCard 
-              label="Auto Searches" 
+            <MetricCard
+              label="Auto Searches"
               value={metrics.autoSearches}
             />
-            <MetricCard 
-              label="Completed Rides" 
+            <MetricCard
+              label="Completed Rides"
               value={metrics.completedRides}
             />
-            <MetricCard 
-              label="Cancelled Rides" 
+            <MetricCard
+              label="Cancelled Rides"
               value={metrics.cancelledRides}
             />
-            <MetricCard 
-              label="Not Completed Rides" 
+            <MetricCard
+              label="Not Completed Rides"
               value={metrics.notAcceptedRides}
             />
           </div>
@@ -238,9 +249,9 @@ const RideJourney = () => {
         </div>
       ) : flowData.length > 0 ? (
         <div className="w-[1200px] h-[500px]">
-          <SankeyChart 
-            data={flowData} 
-            options={options} 
+          <SankeyChart
+            data={flowData}
+            options={options}
           />
         </div>
       ) : (

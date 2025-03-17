@@ -25,9 +25,11 @@ const AddAgent = () => {
         setLoading(true);
         setError('');
         try {
+            const token = localStorage.getItem("token");
             const response = await axios.post(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/agent/add`, // Adjusted endpoint for adding a new agent
-                formData
+                formData,
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             if (response.data.success) {
                 alert('Agent added successfully!');

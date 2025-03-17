@@ -243,7 +243,8 @@ function SideNavbar() {
         try {
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/logout`, {
                 method: 'POST',
-                credentials: 'include'
+                credentials: 'include',
+
             });
 
             const data = await response.json();

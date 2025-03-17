@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import moment from 'moment'; // Changed from '* as moment' to default import
-import { 
-    Card, 
-    CardContent, 
-    CardHeader, 
-    CardTitle 
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Oval } from 'react-loader-spinner';
@@ -64,12 +64,14 @@ const DriverRideLogs = ({ driverId }) => {
 
         try {
             // Fetch ride logs
+            const token = localStorage.getItem('token')
             const rideResponse = await fetch(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverRideLogs`,
                 {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         driverId,
@@ -86,6 +88,7 @@ const DriverRideLogs = ({ driverId }) => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         driverId,
@@ -168,30 +171,30 @@ const DriverRideLogs = ({ driverId }) => {
                 <div className='flex justify-between items-center'>
                     <CardTitle className="text-xl mb-4">Driver Ride Logs</CardTitle>
                     <div className="flex flex-wrap items-center gap-2">
-                        <Button 
+                        <Button
                             size="sm"
-                            variant={dateRange === 'today' ? 'default' : 'outline'} 
+                            variant={dateRange === 'today' ? 'default' : 'outline'}
                             onClick={() => handleDateRangeChange('today')}
                         >
                             Today
                         </Button>
-                        <Button 
+                        <Button
                             size="sm"
-                            variant={dateRange === 'last30' ? 'default' : 'outline'} 
+                            variant={dateRange === 'last30' ? 'default' : 'outline'}
                             onClick={() => handleDateRangeChange('last30')}
                         >
                             Last 30 Days
                         </Button>
-                        <Button 
+                        <Button
                             size="sm"
-                            variant={dateRange === 'allTime' ? 'default' : 'outline'} 
+                            variant={dateRange === 'allTime' ? 'default' : 'outline'}
                             onClick={() => handleDateRangeChange('allTime')}
                         >
                             All Time
                         </Button>
-                        <Button 
+                        <Button
                             size="sm"
-                            variant={dateRange === 'custom' ? 'default' : 'outline'} 
+                            variant={dateRange === 'custom' ? 'default' : 'outline'}
                             onClick={() => handleDateRangeChange('custom')}
                         >
                             Custom
@@ -199,8 +202,8 @@ const DriverRideLogs = ({ driverId }) => {
                         {dateRange === 'custom' && (
                             <div className="flex items-center gap-2">
                                 <div className="relative">
-                                    <input 
-                                        type="date" 
+                                    <input
+                                        type="date"
                                         value={startDate}
                                         onChange={(e) => setStartDate(e.target.value)}
                                         className="border rounded px-2 py-1 pl-8 text-sm"
@@ -208,16 +211,16 @@ const DriverRideLogs = ({ driverId }) => {
                                     <Calendar className="absolute left-2 top-2 h-4 w-4 text-gray-500" />
                                 </div>
                                 <div className="relative">
-                                    <input 
-                                        type="date" 
+                                    <input
+                                        type="date"
                                         value={endDate}
                                         onChange={(e) => setEndDate(e.target.value)}
                                         className="border rounded px-2 py-1 pl-8 text-sm"
                                     />
                                     <Calendar className="absolute left-2 top-2 h-4 w-4 text-gray-500" />
                                 </div>
-                                <Button 
-                                    size="sm" 
+                                <Button
+                                    size="sm"
                                     variant="outline"
                                     onClick={handleSearch}
                                     className="flex items-center gap-2"
@@ -301,7 +304,7 @@ const DriverRideLogs = ({ driverId }) => {
                                 </p>
                             </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="p-4 rounded-lg border">
                                 <h3 className="text-md font-medium text-gray-700 mb-2">Acceptance Rate</h3>

@@ -24,9 +24,13 @@ function UserLastRides({ userId, data }) {
 
     const fetchRides = async () => {
         try {
+            const token = localStorage.getItem('token')
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/getLastTenRides`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
                 body: JSON.stringify({ id: userId }),
             });
 

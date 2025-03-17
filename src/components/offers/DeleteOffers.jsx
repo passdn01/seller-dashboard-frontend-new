@@ -15,12 +15,13 @@ function DeleteOffer({ offerId, isOpen, onClose, onDeleteComplete }) {
 
   const handleDelete = async () => {
     if (!offerId) return;
-    
+
     setLoading(true);
     setError(null);
-    
+
     try {
-      const response = await axios.delete(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/offers/${offerId}`);
+      const token = localStorage.getItem("token");
+      const response = await axios.delete(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/offers/${offerId}`, { headers: { Authorization: `Bearer ${token}` } });
       if (response.data.success) {
         onDeleteComplete(offerId);
       } else {

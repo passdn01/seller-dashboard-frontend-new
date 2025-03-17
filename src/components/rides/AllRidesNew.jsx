@@ -100,9 +100,11 @@ function AllRidesNew() {
             };
 
             // Call the export API
+            const token = localStorage.getItem("token");
             const response = await axios.post(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/exportRide`,
-                exportParams
+                exportParams,
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             if (response.data.success) {
@@ -312,8 +314,8 @@ function AllRidesNew() {
             if (searchQuery) params.set('searchQuery', searchQuery);
 
             const url = `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/getAllRidesNew?${params.toString()}`;
-
-            const response = await axios.get(url);
+            const token = localStorage.getItem("token");
+            const response = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
 
             setData(response.data.rides);
             setTotalPages(response.data.totalPages);

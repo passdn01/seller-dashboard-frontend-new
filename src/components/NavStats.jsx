@@ -25,7 +25,8 @@ const NavStats = () => {
 
     const fetchTotalCompletedRides = async () => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/totalStatsData`, { period: 'all time' });
+            const token = localStorage.getItem("token");
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/totalStatsData`, { period: 'all time' }, { headers: { Authorization: `Bearer ${token}` } });
             const result = response.data;
 
             console.log(result); // Log the response to inspect the structure
@@ -79,7 +80,8 @@ const NavStats = () => {
 
     const fetchOngoingRides = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/total-ongoing-rides`);
+            const token = localStorage.getItem("token");
+            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/total-ongoing-rides`, { headers: { Authorization: `Bearer ${token}` } });
             const totalOngoingRides = response.data.ongoingRides;
             console.log(totalOngoingRides);
             setOngoingRidesCount(totalOngoingRides);

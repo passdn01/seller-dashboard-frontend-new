@@ -28,7 +28,8 @@ export default function BlogList() {
     useEffect(() => {
         async function fetchBlogs() {
             try {
-                const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/api/blogs`);
+                const token = localStorage.getItem("token");
+                const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/api/blogs`, { headers: { Authorization: `Bearer ${token}` } });
                 setBlogs(response.data);
                 setFilteredBlogs(response.data);
                 setLoading(false);

@@ -40,7 +40,7 @@ const HeatmapLayer = React.memo(({ data }) => {
         const existingHeatmapLayer = Object.values(map._layers).find(
             layer => layer instanceof L.HeatLayer
         );
-        
+
         if (existingHeatmapLayer) {
             map.removeLayer(existingHeatmapLayer);
         }
@@ -73,7 +73,7 @@ HeatmapLayer.propTypes = {
 
 // Memoized HeatmapLegend Component
 const HeatmapLegend = React.memo(({ type }) => {
-    const heatmapColors = useMemo(() => 
+    const heatmapColors = useMemo(() =>
         type === 'completed'
             ? ['#4575b4', '#91bfdb', '#e0f3f8', '#fee090', '#fc8d59', '#d73027']
             : ['#313695', '#4575b4', '#74add1', '#fdae61', '#f46d43', '#a50026'],
@@ -131,7 +131,8 @@ const GeoMetrics = () => {
     // Memoized API calls
     const fetchRideDistribution = useCallback(async () => {
         try {
-            const response = await api.get('/dashboard/api/seller/ride-distribution');
+            const token = localStorage.getItem("token");
+            const response = await api.get('/dashboard/api/seller/ride-distribution', { headers: { Authorization: `Bearer ${token}` } });
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -149,7 +150,8 @@ const GeoMetrics = () => {
 
     const fetchCancelledRideDistribution = useCallback(async () => {
         try {
-            const response = await api.get('/dashboard/api/seller/cancelled-distribution');
+            const token = localStorage.getItem("token");
+            const response = await api.get('/dashboard/api/seller/cancelled-distribution', { headers: { Authorization: `Bearer ${token}` } });
             const data = response.data.map(cluster => [
                 cluster.center.lat,
                 cluster.center.lng,
@@ -179,21 +181,22 @@ const GeoMetrics = () => {
                 ...(type !== 'all' && { type })
             };
 
-            const response = await api.post('/dashboard/api/seller/start-ride-clustering', requestData);
-            
+            const token = localStorage.getItem("token");
+            const response = await api.post('/dashboard/api/seller/start-ride-clustering', requestData, { headers: { Authorization: `Bearer ${token}` } });
+
             // Process the response to separate start and end clusters
             const clusters = response.data.map(cluster => ({
                 center: [cluster.center.lat, cluster.center.lng],
                 count: cluster.numRides,
                 type: cluster.type // 'start' or 'end'
             }));
-            
+
             setCirclemapData(clusters);
-            
-            const dateRange = startDate === endDate || !endDate 
+
+            const dateRange = startDate === endDate || !endDate
                 ? `on ${formatDate(startDate)}`
                 : `from ${formatDate(startDate)} to ${formatDate(endDate)}`;
-                
+
             setAnalysis(`Ride clustering ${dateRange}`);
         } catch (error) {
             console.error('Error fetching ride data:', error);
@@ -300,7 +303,7 @@ const GeoMetrics = () => {
     }), []);
 
     return (
-        <div className="flex h-screen">  
+        <div className="flex h-screen">
             <div className="flex-1 relative">
                 {(mapLoading || optionLoading) ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-white/80">
@@ -322,9 +325,9 @@ const GeoMetrics = () => {
                             attribution="Map data © OpenStreetMap contributors"
                         />
                         <ZoomControl position="topright" />
-                        
+
                         {viewMode === 'heatmap' && <HeatmapLayer data={heatmapData} />}
-                        
+
                         {viewMode === 'drivers' && drivers.map(driver => (
                             <Marker
                                 key={driver.driverId}
@@ -342,7 +345,7 @@ const GeoMetrics = () => {
                                 </Popup>
                             </Marker>
                         ))}
-                        
+
                         {viewMode === 'ride24hrs' && circlemapData.map((cluster, index) => {
                             const color = cluster.type === 'start' ? '#3b82f6' : '#22c55e';
                             if (type === 'all' || type === cluster.type) {
@@ -365,133 +368,133 @@ const GeoMetrics = () => {
 
             <Card className="w-80 h-screen rounded-none flex flex-col border-r">
                 <CardHeader className="bg-background border-b">
-                <CardTitle>Map View Options</CardTitle>
+                    <CardTitle>Map View Options</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 overflow-y-auto p-4 space-y-6">
-                <div className="space-y-4">
-                    <div>
-                    <Label>View Mode</Label>
-                    <Select value={viewMode} onValueChange={setViewMode}>
-                        <SelectTrigger>
-                        <SelectValue placeholder="Select a view" />
-                        </SelectTrigger>
-                        <SelectContent>
-                        <SelectItem value="heatmap">Rides Heatmap</SelectItem>
-                        <SelectItem value="drivers">All Drivers Location</SelectItem>
-                        <SelectItem value="ride24hrs">Ride 24 Hrs</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    </div>
-
-                    {viewMode === 'heatmap' && (
-                    <div>
-                        <Label>Ride Type</Label>
-                        <Select value={rideType} onValueChange={setRideType}>
-                        <SelectTrigger>
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="completed">Completed Rides</SelectItem>
-                            <SelectItem value="cancelled">Cancelled Rides</SelectItem>
-                        </SelectContent>
-                        </Select>
-                    </div>
-                    )}
-
-                    {viewMode === 'ride24hrs' && (
                     <div className="space-y-4">
                         <div>
-                        <Label className="mb-2 block">Date Range</Label>
-                        <div className="grid grid-cols-2 gap-2">
-                            <div>
-                            <Input
-                                type="date"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                className="w-full text-sm"
-                                placeholder="Start Date"
-                            />
-                            </div>
-                            <div>
-                            <Input
-                                type="date"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                className="w-full text-sm"
-                                placeholder="End Date"
-                            />
-                            </div>
-                        </div>
+                            <Label>View Mode</Label>
+                            <Select value={viewMode} onValueChange={setViewMode}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a view" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="heatmap">Rides Heatmap</SelectItem>
+                                    <SelectItem value="drivers">All Drivers Location</SelectItem>
+                                    <SelectItem value="ride24hrs">Ride 24 Hrs</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
 
-                        <div>
-                        <Label className="mb-2 block">Time Range</Label>
-                        <div className="grid grid-cols-2 gap-2">
+                        {viewMode === 'heatmap' && (
                             <div>
-                            <Input
-                                type="time"
-                                value={startTime}
-                                onChange={(e) => setStartTime(e.target.value)}
-                                className="w-full text-sm"
-                                placeholder="Start Time"
-                            />
+                                <Label>Ride Type</Label>
+                                <Select value={rideType} onValueChange={setRideType}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="completed">Completed Rides</SelectItem>
+                                        <SelectItem value="cancelled">Cancelled Rides</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
-                            <div>
-                            <Input
-                                type="time"
-                                value={endTime}
-                                onChange={(e) => setEndTime(e.target.value)}
-                                className="w-full text-sm"
-                                placeholder="End Time"
-                            />
+                        )}
+
+                        {viewMode === 'ride24hrs' && (
+                            <div className="space-y-4">
+                                <div>
+                                    <Label className="mb-2 block">Date Range</Label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <Input
+                                                type="date"
+                                                value={startDate}
+                                                onChange={(e) => setStartDate(e.target.value)}
+                                                className="w-full text-sm"
+                                                placeholder="Start Date"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Input
+                                                type="date"
+                                                value={endDate}
+                                                onChange={(e) => setEndDate(e.target.value)}
+                                                className="w-full text-sm"
+                                                placeholder="End Date"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <Label className="mb-2 block">Time Range</Label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <Input
+                                                type="time"
+                                                value={startTime}
+                                                onChange={(e) => setStartTime(e.target.value)}
+                                                className="w-full text-sm"
+                                                placeholder="Start Time"
+                                            />
+                                        </div>
+                                        <div>
+                                            <Input
+                                                type="time"
+                                                value={endTime}
+                                                onChange={(e) => setEndTime(e.target.value)}
+                                                className="w-full text-sm"
+                                                placeholder="End Time"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Button
+                                    variant="outline"
+                                    onClick={resetFields}
+                                    className="w-full border border-gray-200"
+                                >
+                                    Reset Fields
+                                </Button>
+
+                                <div>
+                                    <Label>Variant</Label>
+                                    <Select value={varient} onValueChange={setVarient}>
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="ALL">All</SelectItem>
+                                            <SelectItem value="AUTO">Auto</SelectItem>
+                                            <SelectItem value="HATCHBACK">Cab</SelectItem>
+                                            <SelectItem value="SEDAN">Elite</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div>
+                                    <Label>Type</Label>
+                                    <Select value={type} onValueChange={setType}>
+                                        <SelectTrigger>
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">All</SelectItem>
+                                            <SelectItem value="start">Start</SelectItem>
+                                            <SelectItem value="end">End</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
-                        </div>
-                        </div>
-                        
-                        <Button 
-                        variant="outline"
-                        onClick={resetFields}
-                        className="w-full border border-gray-200"
-                        >
-                        Reset Fields
-                        </Button>
-
-                        <div>
-                        <Label>Variant</Label>
-                        <Select value={varient} onValueChange={setVarient}>
-                            <SelectTrigger>
-                            <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                            <SelectItem value="ALL">All</SelectItem>
-                            <SelectItem value="AUTO">Auto</SelectItem>
-                            <SelectItem value="HATCHBACK">Cab</SelectItem>
-                            <SelectItem value="SEDAN">Elite</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        </div>
-
-                        <div>
-                        <Label>Type</Label>
-                        <Select value={type} onValueChange={setType}>
-                            <SelectTrigger>
-                            <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                            <SelectItem value="all">All</SelectItem>
-                            <SelectItem value="start">Start</SelectItem>
-                            <SelectItem value="end">End</SelectItem>
-                            </SelectContent>
-                        </Select>
-                        </div>
+                        )}
                     </div>
-                    )}
-                </div>
 
-                <div className="space-y-2">
-                    <h3 className="font-semibold">Analysis</h3>
-                    {viewMode === 'heatmap' && <HeatmapLegend type={rideType} />}
-                </div>
+                    <div className="space-y-2">
+                        <h3 className="font-semibold">Analysis</h3>
+                        {viewMode === 'heatmap' && <HeatmapLegend type={rideType} />}
+                    </div>
                 </CardContent>
             </Card>
         </div>

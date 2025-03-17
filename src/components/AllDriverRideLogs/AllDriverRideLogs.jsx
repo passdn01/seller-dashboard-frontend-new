@@ -57,12 +57,14 @@ const AllDriverRideLogs = () => {
 
         try {
             // Fetch ride logs
+            const token = localStorage.getItem("token");
             const rideResponse = await axios.post(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/allDriverRideLogs`,
                 {
                     startDate: formattedStartDate,
                     endDate: formattedEndDate
-                }
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             // Fetch session data
@@ -71,7 +73,8 @@ const AllDriverRideLogs = () => {
                 {
                     startDate: formattedStartDate,
                     endDate: formattedEndDate
-                }
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
             );
 
             setRideLogsData(rideResponse.data);

@@ -158,10 +158,12 @@ export default function FarePricing() {
 
         try {
             setLoading(true);
+            const token = localStorage.getItem("token");
             await axios.patch(
                 // `https://airshare.co.in/pricing/${category}?cityId=${cityId}`,
                 `https://jwkxs7nc-8055.inc1.devtunnels.ms/pricing/${category}?cityId=${cityId}`,
-                changedFields[category]
+                changedFields[category],
+                { headers: { Authorization: `Bearer ${token}` } }
             );
             setSaveStatus({
                 type: "success",

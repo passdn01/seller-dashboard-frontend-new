@@ -128,7 +128,8 @@ export default function BlogEditor() {
             if (isNewBlog) return;
 
             try {
-                const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/api/blogs/${blogId}`);
+                const token = localStorage.getItem("token");
+                const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/api/blogs/${blogId}`, { headers: { Authorization: `Bearer ${token}` } });
                 setBlog(response.data);
 
                 // Set banner preview if exists
@@ -227,17 +228,18 @@ export default function BlogEditor() {
             let response;
 
             console.log(formData, "formdata");
+            const token = localStorage.getItem("token");
             if (isNewBlog) {
                 response = await axios.post(
                     `${import.meta.env.VITE_SELLER_URL_LOCAL}/api/blogs`,
                     formData,
-                    { headers: { 'Content-Type': 'multipart/form-data' } }
+                    { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` } }
                 );
             } else {
                 response = await axios.put(
                     `${import.meta.env.VITE_SELLER_URL_LOCAL}/api/blogs/${blogId}`,
                     formData,
-                    { headers: { 'Content-Type': 'multipart/form-data' } }
+                    { headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` } }
                 );
             }
 

@@ -73,9 +73,10 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
 
         setIsLoading(true);
         try {
+            const token = localStorage.getItem('token')
             const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverDetail`, {
                 id: driverId
-            });
+            }, { headers: { Authorization: `Bearer ${token}` } });
 
             if (response.data) {
                 const driver = response.data;
@@ -141,11 +142,12 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
             if (!dataToSend.rejectDate) {
                 delete dataToSend.rejectDate;
             }
-
+            const token = localStorage.getItem('token')
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverTableEdit`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify(dataToSend),
             });

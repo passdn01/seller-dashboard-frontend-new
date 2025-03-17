@@ -38,11 +38,14 @@ const MessagesCard = ({ issue, issueId }) => {
       timestamp: new Date().toISOString(),
     };
 
+    const token = localStorage.getItem('token')
+
     try {
       const response = await fetch(`https://airshare.co.in/adminTicketChat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({ ticketId: issueId, message: sentMessage }),
       });

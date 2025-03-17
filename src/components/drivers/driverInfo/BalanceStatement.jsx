@@ -147,13 +147,15 @@ const DriverBalanceStatement = ({ data }) => {
         setError("");
 
         try {
+            const token = localStorage.getItem('token')
             console.log("adfa")
             console.log(data?.driverInfo?._id)
             console.log(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/balance?type=${dialogType === "add" ? "add" : "cut"}`)
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/balance?type=${dialogType === "add" ? "add" : "cut"}`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     driverId: data?.driverInfo?._id,
