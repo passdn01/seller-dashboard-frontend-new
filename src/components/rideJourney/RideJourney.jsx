@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import '@carbon/charts-react/styles.css';
-// import { AlluvialChart } from '@carbon/charts-react';
-import { Calendar, Search } from 'lucide-react';
+import { Calendar, Search, Info } from 'lucide-react';
 import SankeyChart from './SankeyChart';
 import moment from 'moment-timezone';
 
@@ -143,6 +142,17 @@ const RideJourney = () => {
 
   const metrics = calculateMetrics();
 
+  // Metric info descriptions
+  const metricInfo = {
+    totalSearches: "Total ride searches across all vehicle types.",
+    autoSearches: "Searches for auto-rickshaw rides.",
+    eliteSearches: "Searches for premium/elite rides.",
+    completedRides: "Total successfully completed rides.",
+    notAcceptedRides: "Rides searched but not accepted.",
+    cancelledRides: "Accepted rides later canceled."
+  };
+
+
   return (
     <div className="w-full h-auto p-4 bg-white">
       <div className="mb-4">
@@ -207,22 +217,27 @@ const RideJourney = () => {
             <MetricCard 
               label="Total Searches" 
               value={metrics.totalSearches}
+              info={metricInfo.totalSearches}
             />
             <MetricCard 
               label="Auto Searches" 
               value={metrics.autoSearches}
+              info={metricInfo.autoSearches}
             />
             <MetricCard 
               label="Completed Rides" 
               value={metrics.completedRides}
+              info={metricInfo.completedRides}
             />
             <MetricCard 
               label="Cancelled Rides" 
               value={metrics.cancelledRides}
+              info={metricInfo.cancelledRides}
             />
             <MetricCard 
               label="Not Completed Rides" 
               value={metrics.notAcceptedRides}
+              info={metricInfo.notAcceptedRides}
             />
           </div>
         )}
@@ -252,11 +267,29 @@ const RideJourney = () => {
   );
 };
 
-const MetricCard = ({ label, value }) => (
-  <div className="p-6 rounded-sm border">
-    <p className="text-3xl font-bold text-gray-800">{value.toLocaleString()}</p>
-    <p className="text-md text-gray-600">{label}</p>
-  </div>
-);
+const MetricCard = ({ label, value, info }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  return (
+    <div className="p-6 rounded-sm border relative">
+      <div 
+        className="absolute top-0 right-0 mt-2 mr-2"
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+      >
+        <Info className="w-5 h-5 text-gray-400 cursor-pointer" />
+        {showTooltip && (
+          <div className="absolute z-10 right-0 mt-1 p-3 bg-white border shadow-lg rounded-md w-64 text-sm text-gray-700">
+            {info}
+          </div>
+        )}
+      </div>
+      <div className="flex justify-between items-start">
+        <p className="text-3xl font-bold text-gray-800">{value.toLocaleString()}</p>
+      </div>
+      <p className="text-md text-gray-600 mt-1">{label}</p>
+    </div>
+  );
+};
 
 export default RideJourney;
