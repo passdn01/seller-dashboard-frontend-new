@@ -59,7 +59,7 @@ function CustomTimeCardGrid({ customButton }) {
 
             // Make API call with the formatted dates
             const token = localStorage.getItem('token')
-            const response = await axios.get('https://8qklrvxb-5000.inc1.devtunnels.ms/api/customMetricData', {
+            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/api/customMetricData`, {
                 params: {
                     startDate: fullStartDate,
                     endDate: fullEndDate

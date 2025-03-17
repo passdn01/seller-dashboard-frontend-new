@@ -214,6 +214,14 @@ const IssueAssigner = () => {
             }
         },
         {
+            header: "User Number",
+            cell: ({ row }) => {
+                const user = row.original.userId;
+                console.log(user, "user in user number")
+                return <div>{user ? `${user.phone}` : "N/A"}</div>;
+            }
+        },
+        {
             accessorKey: "status",
             header: "Status",
             cell: ({ row }) => <div>{row.getValue("status")}</div>,
