@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Search } from 'lucide-react';
+import { Calendar, Search, Info } from 'lucide-react';
 import SankeyChart from './SankeyChart';
 import moment from 'moment-timezone';
 
@@ -53,7 +53,7 @@ const DriverJourney = () => {
   const handlePresetClick = async (preset) => {
     const end = moment().tz(IST_TIMEZONE).format('YYYY-MM-DD');
     let start;
-
+  
     if (preset === 'last30') {
       start = moment().tz(IST_TIMEZONE).subtract(30, 'days').format('YYYY-MM-DD');
     } else if (preset === 'today') {
@@ -62,9 +62,9 @@ const DriverJourney = () => {
     else if (preset === 'allTime') {
       start = '2024-01-01';
     }
-
+  
     setDateRange({ start, end });
-
+    
     // Fetch data immediately after setting date range
     setIsLoading(true);
     try {
@@ -137,6 +137,17 @@ const DriverJourney = () => {
   };
 
   const metrics = calculateMetrics();
+  
+  // Metric info descriptions
+  const metricInfo = {
+    totalDrivers: "Total number of drivers who have logged into the system within the selected date range.",
+    verifiedDrivers: "Drivers who have completed the verification process and are approved to accept ride requests.",
+    pendingDrivers: "Drivers who have started but not completed the verification process.",
+    notVerifiedDrivers: "Drivers who have registered but have not yet initiated or completed verification.",
+    autoDrivers: "Verified drivers who operate auto-rickshaws and are available for auto ride requests.",
+    cabDrivers: "Verified drivers who operate standard cab vehicles and are available for cab ride requests.",
+    eliteDrivers: "Verified drivers who operate premium vehicles and are available for elite ride requests."
+  };
 
   return (
     <div className="w-full h-auto p-4 bg-white">
@@ -202,18 +213,22 @@ const DriverJourney = () => {
             <MetricCard
               label="Total LogIn Drivers"
               value={metrics.totalDrivers}
+              info={metricInfo.totalDrivers}
             />
             <MetricCard
               label="Verified Drivers"
               value={metrics.verifiedDrivers}
+              info={metricInfo.verifiedDrivers}
             />
             <MetricCard
               label="Auto Drivers"
               value={metrics.autoDrivers}
+              info={metricInfo.autoDrivers}
             />
             <MetricCard
               label="Elite Drivers"
               value={metrics.eliteDrivers}
+              info={metricInfo.eliteDrivers}
             />
           </div>
         )}
@@ -243,11 +258,29 @@ const DriverJourney = () => {
   );
 };
 
-const MetricCard = ({ label, value }) => (
-  <div className="p-6 rounded-sm border">
-    <p className="text-3xl font-bold text-gray-800">{value.toLocaleString()}</p>
-    <p className="text-md text-gray-600">{label}</p>
-  </div>
-);
+const MetricCard = ({ label, value, info }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  return (
+    <div className="p-6 rounded-sm border relative">
+      <div 
+        className="absolute top-0 right-0 mt-2 mr-2"
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+      >
+        <Info className="w-5 h-5 text-gray-400 cursor-pointer" />
+        {showTooltip && (
+          <div className="absolute z-10 right-0 mt-1 p-3 bg-white border shadow-lg rounded-md w-64 text-sm text-gray-700">
+            {info}
+          </div>
+        )}
+      </div>
+      <div className="flex justify-between items-start">
+        <p className="text-3xl font-bold text-gray-800">{value.toLocaleString()}</p>
+      </div>
+      <p className="text-md text-gray-600 mt-1">{label}</p>
+    </div>
+  );
+};
 
 export default DriverJourney;
