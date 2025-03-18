@@ -15,20 +15,49 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
 import { SELLER_URL_LOCAL } from '@/lib/utils';
 
+// Import vehicle icons
+import autoIcon from '@/assets/Vehicles/auto_icon.png';
+import cabIcon from '@/assets/Vehicles/cab_icon.png';
+import sedanIcon from '@/assets/Vehicles/cabelite_icon.png';
+
 // Create axios instance with default config
 const api = axios.create({
     baseURL: import.meta.env.VITE_SELLER_URL_LOCAL,
 });
 
-// Default icon configuration
-const defaultIcon = new L.Icon({
-    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41],
-});
+// Custom vehicle icons
+const vehicleIcons = {
+    AUTO: new L.Icon({
+        iconUrl: autoIcon,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+    }),
+    HATCHBACK: new L.Icon({
+        iconUrl: cabIcon,
+        iconSize: [24, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+    }),
+    SEDAN: new L.Icon({
+        iconUrl: sedanIcon,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+    }),
+    DEFAULT: new L.Icon({
+        iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+    })
+};
 
+// Function to get the appropriate icon based on category
+const getVehicleIcon = (category) => {
+    return vehicleIcons[category] || vehicleIcons.DEFAULT;
+};
 
 // Memoized HeatmapLayer Component
 const HeatmapLayer = React.memo(({ data }) => {
@@ -103,6 +132,29 @@ HeatmapLegend.displayName = 'HeatmapLegend';
 
 HeatmapLegend.propTypes = {
     type: PropTypes.string.isRequired,
+};
+
+// Vehicle Legend Component
+const VehicleLegend = () => {
+    return (
+        <div className="legend-box mt-4">
+            <h4>Vehicle Types</h4>
+            <div className="flex flex-col space-y-2 mt-2">
+                <div className="flex items-center space-x-2">
+                    <img src={autoIcon} alt="Auto" className="w-6 h-6" />
+                    <span>Auto</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <img src={cabIcon} alt="Cab" className="w-6 h-6" />
+                    <span>Cab</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <img src={sedanIcon} alt="Sedan" className="w-6 h-6" />
+                    <span>Elite</span>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 const GeoMetrics = () => {
@@ -227,6 +279,9 @@ const GeoMetrics = () => {
 
         if (viewMode === "drivers") {
             newSocket.emit("getOnlineDrivers");
+            
+            // Set default filter to ALL when first loading drivers view
+            setVarient('ALL');
         }
 
         const handleOnlineDrivers = (response) => {
@@ -235,7 +290,12 @@ const GeoMetrics = () => {
                     driver => driver?.driverLiveLocation
                 );
                 setDrivers(validDrivers);
-                setAnalysis("This map shows the locations of all active drivers. Click on a marker for more information.");
+                const autoCount = validDrivers.filter(d => d.category === 'AUTO').length;
+                const cabCount = validDrivers.filter(d => d.category === 'HATCHBACK').length;
+                const eliteCount = validDrivers.filter(d => d.category === 'SEDAN').length;
+                
+                setAnalysis(`This map shows the locations of active drivers (${validDrivers.length} total). Distribution: ${autoCount} Auto, ${cabCount} Cab, ${eliteCount} Elite. Click on a marker for more information.`);
+                // console.log("Drivers received:", validDrivers);
             }
         };
 
@@ -275,9 +335,26 @@ const GeoMetrics = () => {
         } else if (viewMode === 'ride24hrs' && startDate) {
             fetchDateRides();
         } else if (viewMode === 'drivers') {
+            // When drivers view is selected or vehicle filter changes, update the analysis text
+            if (drivers.length > 0) {
+                const filteredDrivers = varient === 'ALL' 
+                    ? drivers 
+                    : drivers.filter(d => d.category === varient);
+                
+                const autoCount = drivers.filter(d => d.category === 'AUTO').length;
+                const cabCount = drivers.filter(d => d.category === 'HATCHBACK').length;
+                const eliteCount = drivers.filter(d => d.category === 'SEDAN').length;
+                
+                if (varient === 'ALL') {
+                    setAnalysis(`This map shows the locations of active drivers (${drivers.length} total). Distribution: ${autoCount} Auto, ${cabCount} Cab, ${eliteCount} Elite. Click on a marker for more information.`);
+                } else {
+                    const typeLabel = varient === 'AUTO' ? 'Auto' : varient === 'HATCHBACK' ? 'Cab' : 'Elite';
+                    setAnalysis(`Showing ${filteredDrivers.length} ${typeLabel} drivers out of ${drivers.length} total drivers.`);
+                }
+            }
             setOptionLoading(false);
         }
-    }, [viewMode, rideType, startDate, endDate, fetchRideDistribution, fetchCancelledRideDistribution, fetchDateRides]);
+    }, [viewMode, rideType, startDate, endDate, varient, drivers, fetchRideDistribution, fetchCancelledRideDistribution, fetchDateRides]);
 
     // Reset function for form fields
     const resetFields = () => {
@@ -328,23 +405,30 @@ const GeoMetrics = () => {
 
                         {viewMode === 'heatmap' && <HeatmapLayer data={heatmapData} />}
 
-                        {viewMode === 'drivers' && drivers.map(driver => (
-                            <Marker
-                                key={driver.driverId}
-                                position={[
-                                    driver.driverLiveLocation.latitude,
-                                    driver.driverLiveLocation.longitude,
-                                ]}
-                                icon={defaultIcon}
-                            >
-                                <Popup>
-                                    <div className="p-2">
-                                        <p className="font-semibold">{driver.driverName}</p>
-                                        <p className="text-sm">Phone: {driver.phone}</p>
-                                    </div>
-                                </Popup>
-                            </Marker>
-                        ))}
+                        {viewMode === 'drivers' && drivers
+                            .filter(driver => varient === 'ALL' || driver.category === varient)
+                            .map(driver => (
+                                <Marker
+                                    key={driver.driverId}
+                                    position={[
+                                        driver.driverLiveLocation.latitude,
+                                        driver.driverLiveLocation.longitude,
+                                    ]}
+                                    icon={getVehicleIcon(driver.category)}
+                                >
+                                    <Popup>
+                                        <div className="p-2">
+                                            <p className="font-semibold">{driver.driverName}</p>
+                                            <p className="text-sm">Phone: {driver.phone}</p>
+                                            <p className="text-sm">Vehicle Type: {
+                                                driver.category === 'AUTO' ? 'Auto' : 
+                                                driver.category === 'HATCHBACK' ? 'Cab' : 
+                                                driver.category === 'SEDAN' ? 'Elite' : 'Unknown'
+                                            }</p>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            ))}
 
                         {viewMode === 'ride24hrs' && circlemapData.map((cluster, index) => {
                             const color = cluster.type === 'start' ? '#3b82f6' : '#22c55e';
@@ -396,6 +480,23 @@ const GeoMetrics = () => {
                                     <SelectContent>
                                         <SelectItem value="completed">Completed Rides</SelectItem>
                                         <SelectItem value="cancelled">Cancelled Rides</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        )}
+
+                        {viewMode === 'drivers' && (
+                            <div>
+                                <Label>Vehicle Type</Label>
+                                <Select value={varient} onValueChange={setVarient}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="ALL">All</SelectItem>
+                                        <SelectItem value="AUTO">Auto</SelectItem>
+                                        <SelectItem value="HATCHBACK">Cab</SelectItem>
+                                        <SelectItem value="SEDAN">Elite</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -493,7 +594,23 @@ const GeoMetrics = () => {
 
                     <div className="space-y-2">
                         <h3 className="font-semibold">Analysis</h3>
+                        <p className="text-sm text-gray-600">{analysis}</p>
                         {viewMode === 'heatmap' && <HeatmapLegend type={rideType} />}
+                        {viewMode === 'drivers' && (
+                            <>
+                                <div className="bg-blue-200 p-3 rounded-md mt-2 mb-3">
+                                    <div className="flex-1 justify-between items-center">
+                                        <h4 className="text-lg font-medium">Driver Count</h4>
+                                        <span className="text-xl font-bold">{
+                                            varient === 'ALL' 
+                                                ? drivers.length 
+                                                : drivers.filter(d => d.category === varient).length
+                                        }</span>
+                                    </div>
+                                </div>
+                                <VehicleLegend />
+                            </>
+                        )}
                     </div>
                 </CardContent>
             </Card>
