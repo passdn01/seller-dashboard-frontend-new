@@ -17,15 +17,20 @@ import { Label } from '@/components/ui/label';
 import UploadDocuments from './UploadDocuments';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import NotifyUsers from './NotifyUsers';
 
 const DriverDetails = ({ data, onDriverUpdated }) => {
     const driverId = data?._id;
-    const [saveLoading, setSaveLoading] = useState(false)
+    const [saveLoading, setSaveLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isImagesFetched, setIsImagesFetched] = useState(false);
+    const [activeTab, setActiveTab] = useState("details");
+    
+    // Store the initial registration status to compare later
+    const [initialRegStatus, setInitialRegStatus] = useState(false);
 
     const initialFormState = {
         licenseNumber: "",
@@ -81,7 +86,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
             if (response.data) {
                 const driver = response.data;
 
-                setFormData({
+                const newFormData = {
                     licenseNumber: driver.licenseNumber || "",
                     name: driver.name || "",
                     dob: driver.dob || "",
@@ -102,7 +107,12 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                     isCompleteRegistration: driver.isCompleteRegistration || false,
                     aadharNumber: driver.aadharNumber,
                     missingDocuments: driver.missingDocuments || []
-                });
+                };
+
+                setFormData(newFormData);
+                
+                // Store the initial registration status when data is first loaded
+                setInitialRegStatus(driver.isCompleteRegistration || false);
 
                 setImageUrls({
                     profileUrl: driver.profileUrl || "",
@@ -132,17 +142,48 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
             [field]: value,
         }));
     };
+    
+    const sendVerificationNotification = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const notificationData = {
+                userIds: [driverId],
+                userType: "D",
+                title: "Account Approved",
+                body: "Congratulations! Your account has been verified and approved. You can now start accepting trips."
+            };
+            
+            console.log("Sending verification notification:", notificationData);
+            
+            const response = await axios.post(
+                `https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/notifyUsers`, 
+                notificationData,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            
+           
+        } catch (error) {
+            console.error("Error sending verification notification:", error);
+        }
+    };
 
     const handleSave = async () => {
-
         try {
-            setSaveLoading(true)
+            setSaveLoading(true);
             const dataToSend = { ...formData, imageUrls, id: driverId };
-            console.log(dataToSend, "datatosend")
+            
+            // Check if registration status changed from false to true
+            const registrationActivated = !initialRegStatus && formData.isCompleteRegistration;
+            
+            console.log("Save data - Initial registration status:", initialRegStatus);
+            console.log("Save data - Current registration status:", formData.isCompleteRegistration);
+            console.log("Registration activated:", registrationActivated);
+            
             if (!dataToSend.rejectDate) {
                 delete dataToSend.rejectDate;
             }
-            const token = localStorage.getItem('token')
+            
+            const token = localStorage.getItem('token');
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverTableEdit`, {
                 method: "POST",
                 headers: {
@@ -155,7 +196,15 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
             if (response.ok) {
                 const d = await response.json();
                 window.alert("Data saved successfully");
-                console.log(d.driver, "d driver")
+                
+                // If registration was activated in this save operation, send notification
+                if (registrationActivated) {
+                    await sendVerificationNotification();
+                }
+                
+                // Update the initial registration status to match the current state
+                setInitialRegStatus(formData.isCompleteRegistration);
+                
                 onDriverUpdated(d.driver);
             } else {
                 throw new Error(response.statusText);
@@ -164,7 +213,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
             console.error("Error saving data:", error);
             window.alert("Failed to save data");
         } finally {
-            setSaveLoading(false)
+            setSaveLoading(false);
         }
     };
 
@@ -182,197 +231,209 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
 
     return (
         <div className="w-full max-w-5xl mx-auto p-4">
-
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Driver Details</h2>
-
+                <div className="flex space-x-2">
+                    <Button variant="outline" onClick={fetchDriverDetails}>Refresh</Button>
+                </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-6">
-                <div className="space-y-4">
-                    <div className="flex justify-center mb-6">
-                        <Avatar className="w-32 h-32">
-                            <AvatarImage
-                                src={imageUrls?.profileUrl}
-                                alt="Profile"
-                                onClick={() => handleImageClick(imageUrls.profileUrl)}
-                                className="cursor-pointer"
-                            />
-                            <AvatarFallback>{formData.name?.charAt(0) || 'DP'}</AvatarFallback>
-                        </Avatar>
-                    </div>
-                    {Object.entries(imageUrls)
-                        .filter(([key]) => key !== 'profileUrl')
-                        .map(([key, url]) => (
-                            <div key={key} className="relative">
-
-                                <img
-                                    src={url || '/placeholder-image.jpg'}
-                                    alt={key.replace(/([A-Z])/g, " $1").trim()}
-                                    className="w-full h-48 object-cover rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
-                                    onClick={() => handleImageClick(url)}
-                                />
-                                <span className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
-                                    {key.replace(/([A-Z])/g, " $1").trim()}
-                                </span>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid grid-cols-3 mb-4">
+                    <TabsTrigger value="details">Driver Details</TabsTrigger>
+                    <TabsTrigger value="documents">Documents</TabsTrigger>
+                    <TabsTrigger value="notifications">Notifications</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="details" className="mt-0">
+                    <div className="grid grid-cols-3 gap-6">
+                        <div className="space-y-4">
+                            <div className="flex justify-center mb-6">
+                                <Avatar className="w-32 h-32">
+                                    <AvatarImage
+                                        src={imageUrls?.profileUrl}
+                                        alt="Profile"
+                                        onClick={() => handleImageClick(imageUrls.profileUrl)}
+                                        className="cursor-pointer"
+                                    />
+                                    <AvatarFallback>{formData.name?.charAt(0) || 'DP'}</AvatarFallback>
+                                </Avatar>
                             </div>
-                        ))}
-                </div>
-
-                <div className="col-span-2 grid grid-cols-2 gap-4">
-                    <div className="space-y-4">
-                        <LabelField label="License Number" value={formData.licenseNumber} onChange={(val) => handleChange("licenseNumber", val)} />
-                        <LabelField label="DOB" type="date" value={formData.dob} onChange={(val) => handleChange("dob", val)} />
-                        <LabelField
-                            label="License Valid Upto"
-                            type="date"
-                            value={formData.licenseValidUpTo}
-                            onChange={(val) => handleChange("licenseValidUpTo", val)}
-                        />
-                        {/* <LabelField type='text-area' label="Address" value={formData.address} onChange={(val) => handleChange("address", val)} /> */}
-                        <div>
-                            <Label>Address</Label>
-                            <Textarea
-                                value={formData.address}
-                                onChange={(e) => handleChange("address", e.target.value)}
-                                className="mt-1"
-                            />
+                            {Object.entries(imageUrls)
+                                .filter(([key]) => key !== 'profileUrl')
+                                .map(([key, url]) => (
+                                    <div key={key} className="relative">
+                                        <img
+                                            src={url || '/placeholder-image.jpg'}
+                                            alt={key.replace(/([A-Z])/g, " $1").trim()}
+                                            className="w-full h-48 object-cover rounded-lg border cursor-pointer hover:opacity-90 transition-opacity"
+                                            onClick={() => handleImageClick(url)}
+                                        />
+                                        <span className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
+                                            {key.replace(/([A-Z])/g, " $1").trim()}
+                                        </span>
+                                    </div>
+                                ))}
                         </div>
-                        <LabelField label="Vehicle Number" value={formData.vehicleNumber} onChange={(val) => handleChange("vehicleNumber", val)} />
-                        <LabelField label="RC Valid Upto" type="date" value={formData.rcValidUpTo} onChange={(val) => handleChange("rcValidUpTo", val)} />
-                        <LabelField label="UPI ID" value={formData.upiId} onChange={(val) => handleChange("upiId", val)} />
-                        <LabelField label="Balance" type="number" value={formData.balance} onChange={(val) => handleChange("balance", val)} />
-                        <DropdownField
-                            label="Status"
-                            value={formData.status}
-                            options={[
-                                { label: "Offline", value: "OFFLINE" },
-                                { label: "Available", value: "AVAILABLE" },
-                                { label: "On Trip", value: "ON_TRIP" },
-                                { label: "Low Balance", value: "LOW_BALANCE" },
-                                { label: "Rejected", value: "REJECTED" },
-                                { label: "Accepted", value: "ACCEPTED" },
-                            ]}
-                            onChange={(val) => handleChange("status", val)}
-                        />
 
-                    </div>
+                        <div className="col-span-2 grid grid-cols-2 gap-4">
+                            <div className="space-y-4">
+                                <LabelField label="License Number" value={formData.licenseNumber} onChange={(val) => handleChange("licenseNumber", val)} />
+                                <LabelField label="DOB" type="date" value={formData.dob} onChange={(val) => handleChange("dob", val)} />
+                                <LabelField
+                                    label="License Valid Upto"
+                                    type="date"
+                                    value={formData.licenseValidUpTo}
+                                    onChange={(val) => handleChange("licenseValidUpTo", val)}
+                                />
+                                <div>
+                                    <Label>Address</Label>
+                                    <Textarea
+                                        value={formData.address}
+                                        onChange={(e) => handleChange("address", e.target.value)}
+                                        className="mt-1"
+                                    />
+                                </div>
+                                <LabelField label="Vehicle Number" value={formData.vehicleNumber} onChange={(val) => handleChange("vehicleNumber", val)} />
+                                <LabelField label="RC Valid Upto" type="date" value={formData.rcValidUpTo} onChange={(val) => handleChange("rcValidUpTo", val)} />
+                                <LabelField label="UPI ID" value={formData.upiId} onChange={(val) => handleChange("upiId", val)} />
+                                <LabelField label="Balance" type="number" value={formData.balance} onChange={(val) => handleChange("balance", val)} />
+                                <DropdownField
+                                    label="Status"
+                                    value={formData.status}
+                                    options={[
+                                        { label: "Offline", value: "OFFLINE" },
+                                        { label: "Available", value: "AVAILABLE" },
+                                        { label: "On Trip", value: "ON_TRIP" },
+                                        { label: "Low Balance", value: "LOW_BALANCE" },
+                                        { label: "Rejected", value: "REJECTED" },
+                                        { label: "Accepted", value: "ACCEPTED" },
+                                    ]}
+                                    onChange={(val) => handleChange("status", val)}
+                                />
+                            </div>
 
-                    <div className="space-y-4">
-                        <LabelField label="Driver Name" value={formData.name} onChange={(val) => handleChange("name", val)} />
-                        <DropdownField
-                            label="Gender"
-                            value={formData.gender}
-                            options={[
-                                { label: "Male", value: "Male" },
-                                { label: "Female", value: "Female" },
-                            ]}
-                            onChange={(val) => handleChange("gender", val)}
-                        />
-                        <DropdownField
-                            label="License Type"
-                            value={formData.licenseType}
-                            options={[
-                                { label: "LMV", value: "LMV" },
-                                { label: "MCWG", value: "MCWG" },
-                                { label: "3WNT", value: "3WNT" },
-                                { label: "Handicap", value: "HANDICAP" },
-                            ]}
-                            onChange={(val) => handleChange("licenseType", val)}
-                        />
+                            <div className="space-y-4">
+                                <LabelField label="Driver Name" value={formData.name} onChange={(val) => handleChange("name", val)} />
+                                <DropdownField
+                                    label="Gender"
+                                    value={formData.gender}
+                                    options={[
+                                        { label: "Male", value: "Male" },
+                                        { label: "Female", value: "Female" },
+                                    ]}
+                                    onChange={(val) => handleChange("gender", val)}
+                                />
+                                <DropdownField
+                                    label="License Type"
+                                    value={formData.licenseType}
+                                    options={[
+                                        { label: "LMV", value: "LMV" },
+                                        { label: "MCWG", value: "MCWG" },
+                                        { label: "3WNT", value: "3WNT" },
+                                        { label: "Handicap", value: "HANDICAP" },
+                                    ]}
+                                    onChange={(val) => handleChange("licenseType", val)}
+                                />
 
-                        <DropdownField
-                            label="Category"
-                            value={formData.category}
-                            options={[
-                                { label: "Auto", value: "AUTO" },
-                                { label: "Cab", value: "HATCHBACK" },
-                                { label: "Elite", value: "SEDAN" }
-                            ]}
-                            onChange={(val) => handleChange("category", val)}
-                        />
-                        <LabelField
-                            label="Vehicle Model"
-                            value={formData.vehicleModel}
-                            onChange={(val) => handleChange("vehicleModel", val)}
-                        />
+                                <DropdownField
+                                    label="Category"
+                                    value={formData.category}
+                                    options={[
+                                        { label: "Auto", value: "AUTO" },
+                                        { label: "Cab", value: "HATCHBACK" },
+                                        { label: "Elite", value: "SEDAN" }
+                                    ]}
+                                    onChange={(val) => handleChange("category", val)}
+                                />
+                                <LabelField
+                                    label="Vehicle Model"
+                                    value={formData.vehicleModel}
+                                    onChange={(val) => handleChange("vehicleModel", val)}
+                                />
 
-                        <DropdownField
-                            label="Fuel Type"
-                            value={formData.fuelType}
-                            options={[
-                                { label: "CNG", value: "CNG" },
-                                { label: "Petrol", value: "PETROL" },
-                                { label: "Diesel", value: "DIESEL" },
-                                { label: "Electric", value: "ELECTRIC" }
-                            ]}
-                            onChange={(val) => handleChange("fuelType", val)}
-                        />
+                                <DropdownField
+                                    label="Fuel Type"
+                                    value={formData.fuelType}
+                                    options={[
+                                        { label: "CNG", value: "CNG" },
+                                        { label: "Petrol", value: "PETROL" },
+                                        { label: "Diesel", value: "DIESEL" },
+                                        { label: "Electric", value: "ELECTRIC" }
+                                    ]}
+                                    onChange={(val) => handleChange("fuelType", val)}
+                                />
 
-                        <LabelField
-                            label="Aadhar Number"
-                            value={formData.aadharNumber}
-                            onChange={(val) => handleChange("aadharNumber", val)}
-                        />
+                                <LabelField
+                                    label="Aadhar Number"
+                                    value={formData.aadharNumber}
+                                    onChange={(val) => handleChange("aadharNumber", val)}
+                                />
 
-                        <DropdownField
-                            label="Reject Reason"
-                            value={formData.rejectReason}
-                            options={[
-                                { label: "License not clear", value: "license not clear" },
-                                { label: "License expired", value: "license expired" },
-                                { label: "License for bike", value: "license for Bike" },
-                                { label: "RC of bike", value: "rc of bike" },
-                                { label: "RC Number different", value: "rc number different" },
-                                { label: "License name is different", value: "license name is different" },
-                                { label: "Not Applicable", value: "NA" },
-                            ]}
-                            onChange={(val) => handleChange("rejectReason", val)}
-                        />
+                                <DropdownField
+                                    label="Reject Reason"
+                                    value={formData.rejectReason}
+                                    options={[
+                                        { label: "License not clear", value: "license not clear" },
+                                        { label: "License expired", value: "license expired" },
+                                        { label: "License for bike", value: "license for Bike" },
+                                        { label: "RC of bike", value: "rc of bike" },
+                                        { label: "RC Number different", value: "rc number different" },
+                                        { label: "License name is different", value: "license name is different" },
+                                        { label: "Not Applicable", value: "NA" },
+                                    ]}
+                                    onChange={(val) => handleChange("rejectReason", val)}
+                                />
 
-                        <LabelField
-                            label="Reject Date"
-                            type="date"
-                            value={formData.rejectDate}
-                            onChange={(val) => handleChange("rejectDate", val)}
-                        />
+                                <LabelField
+                                    label="Reject Date"
+                                    type="date"
+                                    value={formData.rejectDate}
+                                    onChange={(val) => handleChange("rejectDate", val)}
+                                />
 
-                        <MultiSelectField
-                            label="Missing Documents if rejected"
-                            selectedValues={formData.missingDocuments.map(doc => doc.documentType)}
-                            options={[
-                                { label: "Driving License", value: "DRIVING_LICENSE" },
-                                { label: "Registration Certificate", value: "REGISTRATION_CERTIFICATE" },
-                                { label: "Aadhar Card", value: "AADHAR_CARD" },
-                                { label: "Profile", value: "PROFILE" }
-                            ]}
-                            onChange={(values) => handleChange("missingDocuments", values.map(val => ({
-                                documentType: val,
-                                requiredDate: new Date().toISOString(),
-                                isUploaded: false
-                            })))}
-                        />
+                                <MultiSelectField
+                                    label="Missing Documents if rejected"
+                                    selectedValues={formData.missingDocuments.map(doc => doc.documentType)}
+                                    options={[
+                                        { label: "Driving License", value: "DRIVING_LICENSE" },
+                                        { label: "Registration Certificate", value: "REGISTRATION_CERTIFICATE" },
+                                        { label: "Aadhar Card", value: "AADHAR_CARD" },
+                                        { label: "Profile", value: "PROFILE" }
+                                    ]}
+                                    onChange={(values) => handleChange("missingDocuments", values.map(val => ({
+                                        documentType: val,
+                                        requiredDate: new Date().toISOString(),
+                                        isUploaded: false
+                                    })))}
+                                />
 
+                                <CheckboxField
+                                    label="Complete Registration"
+                                    checked={formData.isCompleteRegistration}
+                                    onChange={(checked) => handleChange("isCompleteRegistration", checked)}
+                                />
 
-                        <CheckboxField
-                            label="Complete Registration"
-                            checked={formData.isCompleteRegistration}
-                            onChange={(checked) => handleChange("isCompleteRegistration", checked)}
-                        />
-
-                        <div className="space-x-2 flex justify-end mb-4">
-                            <Button onClick={handleSave} disabled={saveLoading ? true : false}> {saveLoading ? 'Saving...' : 'Save'}</Button>
-                            <Button variant="outline" onClick={fetchDriverDetails}>Refresh</Button>
+                                <div className="space-x-2 flex justify-end mb-4">
+                                    <Button onClick={handleSave} disabled={saveLoading}> 
+                                        {saveLoading ? 'Saving...' : 'Save'}
+                                    </Button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-
-            </div>
-
-
-            <div className="w-full border-t-2 border-gray-200 my-2 p-2">
-                <UploadDocuments id={driverId} />
-            </div>
+                </TabsContent>
+                
+                <TabsContent value="documents" className="mt-0">
+                    <div className="w-full border-t-2 border-gray-200 my-2 p-2">
+                        <UploadDocuments id={driverId} />
+                    </div>
+                </TabsContent>
+                
+                <TabsContent value="notifications" className="mt-0">
+                    <NotifyUsers driverId={driverId} />
+                </TabsContent>
+            </Tabs>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
@@ -462,7 +523,5 @@ const MultiSelectField = ({ label, selectedValues, options, onChange }) => {
         </div>
     );
 };
-
-
 
 export default DriverDetails;
