@@ -24,6 +24,7 @@ const roleRoutes = {
         '/blogs',
         '/blog/',
         '/tspMessages',
+        '/contests'
     ],
     admin: [
         "/home/dashboard",

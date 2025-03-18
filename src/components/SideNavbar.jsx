@@ -209,6 +209,13 @@ function SideNavbar() {
             submenu: false,
             icon: OfferIcon,
         },
+        {
+            id: "14",
+            title: "Contests",
+            link: "/contests",
+            submenu: false,
+            icon: OfferIcon,
+        },
     ];
 
     console.log(menuList)

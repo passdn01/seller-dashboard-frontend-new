@@ -36,6 +36,9 @@ import CityIndex from './components/city/CityIndex.jsx'
 import TSPMessagesTable from './components/tsp/TSPMessagesTable.jsx'
 import UserOfferIndex from './components/userOffers/UserOfferIndex.jsx'
 import NotificationIndex from './components/notification/NotificationIndex.jsx'
+import AllContests from './components/contests/AllContests.jsx'
+import ContestView from './components/contests/ContestView.jsx'
+import ContestForm from './components/contests/ContestForm.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -109,6 +112,11 @@ function App() {
           <Route path='/home/dashboard/img' element={<ProtectedRoute element={< ImageComponent />} />} />
           <Route path='/pricing' element={<ProtectedRoute element={< PriceSetterPage />} />} />
           <Route path='/tspMessages' element={<ProtectedRoute element={< TSPMessagesTable />} />} />
+          <Route path='/contests' element={<ProtectedRoute element={< AllContests />} />} />
+          <Route path='/contests' element={<ProtectedRoute element={< TSPMessagesTable />} />} />
+          <Route path='/contests/view/:id' element={<ProtectedRoute element={< ContestView />} />} />
+          <Route path='/contests/new/' element={<ProtectedRoute element={< ContestForm />} />} />
+          <Route path='/contests/edit/:id' element={<ProtectedRoute element={< ContestForm />} />} />
 
 
 
