@@ -62,7 +62,7 @@ const RideJourney = () => {
       start = end;
     }
     else if (preset === 'allTime') {
-      start = '2024-01-01';
+      start = '2025-03-18';
     }
 
     setDateRange({ start, end });
