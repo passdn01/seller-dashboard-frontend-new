@@ -35,6 +35,7 @@ import { useNavigate } from "react-router-dom";
 import { SELLER_URL_LOCAL } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import IssueDetailExpandable from "../issueDetailInTable";
+import moment from 'moment-timezone'
 
 const IssueAssigner = () => {
     const navigate = useNavigate();
@@ -77,7 +78,7 @@ const IssueAssigner = () => {
                 endDate: endDate || undefined
             };
             const token = localStorage.getItem("token");
-            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets`, { ...params, headers: { Authorization: `Bearer ${token}` } });
+            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/tickets`, { params: { ...params }, headers: { Authorization: `Bearer ${token}` } });
             console.log(response.data, response)
             setTickets(response.data.tickets);
             setTotalPages(response.data.totalPages);
@@ -198,11 +199,10 @@ const IssueAssigner = () => {
                 </div>
             ),
             cell: ({ row }) => {
-                const date = new Date(row.getValue("createdAt")); // Convert to Date object
-                const options = { day: 'numeric', month: 'long', year: 'numeric' }; // Options for formatting
-                const formattedDate = date.toLocaleDateString('en-US', options); // Format the date
+                const createdAt = row.getValue("createdAt");
+                const formattedDate = moment.tz(createdAt, "Asia/Kolkata").format("DD MMMM YYYY");
 
-                return <div>{formattedDate}</div>; // Render the formatted date
+                return <span>{formattedDate}</span>;
             },
         },
         {
