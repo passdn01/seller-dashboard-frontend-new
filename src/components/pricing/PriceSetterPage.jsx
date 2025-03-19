@@ -45,7 +45,7 @@ export default function FarePricing() {
         setLoading(true);
         try {
             // const response = await axios.get(`https://airshare.co.in/pricing`);
-            const response = await axios.get(`https://3n8qx2vb-8055.inc1.devtunnels.ms/pricing`);
+            const response = await axios.get(`https://jwkxs7nc-8055.inc1.devtunnels.ms/pricing`);
             const data = response.data.data;
 
             console.log(data, "response from server")
