@@ -31,6 +31,7 @@ export default function CardGrid() {
     const [todayMetrics, setTodayMetrics] = useState({})
     const [allTimeMetrics, setAllTimeMetrics] = useState({})
     const [lastHourMetrics, setLastHourMetrics] = useState({})
+    const [yesterdayMetrics, setYesterdayMetrics] = useState({})
 
     const [allTimeIncrease, setAllTimeIncrease] = useState({})
     const [lastHourIncrease, setLastHourIncrease] = useState({})
@@ -55,6 +56,11 @@ export default function CardGrid() {
     const dToday = [{
         group: 'Search/Completed Ride Ratio',
         value: (todayMetrics.SearchRides != 0 ? todayMetrics.completedRides * 100 / todayMetrics.SearchRides : 0) || 0
+    }]
+
+    const dYesterday = [{
+        group: 'Search/Completed Ride Ratio',
+        value: (yesterdayMetrics.SearchRides != 0 ? yesterdayMetrics.completedRides * 100 / yesterdayMetrics.SearchRides : 0) || 0
     }]
 
     const op = {
@@ -88,6 +94,10 @@ export default function CardGrid() {
                 ...prevData,
                 ...data.lastHourIncrease,
             }));
+            setYesterdayMetrics((prevData) => ({
+                ...prevData,
+                ...data.yesterdayMetrics
+            }))
         };
 
         sellerSocket.on("rideMetrics", handleMetrics);
@@ -569,6 +579,248 @@ export default function CardGrid() {
         },
     ];
 
+    const yesterdayTabData = [
+        {
+            icon: search,
+            number: formatNumber(yesterdayMetrics.SearchRides || 0),
+            title: "Search Rides",
+            increase: todayMetrics.SearchRides,
+            hover: true,
+            hoverData: {
+                title: "Number of Ride Search",
+                todayNumber: todayMetrics.SearchRides,
+                todayNumberLine: "Today's Search ride",
+                lastHourNumber: lastHourMetrics.SearchRides,
+                lastHourNumberLine: "Last hour's Search",
+            },
+        },
+        {
+            icon: completed,
+            number: formatNumber(yesterdayMetrics.completedRides || 0),
+            title: "Complete Rides",
+            increase: todayMetrics.completedRides,
+            hover: true,
+            hoverData: {
+                title: "Number of Completed Rides",
+                todayNumber: todayMetrics.completedRides,
+                todayNumberLine: "Today's Completed ride",
+                lastHourNumber: lastHourMetrics.completedRides,
+                lastHourNumberLine: "Last hour's Completed ride",
+            },
+        },
+        {
+            icon: driverearning,
+            number: `₹${formatNumber(yesterdayMetrics.driversEarnings || 0)}`,
+            title: "Driver's Earnings",
+            increase: todayMetrics.driversEarnings,
+            hover: true,
+            hoverData: {
+                title: "Driver's Earnings",
+                todayNumber: `₹${formatNumber(todayMetrics.driversEarnings)}`,
+                todayNumberLine: "Today's Earnings",
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.driversEarnings)}`,
+                lastHourNumberLine: "Last hour's Earnings",
+            },
+        },
+        {
+            icon: savecommission,
+            number: `₹${formatNumber(calculateCommission(yesterdayMetrics.driversEarnings) || 0)}`,
+            title: "Save Commission",
+            increase: calculateCommission(todayMetrics.driversEarnings),
+            hover: true,
+            hoverData: {
+                title: "Saved Commissions",
+                todayNumber: `₹${formatNumber(calculateCommission(todayMetrics.driversEarnings))}`,
+                todayNumberLine: "Today's Saved Commission",
+                lastHourNumber: `₹${formatNumber(calculateCommission(lastHourMetrics.driversEarnings))}`,
+                lastHourNumberLine: "Last hour's Saved Commission",
+            },
+        },
+        {
+            icon: user,
+            number: formatNumber(yesterdayMetrics.Users || 0),
+            title: "User Registered",
+            increase: todayMetrics.Users,
+            hover: true,
+            hoverData: {
+                title: "Number of Registered Users",
+                todayNumber: todayMetrics.Users,
+                todayNumberLine: "Today's Registered Users",
+                lastHourNumber: lastHourMetrics.Users,
+                lastHourNumberLine: "Last hour's Registered Users",
+            },
+        },
+        {
+            icon: drivers,
+            number: formatNumber(yesterdayMetrics.driversRegistered || 0),
+            title: "Driver Registered",
+            increase: todayMetrics.driversRegistered,
+            hover: true,
+            hoverData: {
+                title: "Number of Driver Registrations",
+                todayNumber: todayMetrics.driversRegistered,
+                todayNumberLine: "Today's Driver Registrations",
+                lastHourNumber: lastHourMetrics.driversRegistered,
+                lastHourNumberLine: "Last hour's Driver Registrations",
+            },
+        },
+        {
+            icon: driverwalletadd,
+            number: `₹${formatNumber(yesterdayMetrics.walletCredits || 0)}`,
+            title: "Driver Wallet Add",
+            increase: formatNumber(todayMetrics.walletCredits),
+            hover: true,
+            hoverData: {
+                title: "Driver Wallet Additions",
+                todayNumber: `₹${formatNumber(todayMetrics.walletCredits)}`,
+                todayNumberLine: "Today's Wallet Additions",
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.walletCredits)}`,
+                lastHourNumberLine: "Last hour's Wallet Additions",
+            },
+        },
+        {
+            icon: subscriptiontrans,
+            number: formatNumber(yesterdayMetrics.subscriptionTransactions || 0),
+            title: "Subscription Transactions",
+            increase: todayMetrics.subscriptionTransactions,
+            hover: true,
+            hoverData: {
+                title: "Subscription Transactions",
+                todayNumber: todayMetrics.subscriptionTransactions,
+                todayNumberLine: "Today's Subscription Transactions",
+                lastHourNumber: lastHourMetrics.subscriptionTransactions,
+                lastHourNumberLine: "Last hour's Subscription Transactions",
+            },
+        },
+        {
+            icon: totalsubscription,
+            number: `₹${formatNumber(yesterdayMetrics.subscriptionAmount || 0)}`,
+            title: "Total Subscription Amount",
+            increase: formatNumber(todayMetrics.subscriptionAmount),
+            hover: true,
+            hoverData: {
+                title: "Total Subscription Amount",
+                todayNumber: `₹${formatNumber(todayMetrics.subscriptionAmount)}`,
+                todayNumberLine: "Today's Subscription Amount",
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.subscriptionAmount)}`,
+                lastHourNumberLine: "Last hour's Subscription Amount",
+            },
+        },
+        {
+            icon: coinsdistributed,
+            number: formatNumber(yesterdayMetrics.coinsDistributed || 0),
+            title: "Coins Distributed",
+            increase: todayMetrics.coinsDistributed,
+            hover: true,
+            hoverData: {
+                title: "Coins Distributed",
+                todayNumber: todayMetrics.coinsDistributed,
+                todayNumberLine: "Today's Coins Distributed",
+                lastHourNumber: lastHourMetrics.coinsDistributed,
+                lastHourNumberLine: "Last hour's Coins Distributed",
+            },
+        },
+        {
+            icon: userredeem,
+            number: `₹${formatNumber(yesterdayMetrics.userRedeemMoney || 0)}`,
+            title: "User Redeem Money",
+            increase: todayMetrics.userRedeemMoney,
+            hover: true,
+            hoverData: {
+                title: "User Redeemed Money",
+                todayNumber: `₹${formatNumber(todayMetrics.userRedeemMoney)}`,
+                todayNumberLine: "Today's Redeemed Money",
+                lastHourNumber: `₹${formatNumber(lastHourMetrics.userRedeemMoney)}`,
+                lastHourNumberLine: "Last hour's Redeemed Money",
+            },
+        },
+        {
+            icon: kms,
+            number: formatNumber(yesterdayMetrics.kmServed || 0),
+            title: "KM We Serve",
+            increase: formatNumber(todayMetrics.kmServed || 0),
+            hover: true,
+            hoverData: {
+                title: "Kilometers Served",
+                todayNumber: todayMetrics.kmServed,
+                todayNumberLine: "Today's Kilometers Served",
+                lastHourNumber: lastHourMetrics.kmServed,
+                lastHourNumberLine: "Last hour's Kilometers Served",
+            },
+        },
+        {
+            icon: bike,
+            number: formatNumber(yesterdayMetrics.BikeRides || 0),
+            title: "Bike Taxi",
+            increase: 0,
+            hover: true,
+            hoverData: {
+                title: "Number of Bike Rides",
+                todayNumber: 0,
+                todayNumberLine: "Today's Bike Rides",
+                lastHourNumber: 0,
+                lastHourNumberLine: "Last hour's Bike Rides",
+            },
+        },
+        {
+            icon: auto,
+            number: formatNumber(yesterdayMetrics.totalVerifiedAuto || 0),
+            title: "Auto Rickshaw",
+            increase: todayMetrics.totalVerifiedAuto,
+            hover: true,
+            hoverData: {
+                title: "Number of Auto Rickshaw Rides",
+                todayNumber: todayMetrics.totalVerifiedAuto,
+                todayNumberLine: "Today's Auto Rickshaw Rides",
+                lastHourNumber: lastHourMetrics.totalVerifiedAuto,
+                lastHourNumberLine: "Last hour's Auto Rickshaw Rides",
+            },
+        },
+        {
+            icon: cab,
+            number: formatNumber(yesterdayMetrics.totalVerifiedCab || 0),
+            title: "Cab",
+            increase: todayMetrics.totalVerifiedCab,
+            hover: true,
+            hoverData: {
+                title: "Number of Cab Rides",
+                todayNumber: todayMetrics.totalVerifiedCab,
+                todayNumberLine: "Today's Cab Rides",
+                lastHourNumber: lastHourMetrics.totalVerifiedCab,
+                lastHourNumberLine: "Last hour's Cab Rides",
+            },
+        },
+        {
+            icon: fake,
+            number: formatNumber(yesterdayMetrics.FakeRides || 0),
+            title: "Fake Rides",
+            increase: todayMetrics.FakeRides,
+            hover: true,
+            hoverData: {
+                title: "Number of Fake Rides",
+                todayNumber: todayMetrics.FakeRides,
+                todayNumberLine: "Today's Fake Rides",
+                lastHourNumber: lastHourMetrics.FakeRides,
+                lastHourNumberLine: "Last hour's Fake Rides",
+            },
+        },
+        {
+            icon: cancel,
+            number: formatNumber(yesterdayMetrics.cancelledRides || 0),
+            title: "Cancel Rides",
+            increase: todayMetrics.cancelledRides,
+            hover: true,
+            hoverData: {
+                title: "Number of Cancelled Rides",
+                todayNumber: todayMetrics.cancelledRides,
+                todayNumberLine: "Today's Cancelled Rides",
+                lastHourNumber: lastHourMetrics.cancelledRides,
+                lastHourNumberLine: "Last hour's Cancelled Rides",
+            },
+        },
+
+    ];
+
     const [activeTab, setActiveTab] = useState('today');
     const [customButton, setCustomButton] = useState(false)
 
@@ -585,12 +837,21 @@ export default function CardGrid() {
                     <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
                         <button
                             className={`px-4 py-2 rounded-md text-sm transition-colors ${activeTab === 'today'
-                                ? 'bg-white shadow-sm'
+                                ? 'bg-blue-500 shadow-sm text-white'
                                 : 'text-gray-500 hover:text-gray-700'
                                 }`}
                             onClick={() => setActiveTab('today')}
                         >
                             Today
+                        </button>
+                        <button
+                            className={`px-4 py-2 rounded-md text-sm transition-colors ${activeTab === 'yesterday'
+                                ? 'bg-blue-500 text-white shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                            onClick={() => setActiveTab('yesterday')}
+                        >
+                            Yesterday
                         </button>
                         <button
                             className={`px-4 py-2 rounded-md text-sm transition-colors ${activeTab === 'allTime'
@@ -606,22 +867,29 @@ export default function CardGrid() {
 
                 {/* Metrics Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {(activeTab === 'today' ? todayTabData : allTimeTabData).map((metric, index) => (
-                        <MetricCard
-                            key={`${metric.title}-${index}`}
-                            icon={metric.icon}
-                            title={metric.title}
-                            number={metric.number}
-                            increase={metric.increase}
-                            hover={metric.hover}
-                            hoverData={metric.hoverData}
-                        />
-                    ))}
+                    {(activeTab === 'today'
+                        ? todayTabData
+                        : activeTab === 'yesterday'
+                            ? yesterdayTabData
+                            : allTimeTabData).map((metric, index) => (
+                                <MetricCard
+                                    key={`${metric.title}-${index}`}
+                                    icon={metric.icon}
+                                    title={metric.title}
+                                    number={metric.number}
+                                    increase={metric.increase}
+                                    hover={metric.hover}
+                                    hoverData={metric.hoverData}
+                                />
+                            ))}
                 </div>
 
                 <div className='p-2 border-2 border-gray-100 m-6 rounded '>
-                    {activeTab === 'today' ?
-                        <MeterChart data={dToday} options={op}></MeterChart> : <MeterChart data={d} options={op}></MeterChart>}
+                    {activeTab === 'today'
+                        ? <MeterChart data={dToday} options={op}></MeterChart>
+                        : activeTab === 'yesterday'
+                            ? <MeterChart data={dYesterday} options={op}></MeterChart>
+                            : <MeterChart data={d} options={op}></MeterChart>}
                 </div>
             </div>
 
