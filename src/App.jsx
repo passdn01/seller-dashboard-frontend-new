@@ -36,6 +36,7 @@ import CityIndex from './components/city/CityIndex.jsx'
 import TSPMessagesTable from './components/tsp/TSPMessagesTable.jsx'
 import UserOfferIndex from './components/userOffers/UserOfferIndex.jsx'
 import NotificationIndex from './components/notification/NotificationIndex.jsx'
+import CategoryIndex from './components/category/CategoryIndex.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -104,7 +105,9 @@ function App() {
           <Route path='/admin' element={<ProtectedRoute element={< IAMUserPage />} />} />
 
           <Route path='/city' element={<ProtectedRoute element={<CityIndex />} />} />
+          <Route path='/category' element={<ProtectedRoute element={<CategoryIndex />} />} />
           <Route path='/notification' element={<ProtectedRoute element={<NotificationIndex />} />} />
+
 
           <Route path='/home/dashboard/img' element={<ProtectedRoute element={< ImageComponent />} />} />
           <Route path='/pricing' element={<ProtectedRoute element={< PriceSetterPage />} />} />

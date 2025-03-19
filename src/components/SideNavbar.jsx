@@ -156,54 +156,61 @@ function SideNavbar() {
         },
         {
             id: "6",
+            title: "Category",
+            link: "/category",
+            submenu: false,
+            icon: OfferIcon,
+        },
+        {
+            id: "7",
             title: "Issues Assigner",
             link: "/issueAssigner",
             submenu: false,
             icon: OfferIcon,
         },
         {
-            id: "7",
+            id: "8",
             title: "Issue Solver",
             link: '/issueSolver',
             icon: IssueSolverIcon,
         },
         {
-            id: "8",
+            id: "9",
             title: "I AM User",
             link: "/admin",
             submenu: false,
             icon: IAMAdminIcon,
         },
         {
-            id: "9",
+            id: "10",
             title: "Image Viewer",
             link: "/home/dashboard/img",
             submenu: false,
             icon: IAMAdminIcon,
         },
         {
-            id: "10",
+            id: "11",
             title: "Pricing",
             link: '/pricing',
             submenu: false,
             icon: pricing
         },
         {
-            id: "11",
+            id: "12",
             title: "Blogs",
             link: '/blogs',
             submenu: false,
             icon: blogs
         },
         {
-            id: "12",
+            id: "13",
             title: "Tsp Messages",
             link: '/tspMessages',
             submenu: false,
             icon: tsp
         },
         {
-            id: "13",
+            id: "14",
             title: "Notification",
             link: "/notification",
             submenu: false,
