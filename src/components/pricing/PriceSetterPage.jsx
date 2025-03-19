@@ -45,8 +45,10 @@ export default function FarePricing() {
         setLoading(true);
         try {
             // const response = await axios.get(`https://airshare.co.in/pricing`);
-            const response = await axios.get(`https://jwkxs7nc-8055.inc1.devtunnels.ms/pricing`);
+            const response = await axios.get(`https://3n8qx2vb-8055.inc1.devtunnels.ms/pricing`);
             const data = response.data.data;
+
+            console.log(data, "response from server")
 
             const formattedData = {
                 auto: data.find((item) => item.vehicleType === "AUTO") || null,
@@ -109,12 +111,12 @@ export default function FarePricing() {
         }));
     };
 
-    const handleDistanceRangeChange = (category, index, value) => {
+    const handleDistanceRangeChange = (category, index, field, value) => {
         setPricingData((prev) => {
             const updatedRanges = [...prev[category].distanceRanges];
             updatedRanges[index] = {
                 ...updatedRanges[index],
-                pricePerKm: value
+                [field]: value
             };
 
             return {
@@ -131,8 +133,8 @@ export default function FarePricing() {
                 ...(prev[category]?.distanceRanges || pricingData[category]?.distanceRanges || [])
             ];
             updatedRanges[index] = {
-                ...updatedRanges[index],
-                pricePerKm: value
+                ...(updatedRanges[index] || {}),
+                [field]: value
             };
 
             return {
@@ -144,7 +146,6 @@ export default function FarePricing() {
             };
         });
     };
-
 
     const handleSave = async (category) => {
         if (!changedFields[category] || Object.keys(changedFields[category]).length === 0) {
@@ -200,6 +201,24 @@ export default function FarePricing() {
         }
     };
 
+    const validateDistanceRanges = (category) => {
+        if (!pricingData[category] || !pricingData[category].distanceRanges) return true;
+
+        const ranges = pricingData[category].distanceRanges;
+        for (let i = 0; i < ranges.length - 1; i++) {
+            // Check if current max equals next min
+            if (parseFloat(ranges[i].maxDistance) !== parseFloat(ranges[i + 1].minDistance)) {
+                setSaveStatus({
+                    type: "warning",
+                    message: `Distance ranges must be continuous. Check ranges ${i + 1} and ${i + 2}.`
+                });
+                setTimeout(() => setSaveStatus({ type: null, message: null }), 5000);
+                return false;
+            }
+        }
+        return true;
+    };
+
     const renderPricingForm = (category) => {
         const data = pricingData[category];
 
@@ -218,7 +237,6 @@ export default function FarePricing() {
                     <div className="space-y-6">
                         <div className="border border-blue-100 rounded-md p-4 bg-white">
                             <h3 className="text-lg font-semibold mb-4  border-b border-blue-100 pb-2 flex items-center">
-
                                 Basic Pricing
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -232,6 +250,7 @@ export default function FarePricing() {
                                         value={data.minimumFare}
                                         onChange={(e) => handleChange(category, "minimumFare", e.target.value)}
                                         className="mt-1 border-blue-200 focus:border-blue-500"
+                                        onWheel={(e) => e.target.blur()}
                                     />
                                 </div>
                                 <div>
@@ -244,20 +263,9 @@ export default function FarePricing() {
                                         value={data.baseFare}
                                         onChange={(e) => handleChange(category, "baseFare", e.target.value)}
                                         className="mt-1 border-blue-200 focus:border-blue-500"
+                                        onWheel={(e) => e.target.blur()}
                                     />
                                 </div>
-                                {/* <div>
-                                    <Label className="text-sm font-medium flex items-center text-gray-700">
-                                        <Route className="mr-1 h-4 w-4 text-blue-500" />
-                                        Per Km After
-                                    </Label>
-                                    <Input
-                                        type="number"
-                                        value={data.perKmAfter}
-                                        onChange={(e) => handleChange(category, "perKmAfter", e.target.value)}
-                                        className="mt-1 border-blue-200 focus:border-blue-500"
-                                    />
-                                </div> */}
                                 <div>
                                     <Label className="text-sm font-medium flex items-center text-gray-700">
                                         <Ruler className="mr-1 h-4 w-4 text-blue-500" />
@@ -268,6 +276,7 @@ export default function FarePricing() {
                                         value={data.baseDistance}
                                         onChange={(e) => handleChange(category, "baseDistance", e.target.value)}
                                         className="mt-1 border-blue-200 focus:border-blue-500"
+                                        onWheel={(e) => e.target.blur()}
                                     />
                                 </div>
                                 <div>
@@ -280,6 +289,7 @@ export default function FarePricing() {
                                         value={data.maxPriceBuffer}
                                         onChange={(e) => handleChange(category, "maxPriceBuffer", e.target.value)}
                                         className="mt-1 border-blue-200 focus:border-blue-500"
+                                        onWheel={(e) => e.target.blur()}
                                     />
                                 </div>
                             </div>
@@ -302,6 +312,7 @@ export default function FarePricing() {
                                         value={data.nightCharges?.multiplier || ""}
                                         onChange={(e) => handleNightChargeChange(category, "multiplier", e.target.value)}
                                         className="mt-1 border-blue-200 focus:border-blue-500"
+                                        onWheel={(e) => e.target.blur()}
                                     />
                                 </div>
                                 <div>
@@ -314,6 +325,7 @@ export default function FarePricing() {
                                         value={data.nightCharges?.startTime || ""}
                                         onChange={(e) => handleNightChargeChange(category, "startTime", e.target.value)}
                                         className="mt-1 border-blue-200 focus:border-blue-500"
+                                        onWheel={(e) => e.target.blur()}
                                     />
                                 </div>
                                 <div>
@@ -326,6 +338,7 @@ export default function FarePricing() {
                                         value={data.nightCharges?.endTime || ""}
                                         onChange={(e) => handleNightChargeChange(category, "endTime", e.target.value)}
                                         className="mt-1 border-blue-200 focus:border-blue-500"
+                                        onWheel={(e) => e.target.blur()}
                                     />
                                 </div>
                             </div>
@@ -346,9 +359,11 @@ export default function FarePricing() {
                                             </Label>
                                             <Input
                                                 type="number"
+                                                step="0.1"
                                                 value={range.minDistance}
-                                                disabled={true}
-                                                className="mt-1 border-blue-200 focus:border-blue-500 bg-gray-100"
+                                                onChange={(e) => handleDistanceRangeChange(category, index, "minDistance", e.target.value)}
+                                                className="mt-1 border-blue-200 focus:border-blue-500"
+                                                onWheel={(e) => e.target.blur()}
                                             />
                                         </div>
                                         <div>
@@ -358,9 +373,11 @@ export default function FarePricing() {
                                             </Label>
                                             <Input
                                                 type="number"
+                                                step="0.1"
                                                 value={range.maxDistance}
-                                                disabled={true}
-                                                className="mt-1 border-blue-200 focus:border-blue-500 bg-gray-100"
+                                                onChange={(e) => handleDistanceRangeChange(category, index, "maxDistance", e.target.value)}
+                                                className="mt-1 border-blue-200 focus:border-blue-500"
+                                                onWheel={(e) => e.target.blur()}
                                             />
                                         </div>
                                         <div>
@@ -372,8 +389,9 @@ export default function FarePricing() {
                                                 type="number"
                                                 step="0.1"
                                                 value={range.pricePerKm}
-                                                onChange={(e) => handleDistanceRangeChange(category, index, e.target.value)}
+                                                onChange={(e) => handleDistanceRangeChange(category, index, "pricePerKm", e.target.value)}
                                                 className="mt-1 border-blue-200 focus:border-blue-500"
+                                                onWheel={(e) => e.target.blur()}
                                             />
                                         </div>
                                     </div>
@@ -394,7 +412,11 @@ export default function FarePricing() {
 
                         <Button
                             className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center"
-                            onClick={() => handleSave(category)}
+                            onClick={() => {
+                                if (validateDistanceRanges(category)) {
+                                    handleSave(category);
+                                }
+                            }}
                             disabled={loading || !changedFields[category] || Object.keys(changedFields[category]).length === 0}
                         >
                             {loading ? (
@@ -420,7 +442,6 @@ export default function FarePricing() {
             <SideNavbar />
             <div className="pl-[250px] px-4 py-6">
                 <h1 className="text-2xl font-bold text-center mb-6  flex items-center justify-center">
-
                     FARE PRICING MANAGEMENT
                 </h1>
 
