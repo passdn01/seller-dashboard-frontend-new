@@ -380,6 +380,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                                         { label: "RC of bike", value: "rc of bike" },
                                         { label: "RC Number different", value: "rc number different" },
                                         { label: "License name is different", value: "license name is different" },
+                                        { label: "No lisense image available", value: "No lisense image available" },
                                         { label: "Not Applicable", value: "NA" },
                                     ]}
                                     onChange={(val) => handleChange("rejectReason", val)}
