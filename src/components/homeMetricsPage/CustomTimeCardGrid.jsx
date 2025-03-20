@@ -231,96 +231,96 @@ function CustomTimeCardGrid({ customButton }) {
     ];
 
     return (
-        customButton && (
-            <div className="mx-16 p-16 border-2 border-gray-200">
-                <h2 className="text-xl font-semibold mb-4">Custom Date Range Metrics</h2>
 
-                <div className="flex flex-wrap gap-4 mb-6 items-end">
-                    <div>
-                        <label className="block text-sm text-gray-500 mb-1">Start Date</label>
-                        <div className="flex gap-2">
-                            <input
-                                type="date"
-                                className="px-4 py-2 border border-gray-300 rounded-md"
-                                value={startDate}
-                                onChange={(e) => setStartDate(e.target.value)}
-                                max={endDate}
-                            />
-                            <input
-                                type="time"
-                                className="px-4 py-2 border border-gray-300 rounded-md"
-                                value={startTime}
-                                onChange={(e) => setStartTime(e.target.value)}
-                            />
-                        </div>
+        <div className="mx-16 p-16 border-2 border-gray-200">
+            <h2 className="text-xl font-semibold mb-4">Custom Date Range Metrics</h2>
+
+            <div className="flex flex-wrap gap-4 mb-6 items-end">
+                <div>
+                    <label className="block text-sm text-gray-500 mb-1">Start Date</label>
+                    <div className="flex gap-2">
+                        <input
+                            type="date"
+                            className="px-4 py-2 border border-gray-300 rounded-md"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            max={endDate}
+                        />
+                        <input
+                            type="time"
+                            className="px-4 py-2 border border-gray-300 rounded-md"
+                            value={startTime}
+                            onChange={(e) => setStartTime(e.target.value)}
+                        />
                     </div>
-
-                    <div>
-                        <label className="block text-sm text-gray-500 mb-1">End Date</label>
-                        <div className="flex gap-2">
-                            <input
-                                type="date"
-                                className="px-4 py-2 border border-gray-300 rounded-md"
-                                value={endDate}
-                                onChange={(e) => setEndDate(e.target.value)}
-                                min={startDate}
-                            />
-                            <input
-                                type="time"
-                                className="px-4 py-2 border border-gray-300 rounded-md"
-                                value={endTime}
-                                onChange={(e) => setEndTime(e.target.value)}
-                            />
-                        </div>
-                    </div>
-
-                    <button
-                        className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
-                        onClick={fetchCustomMetrics}
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Loading...' : 'Fetch Data'}
-                    </button>
                 </div>
 
-                {error && (
-                    <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        {error}
+                <div>
+                    <label className="block text-sm text-gray-500 mb-1">End Date</label>
+                    <div className="flex gap-2">
+                        <input
+                            type="date"
+                            className="px-4 py-2 border border-gray-300 rounded-md"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            min={startDate}
+                        />
+                        <input
+                            type="time"
+                            className="px-4 py-2 border border-gray-300 rounded-md"
+                            value={endTime}
+                            onChange={(e) => setEndTime(e.target.value)}
+                        />
                     </div>
-                )}
+                </div>
 
-                {isLoading && (
-                    <div className="flex justify-center items-center py-8">
-                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
-                    </div>
-                )}
-
-                {showData && !isLoading && (
-                    <>
-                        <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded mb-4">
-                            Showing data from {startDate} {startTime} to {endDate} {endTime}
-                        </div>
-
-                        {/* Metrics Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {customTabData.map((metric, index) => (
-                                <MetricCard
-                                    key={`${metric.title}-${index}`}
-                                    icon={metric.icon}
-                                    title={metric.title}
-                                    number={metric.number}
-                                    hover={metric.hover}
-                                />
-                            ))}
-                        </div>
-
-                        <div className='p-2 border-2 border-gray-100 m-6 rounded'>
-                            <MeterChart data={meterData} options={meterOptions}></MeterChart>
-                        </div>
-                    </>
-                )}
+                <button
+                    className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+                    onClick={fetchCustomMetrics}
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Loading...' : 'Fetch Data'}
+                </button>
             </div>
-        )
+
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    {error}
+                </div>
+            )}
+
+            {isLoading && (
+                <div className="flex justify-center items-center py-8">
+                    <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+                </div>
+            )}
+
+            {showData && !isLoading && (
+                <>
+                    <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded mb-4">
+                        Showing data from {startDate} {startTime} to {endDate} {endTime}
+                    </div>
+
+                    {/* Metrics Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {customTabData.map((metric, index) => (
+                            <MetricCard
+                                key={`${metric.title}-${index}`}
+                                icon={metric.icon}
+                                title={metric.title}
+                                number={metric.number}
+                                hover={metric.hover}
+                            />
+                        ))}
+                    </div>
+
+                    <div className='p-2 border-2 border-gray-100 m-6 rounded'>
+                        <MeterChart data={meterData} options={meterOptions}></MeterChart>
+                    </div>
+                </>
+            )}
+        </div>
+
     );
 }
 
