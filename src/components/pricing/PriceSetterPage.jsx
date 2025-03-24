@@ -91,8 +91,9 @@ export default function FarePricing() {
         setRefreshing(true);
         try {
             // const response = await axios.get(`https://airshare.co.in/pricing`);
-            const response = await axios.get(`https://jwkxs7nc-8055.inc1.devtunnels.ms/pricing`);
+            const response = await axios.get(`https://suuper.in/pricing?cityId=${selectedCity}`);
             const data = response.data.data;
+            console.log("Pricing data:", data);
 
             // Extract all unique vehicle types
             const types = [...new Set(data.map(item => item.vehicleType))];
@@ -216,7 +217,7 @@ export default function FarePricing() {
         try {
             const token = localStorage.getItem("token");
             await axios.patch(
-                `https://jwkxs7nc-8055.inc1.devtunnels.ms/pricing/${category.toUpperCase()}?cityId=${selectedCity}`,
+                `https://suuper.in/pricing/${category.toUpperCase()}?cityId=${selectedCity}`,
                 { isActive: !currentStatus },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -270,7 +271,7 @@ export default function FarePricing() {
             setLoading(true);
             const token = localStorage.getItem("token");
             await axios.patch(
-                `https://jwkxs7nc-8055.inc1.devtunnels.ms/pricing/${category.toUpperCase()}?cityId=${selectedCity}`,
+                `https://suuper.in/pricing/${category.toUpperCase()}?cityId=${selectedCity}`,
                 changedFields[category],
                 { headers: { Authorization: `Bearer ${token}` } }
             );
