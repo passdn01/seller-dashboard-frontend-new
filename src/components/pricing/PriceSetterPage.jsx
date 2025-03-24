@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
@@ -12,41 +11,26 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import axios from "axios";
 import SideNavbar from "../SideNavbar";
 import {
     Car,
-    Clock,
-    DollarSign,
-    Save,
-    Moon,
-    ArrowRight,
-    AlertCircle,
-    Check,
     Loader2,
     Route,
-    Ruler,
-    Calculator,
-    Gauge,
-    Bike,
     MapPin,
-    ToggleLeft,
-    Info,
-    RefreshCw,
-    Trash2,
-    Plus,
-    AlarmClock,
     Building2,
-    Settings,
-    BarChart3,
-    HelpCircle,
+    RefreshCw,
+    AlertCircle,
+    Plus,
+    Edit,
+    Bike,
+    CheckCircle, // Added missing import
 } from "lucide-react";
+import CreatePricing from "./CreatePricing";
+import UpdatePricing from "./UpdatePricing";
 
 export default function FarePricing() {
     const [pricingData, setPricingData] = useState({});
-    const [changedFields, setChangedFields] = useState({});
     const [loading, setLoading] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("");
     const [saveStatus, setSaveStatus] = useState({ type: null, message: null });
@@ -56,6 +40,8 @@ export default function FarePricing() {
     const [cityLoading, setCityLoading] = useState(false);
     const [loadingCategories, setLoadingCategories] = useState({});
     const [refreshing, setRefreshing] = useState(false);
+    const [mode, setMode] = useState("view"); // view, create, update
+    const [selectedVehicleForUpdate, setSelectedVehicleForUpdate] = useState(null);
 
     useEffect(() => {
         fetchCities();
@@ -90,8 +76,7 @@ export default function FarePricing() {
         setLoading(true);
         setRefreshing(true);
         try {
-            // const response = await axios.get(`https://airshare.co.in/pricing`);
-            const response = await axios.get(`https://suuper.in/pricing?cityId=${selectedCity}`);
+            const response = await axios.get(`https://suuper.in/pricing?cityId=${cityId}`);
             const data = response.data.data;
             console.log("Pricing data:", data);
 
@@ -116,8 +101,6 @@ export default function FarePricing() {
             } else if (!types.includes(selectedCategory.toUpperCase())) {
                 setSelectedCategory(types[0].toLowerCase());
             }
-            
-            setChangedFields({});
         } catch (error) {
             console.error("Error fetching pricing data:", error);
         } finally {
@@ -129,85 +112,9 @@ export default function FarePricing() {
     const refreshData = () => {
         if (selectedCity) {
             fetchPricingData(selectedCity);
+            setMode("view");
+            setSelectedVehicleForUpdate(null);
         }
-    };
-
-    const handleChange = (category, field, value) => {
-        setPricingData((prev) => ({
-            ...prev,
-            [category]: {
-                ...prev[category],
-                [field]: value,
-            },
-        }));
-
-        setChangedFields((prev) => ({
-            ...prev,
-            [category]: {
-                ...prev[category],
-                [field]: value,
-            },
-        }));
-    };
-
-    const handleNightChargeChange = (category, field, value) => {
-        setPricingData((prev) => ({
-            ...prev,
-            [category]: {
-                ...prev[category],
-                nightCharges: {
-                    ...prev[category]?.nightCharges,
-                    [field]: value,
-                },
-            },
-        }));
-
-        setChangedFields((prev) => ({
-            ...prev,
-            [category]: {
-                ...prev[category],
-                nightCharges: {
-                    ...prev[category]?.nightCharges,
-                    [field]: value,
-                },
-            },
-        }));
-    };
-
-    const handleDistanceRangeChange = (category, index, field, value) => {
-        setPricingData((prev) => {
-            const updatedRanges = [...prev[category].distanceRanges];
-            updatedRanges[index] = {
-                ...updatedRanges[index],
-                [field]: value
-            };
-
-            return {
-                ...prev,
-                [category]: {
-                    ...prev[category],
-                    distanceRanges: updatedRanges
-                }
-            };
-        });
-
-        setChangedFields((prev) => {
-            const updatedRanges = [
-                ...(prev[category]?.distanceRanges || pricingData[category]?.distanceRanges || [])
-            ];
-            updatedRanges[index] = {
-                ...(updatedRanges[index] || {}),
-                [field]: value
-            };
-
-            return {
-                ...prev,
-                [category]: {
-                    ...prev[category],
-                    distanceRanges: updatedRanges
-                }
-            };
-        });
     };
 
     const handleToggleActive = async (category, currentStatus) => {
@@ -257,43 +164,22 @@ export default function FarePricing() {
         }
     };
 
-    const handleSave = async (category) => {
-        if (!changedFields[category] || Object.keys(changedFields[category]).length === 0) {
-            setSaveStatus({
-                type: "warning",
-                message: `No changes detected for ${category}`
-            });
-            setTimeout(() => setSaveStatus({ type: null, message: null }), 3000);
-            return;
-        }
+    const handleCreateClick = () => {
+        setMode("create");
+    };
 
-        try {
-            setLoading(true);
-            const token = localStorage.getItem("token");
-            await axios.patch(
-                `https://suuper.in/pricing/${category.toUpperCase()}?cityId=${selectedCity}`,
-                changedFields[category],
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            setSaveStatus({
-                type: "success",
-                message: `Updated ${category} pricing successfully!`
-            });
-            setTimeout(() => setSaveStatus({ type: null, message: null }), 3000);
-            setChangedFields((prev) => ({
-                ...prev,
-                [category]: {},
-            }));
-        } catch (error) {
-            console.error("Error updating pricing:", error);
-            setSaveStatus({
-                type: "error",
-                message: `Failed to update ${category} pricing`
-            });
-            setTimeout(() => setSaveStatus({ type: null, message: null }), 3000);
-        } finally {
-            setLoading(false);
-        }
+    const handleUpdateClick = (vehicleType) => {
+        setSelectedVehicleForUpdate(pricingData[vehicleType.toLowerCase()]);
+        setMode("update");
+    };
+
+    const handleCancelForm = () => {
+        setMode("view");
+        setSelectedVehicleForUpdate(null);
+    };
+
+    const handleFormSubmitSuccess = () => {
+        refreshData();
     };
 
     // Get the appropriate vehicle icon based on category
@@ -305,6 +191,8 @@ export default function FarePricing() {
                 return <Car className="mr-2 h-5 w-5 text-blue-500" />;
             case "SEDAN":
                 return <Car className="mr-2 h-5 w-5 text-blue-500" />;
+            case "SUV":
+                return <Car className="mr-2 h-5 w-5 text-blue-500" />;
             case "BIKE":
                 return <Bike className="mr-2 h-5 w-5 text-blue-500" />;
             default:
@@ -312,272 +200,9 @@ export default function FarePricing() {
         }
     };
 
-    const validateDistanceRanges = (category) => {
-        if (!pricingData[category] || !pricingData[category].distanceRanges) return true;
-
-        const ranges = pricingData[category].distanceRanges;
-        for (let i = 0; i < ranges.length - 1; i++) {
-            // Check if current max equals next min
-            if (parseFloat(ranges[i].maxDistance) !== parseFloat(ranges[i + 1].minDistance)) {
-                setSaveStatus({
-                    type: "warning",
-                    message: `Distance ranges must be continuous. Check ranges ${i + 1} and ${i + 2}.`
-                });
-                setTimeout(() => setSaveStatus({ type: null, message: null }), 5000);
-                return false;
-            }
-        }
-        return true;
-    };
-
     const getStatusDot = (isActive) => {
         return (
             <div className={`h-3 w-3 rounded-full ${isActive ? 'bg-green-500' : 'bg-blue-500'} shadow-sm mr-2 transition-all duration-300`}></div>
-        );
-    };
-
-    const renderPricingForm = (category) => {
-        const data = pricingData[category];
-
-        if (!data) return null;
-
-        const isCategoryLoading = loadingCategories[category] || false;
-        const hasChanges = changedFields[category] && Object.keys(changedFields[category]).length > 0;
-
-        return (
-            <Card className="shadow-md border-blue-100">
-                <CardHeader className="border-b bg-blue-50">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            {getVehicleIcon(category)}
-                            <CardTitle className="text-xl">{category.toUpperCase()} Pricing Configuration</CardTitle>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            {isCategoryLoading ? (
-                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            ) : (
-                                <div className="flex items-center">
-                                    <div className="flex items-center mr-3">
-                                        {getStatusDot(data.isActive)}
-                                        <span className={`text-sm font-medium ${data.isActive ? 'text-green-600' : 'text-blue-500'}`}>
-                                            {data.isActive ? 'Active' : 'Inactive'}
-                                        </span>
-                                    </div>
-                                    <Switch
-                                        id={`active-${category}`}
-                                        checked={data.isActive}
-                                        onCheckedChange={() => handleToggleActive(category, data.isActive)}
-                                        disabled={isCategoryLoading}
-                                        className={data.isActive ? "data-[state=checked]:bg-green-500" : ""}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                    <CardDescription>Adjust pricing parameters for {category} vehicles</CardDescription>
-                </CardHeader>
-                <CardContent className="pt-6">
-                    <div className="space-y-6">
-                        <div className="border border-blue-100 rounded-md p-4 bg-white">
-                            <h3 className="text-lg font-semibold mb-4 border-b border-blue-100 pb-2 flex items-center">
-                                <DollarSign className="mr-2 h-5 w-5 text-blue-600" />
-                                Basic Pricing
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <Label className="text-sm font-medium flex items-center text-gray-700">
-                                        <DollarSign className="mr-1 h-4 w-4 text-blue-500" />
-                                        Minimum Fare
-                                    </Label>
-                                    <Input
-                                        type="number"
-                                        value={data.minimumFare}
-                                        onChange={(e) => handleChange(category, "minimumFare", e.target.value)}
-                                        className="mt-1 border-blue-200 focus:border-blue-500"
-                                        onWheel={(e) => e.target.blur()}
-                                    />
-                                </div>
-                                <div>
-                                    <Label className="text-sm font-medium flex items-center text-gray-700">
-                                        <DollarSign className="mr-1 h-4 w-4 text-blue-500" />
-                                        Base Fare
-                                    </Label>
-                                    <Input
-                                        type="number"
-                                        value={data.baseFare}
-                                        onChange={(e) => handleChange(category, "baseFare", e.target.value)}
-                                        className="mt-1 border-blue-200 focus:border-blue-500"
-                                        onWheel={(e) => e.target.blur()}
-                                    />
-                                </div>
-                                <div>
-                                    <Label className="text-sm font-medium flex items-center text-gray-700">
-                                        <Ruler className="mr-1 h-4 w-4 text-blue-500" />
-                                        Base Distance
-                                    </Label>
-                                    <Input
-                                        type="number"
-                                        value={data.baseDistance}
-                                        onChange={(e) => handleChange(category, "baseDistance", e.target.value)}
-                                        className="mt-1 border-blue-200 focus:border-blue-500"
-                                        onWheel={(e) => e.target.blur()}
-                                    />
-                                </div>
-                                <div>
-                                    <Label className="text-sm font-medium flex items-center text-gray-700">
-                                        <Calculator className="mr-1 h-4 w-4 text-blue-500" />
-                                        Max Price Buffer
-                                    </Label>
-                                    <Input
-                                        type="number"
-                                        value={data.maxPriceBuffer}
-                                        onChange={(e) => handleChange(category, "maxPriceBuffer", e.target.value)}
-                                        className="mt-1 border-blue-200 focus:border-blue-500"
-                                        onWheel={(e) => e.target.blur()}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="border border-blue-100 rounded-md p-4 bg-white">
-                            <h3 className="text-lg font-semibold mb-4 border-b border-blue-100 pb-2 flex items-center">
-                                <Moon className="mr-2 h-5 w-5 text-blue-600" />
-                                Night Charges
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <Label className="text-sm font-medium flex items-center text-gray-700">
-                                        <Gauge className="mr-1 h-4 w-4 text-blue-500" />
-                                        Multiplier
-                                    </Label>
-                                    <Input
-                                        type="number"
-                                        step="0.1"
-                                        value={data.nightCharges?.multiplier || ""}
-                                        onChange={(e) => handleNightChargeChange(category, "multiplier", e.target.value)}
-                                        className="mt-1 border-blue-200 focus:border-blue-500"
-                                        onWheel={(e) => e.target.blur()}
-                                    />
-                                </div>
-                                <div>
-                                    <Label className="text-sm font-medium flex items-center text-gray-700">
-                                        <Clock className="mr-1 h-4 w-4 text-blue-500" />
-                                        Start Time
-                                    </Label>
-                                    <Input
-                                        type="number"
-                                        value={data.nightCharges?.startTime || ""}
-                                        onChange={(e) => handleNightChargeChange(category, "startTime", e.target.value)}
-                                        className="mt-1 border-blue-200 focus:border-blue-500"
-                                        onWheel={(e) => e.target.blur()}
-                                    />
-                                </div>
-                                <div>
-                                    <Label className="text-sm font-medium flex items-center text-gray-700">
-                                        <Clock className="mr-1 h-4 w-4 text-blue-500" />
-                                        End Time
-                                    </Label>
-                                    <Input
-                                        type="number"
-                                        value={data.nightCharges?.endTime || ""}
-                                        onChange={(e) => handleNightChargeChange(category, "endTime", e.target.value)}
-                                        className="mt-1 border-blue-200 focus:border-blue-500"
-                                        onWheel={(e) => e.target.blur()}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="border border-blue-100 rounded-md p-4 bg-white">
-                            <h3 className="text-lg font-semibold mb-4 border-b border-blue-100 pb-2 flex items-center">
-                                <Route className="mr-2 h-5 w-5 text-blue-600" />
-                                Distance Ranges
-                            </h3>
-                            <div className="space-y-4">
-                                {data.distanceRanges?.map((range, index) => (
-                                    <div key={index} className="grid grid-cols-1 md:grid-cols-3 gap-4 p-3 bg-blue-50/50 rounded-md border border-blue-100/50">
-                                        <div>
-                                            <Label className="text-sm font-medium flex items-center text-gray-700">
-                                                <Ruler className="mr-1 h-4 w-4 text-blue-500" />
-                                                Min Distance
-                                            </Label>
-                                            <Input
-                                                type="number"
-                                                step="0.1"
-                                                value={range.minDistance}
-                                                onChange={(e) => handleDistanceRangeChange(category, index, "minDistance", e.target.value)}
-                                                className="mt-1 border-blue-200 focus:border-blue-500"
-                                                onWheel={(e) => e.target.blur()}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-medium flex items-center text-gray-700">
-                                                <Ruler className="mr-1 h-4 w-4 text-blue-500" />
-                                                Max Distance
-                                            </Label>
-                                            <Input
-                                                type="number"
-                                                step="0.1"
-                                                value={range.maxDistance}
-                                                onChange={(e) => handleDistanceRangeChange(category, index, "maxDistance", e.target.value)}
-                                                className="mt-1 border-blue-200 focus:border-blue-500"
-                                                onWheel={(e) => e.target.blur()}
-                                            />
-                                        </div>
-                                        <div>
-                                            <Label className="text-sm font-medium flex items-center text-gray-700">
-                                                <DollarSign className="mr-1 h-4 w-4 text-blue-500" />
-                                                Price Per Km
-                                            </Label>
-                                            <Input
-                                                type="number"
-                                                step="0.1"
-                                                value={range.pricePerKm}
-                                                onChange={(e) => handleDistanceRangeChange(category, index, "pricePerKm", e.target.value)}
-                                                className="mt-1 border-blue-200 focus:border-blue-500"
-                                                onWheel={(e) => e.target.blur()}
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {saveStatus.type && (
-                            <div className={`py-2 px-4 rounded-md flex items-center ${saveStatus.type === 'success' ? 'bg-green-100 text-green-800' :
-                                saveStatus.type === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
-                                }`}>
-                                {saveStatus.type === 'success' ? <Check className="h-4 w-4 mr-2" /> :
-                                    saveStatus.type === 'warning' ? <AlertCircle className="h-4 w-4 mr-2" /> :
-                                        <AlertCircle className="h-4 w-4 mr-2" />}
-                                {saveStatus.message}
-                            </div>
-                        )}
-
-                        <Button
-                            className="w-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center"
-                            onClick={() => {
-                                if (validateDistanceRanges(category)) {
-                                    handleSave(category);
-                                }
-                            }}
-                            disabled={loading || !changedFields[category] || Object.keys(changedFields[category]).length === 0}
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Saving...
-                                </>
-                            ) : (
-                                <>
-                                    <Save className="mr-2 h-4 w-4" />
-                                    Save Changes
-                                </>
-                            )}
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
         );
     };
 
@@ -593,9 +218,22 @@ export default function FarePricing() {
                 <div className="max-w-4xl mx-auto mb-6">
                     <Card className="shadow-lg border-blue-100 overflow-hidden">
                         <CardContent className="p-0">
-                            <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 flex items-center text-white">
-                                <Building2 className="h-5 w-5 mr-2" />
-                                <h2 className="text-lg font-semibold">City Selection</h2>
+                            <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 flex items-center justify-between text-white">
+                                <div className="flex items-center">
+                                    <Building2 className="h-5 w-5 mr-2" />
+                                    <h2 className="text-lg font-semibold">City Selection</h2>
+                                </div>
+                                {mode === "view" && (
+                                    <Button 
+                                        variant="secondary" 
+                                        size="sm" 
+                                        className="bg-green-500 hover:bg-green-600 text-white"
+                                        onClick={handleCreateClick}
+                                    >
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Create New Pricing
+                                    </Button>
+                                )}
                             </div>
                             <div className="p-4 bg-white">
                                 <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -609,7 +247,7 @@ export default function FarePricing() {
                                         <Select
                                             value={selectedCity}
                                             onValueChange={setSelectedCity}
-                                            disabled={cityLoading || cities.length === 0}
+                                            disabled={cityLoading || cities.length === 0 || mode !== "view"}
                                         >
                                             <SelectTrigger id="city-select" className="w-full border-blue-200 focus:border-blue-500 bg-blue-50/50">
                                                 {cityLoading ? (
@@ -637,7 +275,7 @@ export default function FarePricing() {
                                         variant="outline"
                                         size="sm"
                                         onClick={refreshData}
-                                        disabled={loading || refreshing || !selectedCity}
+                                        disabled={loading || refreshing || !selectedCity || mode !== "view"}
                                         className="min-w-[100px] border-blue-200 text-blue-700 hover:bg-blue-50"
                                     >
                                         <RefreshCw className={`mr-2 h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
@@ -649,12 +287,36 @@ export default function FarePricing() {
                     </Card>
                 </div>
 
-                {loading ? (
+                {mode === "create" && (
+                    <div className="max-w-4xl mx-auto">
+                        <CreatePricing 
+                            cityId={selectedCity} 
+                            onCancel={handleCancelForm} 
+                            onSuccess={handleFormSubmitSuccess}
+                            existingVehicleTypes={vehicleTypes}
+                            cities={cities}
+                        />
+                    </div>
+                )}
+
+                {mode === "update" && selectedVehicleForUpdate && (
+                    <div className="max-w-4xl mx-auto">
+                        <UpdatePricing 
+                            cityId={selectedCity} 
+                            vehicleData={selectedVehicleForUpdate} 
+                            onCancel={handleCancelForm} 
+                            onSuccess={handleFormSubmitSuccess}
+                            cities={cities}
+                        />
+                    </div>
+                )}
+
+                {mode === "view" && loading ? (
                     <div className="flex justify-center items-center h-64">
                         <Loader2 className="h-8 w-8 text-blue-600 animate-spin mr-2" />
                         <span className="text-lg text-blue-600">Loading pricing data...</span>
                     </div>
-                ) : vehicleTypes.length > 0 ? (
+                ) : mode === "view" && vehicleTypes.length > 0 ? (
                     <div className="max-w-4xl mx-auto">
                         <Tabs
                             value={selectedCategory}
@@ -686,17 +348,143 @@ export default function FarePricing() {
 
                             {vehicleTypes.map(type => (
                                 <TabsContent key={type} value={type.toLowerCase()}>
-                                    {renderPricingForm(type.toLowerCase())}
+                                    <Card className="shadow-md border-blue-100">
+                                        <CardHeader className="border-b bg-blue-50 flex flex-row items-center justify-between">
+                                            <div className="flex items-center">
+                                                {getVehicleIcon(type)}
+                                                <div>
+                                                    <CardTitle className="text-xl">{type.toUpperCase()} Pricing Configuration</CardTitle>
+                                                    <CardDescription>Pricing parameters for {type} vehicles</CardDescription>
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center space-x-4">
+                                                <div className="flex items-center">
+                                                    {loadingCategories[type.toLowerCase()] ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                                    ) : (
+                                                        <div className="flex items-center">
+                                                            <div className="flex items-center mr-3">
+                                                                {getStatusDot(pricingData[type.toLowerCase()]?.isActive)}
+                                                                <span className={`text-sm font-medium ${pricingData[type.toLowerCase()]?.isActive ? 'text-green-600' : 'text-blue-500'}`}>
+                                                                    {pricingData[type.toLowerCase()]?.isActive ? 'Active' : 'Inactive'}
+                                                                </span>
+                                                            </div>
+                                                            <Switch
+                                                                id={`active-${type}`}
+                                                                checked={pricingData[type.toLowerCase()]?.isActive}
+                                                                onCheckedChange={() => handleToggleActive(type, pricingData[type.toLowerCase()]?.isActive)}
+                                                                disabled={loadingCategories[type.toLowerCase()]}
+                                                                className={pricingData[type.toLowerCase()]?.isActive ? "data-[state=checked]:bg-green-500" : ""}
+                                                            />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleUpdateClick(type)}
+                                                    className="border-blue-200 text-blue-700 hover:bg-blue-50"
+                                                >
+                                                    <Edit className="mr-2 h-4 w-4" />
+                                                    Edit
+                                                </Button>
+                                            </div>
+                                        </CardHeader>
+                                        <CardContent className="pt-6">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="border border-blue-100 rounded-md p-4 bg-white">
+                                                    <h3 className="text-lg font-semibold mb-4 border-b border-blue-100 pb-2">
+                                                        Basic Pricing
+                                                    </h3>
+                                                    <div className="space-y-2">
+                                                        <div className="flex justify-between">
+                                                            <span className="text-gray-600">Base Fare:</span>
+                                                            <span className="font-medium">₹{pricingData[type.toLowerCase()]?.baseFare}</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-gray-600">Minimum Fare:</span>
+                                                            <span className="font-medium">₹{pricingData[type.toLowerCase()]?.minimumFare}</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-gray-600">Base Distance:</span>
+                                                            <span className="font-medium">{pricingData[type.toLowerCase()]?.baseDistance} km</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-gray-600">Max Price Buffer:</span>
+                                                            <span className="font-medium">{pricingData[type.toLowerCase()]?.maxPriceBuffer}%</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="border border-blue-100 rounded-md p-4 bg-white">
+                                                    <h3 className="text-lg font-semibold mb-4 border-b border-blue-100 pb-2">
+                                                        Night Charges
+                                                    </h3>
+                                                    <div className="space-y-2">
+                                                        <div className="flex justify-between">
+                                                            <span className="text-gray-600">Multiplier:</span>
+                                                            <span className="font-medium">{pricingData[type.toLowerCase()]?.nightCharges?.multiplier}x</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-gray-600">Start Time:</span>
+                                                            <span className="font-medium">{pricingData[type.toLowerCase()]?.nightCharges?.startTime}:00</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span className="text-gray-600">End Time:</span>
+                                                            <span className="font-medium">{pricingData[type.toLowerCase()]?.nightCharges?.endTime}:00</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="mt-6 border border-blue-100 rounded-md p-4 bg-white">
+                                                <h3 className="text-lg font-semibold mb-4 border-b border-blue-100 pb-2">
+                                                    Distance Ranges
+                                                </h3>
+                                                <div className="overflow-x-auto">
+                                                    <table className="w-full">
+                                                        <thead>
+                                                            <tr className="bg-blue-50">
+                                                                <th className="px-4 py-2 text-left">Min Distance (km)</th>
+                                                                <th className="px-4 py-2 text-left">Max Distance (km)</th>
+                                                                <th className="px-4 py-2 text-left">Price/km (₹)</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {pricingData[type.toLowerCase()]?.distanceRanges?.map((range, index) => (
+                                                                <tr key={index} className="border-t border-blue-100">
+                                                                    <td className="px-4 py-2">{range.minDistance}</td>
+                                                                    <td className="px-4 py-2">{range.maxDistance}</td>
+                                                                    <td className="px-4 py-2">₹{range.pricePerKm}</td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
                                 </TabsContent>
                             ))}
                         </Tabs>
                     </div>
-                ) : (
+                ) : mode === "view" && (
                     <div className="flex justify-center items-center h-64">
                         <div className="text-center">
                             <AlertCircle className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
                             <p className="text-lg text-gray-700">No pricing data found for this city.</p>
                             <p className="text-md text-gray-500 mt-2">Please select a different city or add pricing data.</p>
+                        </div>
+                    </div>
+                )}
+
+                {saveStatus.type && (
+                    <div className="fixed bottom-4 right-4 max-w-md">
+                        <div className={`py-2 px-4 rounded-md flex items-center shadow-lg ${
+                            saveStatus.type === 'success' ? 'bg-green-100 text-green-800' :
+                            saveStatus.type === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
+                        }`}>
+                            {saveStatus.type === 'success' ? <CheckCircle className="h-4 w-4 mr-2" /> :
+                                <AlertCircle className="h-4 w-4 mr-2" />}
+                            {saveStatus.message}
                         </div>
                     </div>
                 )}
