@@ -40,6 +40,7 @@ import AllContests from './components/contests/AllContests.jsx'
 import ContestView from './components/contests/ContestView.jsx'
 import ContestForm from './components/contests/ContestForm.jsx'
 import CategoryIndex from './components/category/CategoryIndex.jsx'
+
 function App() {
 
   const [userRole, setUserRole] = useState(null);

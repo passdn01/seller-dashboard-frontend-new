@@ -18,12 +18,7 @@ const ContestView = () => {
         fetchContest();
     }, [id]);
 
-    // Separate useEffect for city that runs when contest changes
-    useEffect(() => {
-        if (contest?.city) {
-            fetchCity(contest.city);
-        }
-    }, [contest]);
+
 
     const fetchContest = async () => {
         try {
@@ -38,15 +33,35 @@ const ContestView = () => {
         }
     };
 
-    const fetchCity = async (cityId) => {
+
+    useEffect(() => {
+        if (contest?.city && Array.isArray(contest.city) && contest.city.length > 0) {
+            fetchCities(contest.city);
+        }
+    }, [contest]);
+
+
+    const fetchCities = async (cityIds) => {
         try {
             setCityLoading(true);
-            const response = await axios.get(`https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/city/${cityId}`);
-            setCity(response.data.name);
-            console.log(response.data, "city");
+            const cityNames = [];
+
+            // Fetch each city
+            for (const cityId of cityIds) {
+                try {
+                    const response = await axios.get(`https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/city/${cityId}`);
+                    if (response.data && response.data.name) {
+                        cityNames.push(response.data.name);
+                    }
+                } catch (err) {
+                    console.error(`Error fetching city with ID ${cityId}:`, err);
+                }
+            }
+
+            setCity(cityNames);
         } catch (error) {
-            console.error('Error fetching city:', error);
-            setCity(null); // Reset city on error
+            console.error('Error fetching cities:', error);
+            setCity([]);
         } finally {
             setCityLoading(false);
         }
@@ -117,13 +132,24 @@ const ContestView = () => {
                                 <p className="font-medium">{formatDate(contest.endDate)}</p>
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground">City</p>
+                                <p className="text-sm text-muted-foreground">Cities</p>
                                 <p className="font-medium">
                                     {cityLoading ? (
                                         <Loader2 className="h-4 w-4 inline animate-spin mr-2" />
                                     ) : (
-                                        city || 'N/A'
+                                        Array.isArray(city) && city.length > 0 ?
+                                            city.join(', ') : 'No cities assigned'
                                     )}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p className="text-sm text-muted-foreground">Vehicle Types</p>
+                                <p className="font-medium">
+
+                                    {Array.isArray(contest.vehicleType) && contest.vehicleType.length > 0 ?
+                                        contest.vehicleType.join(', ') : 'No vehicle types assigned'
+                                    }
                                 </p>
                             </div>
                             <div>
@@ -133,6 +159,14 @@ const ContestView = () => {
                         </div>
                     </div>
 
+                    <div>
+                        <p className="text-sm text-muted-foreground">Description</p>
+                        <p className="font-medium">{contest.description || "No description available"}</p>
+                    </div>
+                    <div>
+                        <p className="text-sm text-muted-foreground">Rules</p>
+                        <p className="font-medium">{contest.rules || "No rules specified"}</p>
+                    </div>
                     <div>
                         <h3 className="text-lg font-medium">Rewards</h3>
                         {Object.keys(contest.rewardList || {}).length === 0 ? (

@@ -1,20 +1,30 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Oval } from 'react-loader-spinner';
 import loginImage from '../assets/loginPassdn.png';
 import { SELLER_URL_LOCAL } from '@/lib/utils';
 import loginBG from '../assets/loginBG.png'
-
+import ReCAPTCHA from 'react-google-recaptcha'
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+
+    const handleClickCaptcha = async (value) => {
+        setCaptchaClicked(true)
+        setCaptchaValue(value)
+        console.log("Captcha value:", value);
+    }
+
+    // const captchaRef = useRef();
+    // const [captchaClicked, setCaptchaClicked] = useState(false)
+    // const [captchaValue, setCaptchaValue] = useState('')
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-
+        // captchaRef.current.reset();
         try {
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/login`, {
                 method: 'POST',
@@ -73,8 +83,8 @@ const Login = () => {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
-            <div className="flex bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-4xl h-[500px]">
+        <div className="flex min-h-screen items-center justify-center bg-gray-100 ">
+            <div className="flex bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-4xl h-[600px]">
                 {/* Image Section */}
                 <div className="hidden md:block md:w-1/2">
                     <img
@@ -110,8 +120,11 @@ const Login = () => {
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-blue-500 text-sm"
                             />
                         </div>
+                        {/* <ReCAPTCHA sitekey='6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' onChange={handleClickCaptcha} ref={captchaRef} /> */}
+
                         <button
                             type="submit"
+                            // disabled={captchaClicked ? false : true}
                             className="w-full bg-[#0F62FE] text-white py-3 rounded-lg hover:bg-blue-950 transition duration-300"
                         >
                             Login

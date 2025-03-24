@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, ArrowLeft, Plus, X, Save, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { DropdownMenuCheckboxItem, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 const ContestForm = () => {
     const { id } = useParams();
@@ -20,10 +21,13 @@ const ContestForm = () => {
     const [cities, setCities] = useState([]);
     const [formData, setFormData] = useState({
         title: '',
+        description: '',
+        rules: '',
         startDate: '',
         endDate: '',
-        city: '',
-        rewardList: {}
+        city: [],
+        rewardList: {},
+        vehicleType: [],
     });
 
     // For new reward entries
@@ -33,12 +37,34 @@ const ContestForm = () => {
     const [showAllRewards, setShowAllRewards] = useState(false);
     const [rewardFilter, setRewardFilter] = useState('');
 
+    const [selectedCities, setSelectedCities] = useState([]);
+    const [selectedVehicleType, setSelectedVehicleType] = useState([])
+
     useEffect(() => {
         fetchCities();
         if (isEditing) {
+            setFormData({
+                title: '',
+                description: '',
+                rules: '',
+                startDate: '',
+                endDate: '',
+                city: [],
+                rewardList: {},
+                vehicleType: [],
+            });
             fetchContest();
         }
     }, [id]);
+
+    useEffect(() => {
+        setFormData(prev => ({ ...prev, city: selectedCities }));
+    }, [selectedCities]);
+
+    useEffect(() => {
+        setFormData(prev => ({ ...prev, vehicleType: selectedVehicleType }));
+    }, [selectedVehicleType]);
+
 
     const fetchCities = async () => {
         try {
@@ -46,11 +72,7 @@ const ContestForm = () => {
             setCities(response.data);
         } catch (error) {
             console.error('Error fetching cities:', error);
-            toast({
-                title: "Error",
-                description: "Failed to load cities",
-                variant: "destructive"
-            });
+            toast.error("Failed to fetch cities.");
         }
     };
 
@@ -63,16 +85,16 @@ const ContestForm = () => {
                 title: contestData.title,
                 startDate: contestData.startDate?.split('T')[0] || '',
                 endDate: contestData.endDate?.split('T')[0] || '',
-                city: contestData.city?._id || contestData.city,
-                rewardList: contestData.rewardList || {}
+                city: contestData?.city || [],
+                rules: contestData?.rules,
+                description: contestData?.description,
+                rewardList: contestData.rewardList || {},
+                vehicleType: contestData.vehicleType || []
             });
+            setSelectedCities(contestData.city || [])
         } catch (error) {
             console.error('Error fetching contest:', error);
-            toast({
-                title: "Error",
-                description: "Failed to load contest data",
-                variant: "destructive"
-            });
+            toast.error("Failed to load contest");
         } finally {
             setLoading(false);
         }
@@ -83,9 +105,6 @@ const ContestForm = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleCityChange = (value) => {
-        setFormData(prev => ({ ...prev, city: value }));
-    };
 
     const addReward = () => {
         // Clear previous error
@@ -136,48 +155,33 @@ const ContestForm = () => {
     const validateForm = () => {
         // Check if required fields are filled
         if (!formData.title.trim()) {
-            toast({
-                title: "Validation Error",
-                description: "Title is required",
-                variant: "destructive"
-            });
+            toast.error("Title is required.");
             return false;
         }
 
         if (!formData.startDate) {
-            toast({
-                title: "Validation Error",
-                description: "Start date is required",
-                variant: "destructive"
-            });
+            toast.error("Start date is required.");
             return false;
         }
 
         if (!formData.endDate) {
-            toast({
-                title: "Validation Error",
-                description: "End date is required",
-                variant: "destructive"
-            });
+            toast.error("End date is required.");
             return false;
         }
 
-        if (!formData.city) {
-            toast({
-                title: "Validation Error",
-                description: "City is required",
-                variant: "destructive"
-            });
+        if (formData.city.length === 0) {
+            toast.error("At least one city must be selected");
+            return false;
+        }
+
+        if (formData.vehicleType.length === 0) {
+            toast.error("At least one vehicle must be selected");
             return false;
         }
 
         // Check if start date is before end date
         if (new Date(formData.startDate) > new Date(formData.endDate)) {
-            toast({
-                title: "Validation Error",
-                description: "Start date must be before end date",
-                variant: "destructive"
-            });
+            toast.error("Start date must be before end date");
             return false;
         }
 
@@ -187,16 +191,14 @@ const ContestForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Clear any existing reward error
         setRewardError('');
 
-        // Check if new reward is partially filled but not added
         if ((newRewardKey.trim() && !newRewardValue.trim()) || (!newRewardKey.trim() && newRewardValue.trim())) {
             setRewardError("Please add or clear the reward fields before submitting");
             return;
         }
 
-        // Validate form
+
         if (!validateForm()) {
             return;
         }
@@ -210,27 +212,17 @@ const ContestForm = () => {
 
             if (isEditing) {
                 await axios.put(`https://3n8qx2vb-8055.inc1.devtunnels.ms/api/contest/${id}`, payload);
-                toast({
-                    title: "Success",
-                    description: "Contest updated successfully"
-                });
+                toast.success("Contest updated successfully.");
             } else {
                 await axios.post('https://3n8qx2vb-8055.inc1.devtunnels.ms/api/contest/', payload);
                 console.log(payload, "payload im sending to create contest")
-                toast({
-                    title: "Success",
-                    description: "Contest created successfully"
-                });
+                toast.success("Contest added successfully.");
             }
 
             navigate('/contests');
         } catch (error) {
             console.error('Error saving contest:', error);
-            toast({
-                title: "Error",
-                description: error.response?.data?.message || "Failed to save contest",
-                variant: "destructive"
-            });
+            toast.error("Failed to save contest.");
         } finally {
             setSubmitting(false);
         }
@@ -245,6 +237,19 @@ const ContestForm = () => {
         ? filteredRewards
         : filteredRewards.slice(0, 5);
 
+
+    const toggleSelection = (value) => {
+        setSelectedCities((prev) =>
+            prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+        );
+    };
+
+    const toggleVehicleSelection = (value) => {
+        setSelectedVehicleType((prev) =>
+            prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value]
+        );
+    };
+
     if (loading) {
         return (
             <div className="container mx-auto py-12 flex justify-center">
@@ -252,6 +257,8 @@ const ContestForm = () => {
             </div>
         );
     }
+
+    const vehicleOptions = ['AUTO', 'SEDAN', 'HATCHBACK', 'SUV', 'BIKE']
 
     return (
         <div className="mx-16 py-6">
@@ -283,25 +290,66 @@ const ContestForm = () => {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="city">City</Label>
-                                <Select
-                                    name="city"
-                                    value={formData.city}
-                                    onValueChange={handleCityChange}
-                                    required
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select City" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {cities.map(city => (
-                                            <SelectItem key={city._id} value={city._id}>
-                                                {city.name}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
+                                <Label htmlFor="description">Description</Label>
+                                <Input
+                                    id="description"
+                                    name="description"
+                                    value={formData.description}
+                                    onChange={handleInputChange}
+                                    placeholder="Contest Description"
+                                />
                             </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="rules">Rules</Label>
+                                <Input
+                                    id="rules"
+                                    name="rules"
+                                    value={formData.rules}
+                                    onChange={handleInputChange}
+                                    placeholder="Contest Rules"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="city">Cities</Label>
+                                <DropdownMenu
+                                >
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="w-[180px]">
+                                            Select cities
+                                        </Button>
+                                    </DropdownMenuTrigger>
+
+                                    <DropdownMenuContent>
+                                        {cities.map(item => (
+                                            <DropdownMenuCheckboxItem key={item._id} checked={selectedCities.includes(item._id)} onCheckedChange={() => toggleSelection(item._id)}>
+                                                {item.name}
+                                            </DropdownMenuCheckboxItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="city">Vehicle Types</Label>
+                                <DropdownMenu
+                                >
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="w-[180px]">
+                                            Select Vehicle Types
+                                        </Button>
+                                    </DropdownMenuTrigger>
+
+                                    <DropdownMenuContent>
+                                        {vehicleOptions.map(item => (
+                                            <DropdownMenuCheckboxItem key={item} checked={selectedVehicleType.includes(item)} onCheckedChange={() => toggleVehicleSelection(item)}>
+                                                {item}
+                                            </DropdownMenuCheckboxItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+
 
                             <div className="space-y-2">
                                 <Label htmlFor="startDate">Start Date</Label>

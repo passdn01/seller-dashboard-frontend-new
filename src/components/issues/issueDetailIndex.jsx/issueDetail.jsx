@@ -88,7 +88,8 @@ const IssueDetail = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             <p><strong>Transaction Id: </strong>{issue.rideId || "N/A"}</p>
-            <p><strong>Concern:</strong> {issue.concern || "N/A"}</p>
+            <p><strong>Concern:</strong> {issue?.concern || issue?.title || "N/A"}</p>
+            <p><strong>Description:</strong> {issue?.description || "N/A"}</p>
             <p><strong>Status:</strong> {issue.status || "N/A"}</p>
             <p><strong>User:</strong> {displayName}</p>
             <div className="flex space-x-4 mt-4">

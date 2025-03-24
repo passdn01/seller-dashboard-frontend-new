@@ -32,8 +32,8 @@ const ContestsList = () => {
             const updatedContests = contests.map(contest => {
                 const city = cities.find(city => city._id === contest.city);
                 console.log(new Date(contest.endDate), "date in contest end")
-                console.log(new Date(), "date now")
-                const isActive = new Date(contest.endDate) >= new Date();
+                console.log(new Date().setHours(23, 59, 59, 999), "date now")
+                const isActive = new Date(contest.endDate).setHours(23, 59, 59, 999) >= new Date();
                 return {
                     ...contest,
                     cityName: city?.name || "Unknown",
@@ -45,10 +45,12 @@ const ContestsList = () => {
         }
     }, [cities]);
 
-    // Filter contests by city
+
     useEffect(() => {
         if (selectedCity) {
-            const filtered = contests.filter(contest => contest.city === selectedCity);
+            const filtered = contests.filter(contest =>
+                Array.isArray(contest.city) && contest.city.includes(selectedCity)
+            );
             setFilteredContests(filtered);
         } else {
             setFilteredContests(contests);
@@ -150,6 +152,7 @@ const ContestsList = () => {
                                 <TableRow>
                                     <TableHead>Title</TableHead>
                                     <TableHead>City</TableHead>
+                                    <TableHead>Vehicle Types</TableHead>
                                     <TableHead>Start Date</TableHead>
                                     <TableHead>End Date</TableHead>
                                     <TableHead>Status</TableHead>
@@ -167,11 +170,35 @@ const ContestsList = () => {
                                         </TableCell>
                                     </TableRow>
                                 ) : (
-                                    filteredContests.map((contest) => (
+                                    filteredContests && filteredContests.map((contest) => (
                                         <TableRow key={contest._id}>
                                             <TableCell className="font-medium">{contest.title}</TableCell>
                                             <TableCell>
-                                                {contest.cityName}
+                                                {contest.city && Array.isArray(contest.city) ? (
+                                                    contest.city.map(cityId => {
+                                                        const cityObj = cities.find(c => c._id === cityId);
+                                                        return cityObj ? (
+                                                            <Badge key={cityId} variant="outline" className="mr-1">
+                                                                {cityObj.name}
+                                                            </Badge>
+                                                        ) : null;
+                                                    })
+                                                ) : (
+                                                    "No cities assigned"
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                {contest?.vehicleType && Array.isArray(contest.vehicleType) ? (
+                                                    contest.vehicleType.map(v => {
+                                                        return (
+                                                            <Badge variant="outline" className="mr-1">
+                                                                {v}
+                                                            </Badge>)
+
+                                                    })
+                                                ) : (
+                                                    "No vehicle type assigned"
+                                                )}
                                             </TableCell>
                                             <TableCell>{formatDate(contest.startDate)}</TableCell>
                                             <TableCell>{formatDate(contest.endDate)}</TableCell>
