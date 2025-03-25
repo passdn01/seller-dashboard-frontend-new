@@ -24,7 +24,11 @@ import {
     Plus,
     Edit,
     Bike,
-    CheckCircle, // Added missing import
+    CheckCircle,
+    Gauge,
+    Ruler,
+    Calculator,
+    Moon, // Added missing import
 } from "lucide-react";
 import CreatePricing from "./CreatePricing";
 import UpdatePricing from "./UpdatePricing";
@@ -117,7 +121,7 @@ export default function FarePricing() {
         }
     };
 
-    const handleToggleActive = async (category, currentStatus) => {
+    const handleToggleActive = async (category, field, currentStatus) => {
         // Set loading state for specific category
         setLoadingCategories(prev => ({ ...prev, [category.toLowerCase()]: true }));
         
@@ -125,7 +129,7 @@ export default function FarePricing() {
             const token = localStorage.getItem("token");
             await axios.patch(
                 `https://suuper.in/pricing/${category.toUpperCase()}?cityId=${selectedCity}`,
-                { isActive: !currentStatus },
+                { [field]: !currentStatus },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             
@@ -134,20 +138,22 @@ export default function FarePricing() {
                 ...prev,
                 [category.toLowerCase()]: {
                     ...prev[category.toLowerCase()],
-                    isActive: !currentStatus,
+                    [field]: !currentStatus,
                 },
             }));
             
             setSaveStatus({
                 type: "success",
-                message: `${category} is now ${!currentStatus ? 'active' : 'inactive'}`
+                message: `${category} is now ${field === "isActive" ? 
+                    (!currentStatus ? 'active' : 'inactive') : 
+                    (!currentStatus ? 'coming soon' : 'not coming soon')}`
             });
             setTimeout(() => setSaveStatus({ type: null, message: null }), 3000);
         } catch (error) {
-            console.error("Error toggling status:", error);
+            console.error(`Error toggling ${field}:`, error);
             setSaveStatus({
                 type: "error",
-                message: `Failed to update ${category} status`
+                message: `Failed to update ${category} ${field === "isActive" ? "status" : "coming soon status"}`
             });
             setTimeout(() => setSaveStatus({ type: null, message: null }), 3000);
             
@@ -156,7 +162,7 @@ export default function FarePricing() {
                 ...prev,
                 [category.toLowerCase()]: {
                     ...prev[category.toLowerCase()],
-                    isActive: currentStatus, // Revert to original status
+                    [field]: currentStatus, // Revert to original status
                 },
             }));
         } finally {
@@ -358,26 +364,44 @@ export default function FarePricing() {
                                                 </div>
                                             </div>
                                             <div className="flex items-center space-x-4">
-                                                <div className="flex items-center">
-                                                    {loadingCategories[type.toLowerCase()] ? (
-                                                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                                                    ) : (
-                                                        <div className="flex items-center">
-                                                            <div className="flex items-center mr-3">
-                                                                {getStatusDot(pricingData[type.toLowerCase()]?.isActive)}
-                                                                <span className={`text-sm font-medium ${pricingData[type.toLowerCase()]?.isActive ? 'text-green-600' : 'text-blue-500'}`}>
-                                                                    {pricingData[type.toLowerCase()]?.isActive ? 'Active' : 'Inactive'}
-                                                                </span>
+                                                <div className="flex items-center space-x-4">
+                                                    <div className="flex items-center">
+                                                        {loadingCategories[type.toLowerCase()] ? (
+                                                            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                                                        ) : (
+                                                            <div className="flex items-center">
+                                                                <div className="flex items-center mr-3">
+                                                                    {getStatusDot(pricingData[type.toLowerCase()]?.isActive)}
+                                                                    <span className={`text-sm font-medium ${pricingData[type.toLowerCase()]?.isActive ? 'text-green-600' : 'text-blue-500'}`}>
+                                                                        {pricingData[type.toLowerCase()]?.isActive ? 'Active' : 'Inactive'}
+                                                                    </span>
+                                                                </div>
+                                                                <Switch
+                                                                    id={`active-${type}`}
+                                                                    checked={pricingData[type.toLowerCase()]?.isActive}
+                                                                    onCheckedChange={() => handleToggleActive(type, "isActive", pricingData[type.toLowerCase()]?.isActive)}
+                                                                    disabled={loadingCategories[type.toLowerCase()]}
+                                                                    className={pricingData[type.toLowerCase()]?.isActive ? "data-[state=checked]:bg-green-500" : ""}
+                                                                />
                                                             </div>
-                                                            <Switch
-                                                                id={`active-${type}`}
-                                                                checked={pricingData[type.toLowerCase()]?.isActive}
-                                                                onCheckedChange={() => handleToggleActive(type, pricingData[type.toLowerCase()]?.isActive)}
-                                                                disabled={loadingCategories[type.toLowerCase()]}
-                                                                className={pricingData[type.toLowerCase()]?.isActive ? "data-[state=checked]:bg-green-500" : ""}
-                                                            />
+                                                        )}
+                                                    </div>
+                                                    
+                                                    <div className="flex items-center ml-4">
+                                                        <div className="flex items-center mr-3">
+                                                            <div className={`h-3 w-3 rounded-full ${pricingData[type.toLowerCase()]?.isComingSoon ? 'bg-yellow-500' : 'bg-gray-400'} shadow-sm mr-2 transition-all duration-300`}></div>
+                                                            <span className={`text-sm font-medium ${pricingData[type.toLowerCase()]?.isComingSoon ? 'text-yellow-600' : 'text-gray-500'}`}>
+                                                                {pricingData[type.toLowerCase()]?.isComingSoon ? 'Coming Soon' : 'Not Coming Soon'}
+                                                            </span>
                                                         </div>
-                                                    )}
+                                                        <Switch
+                                                            id={`coming-soon-${type}`}
+                                                            checked={pricingData[type.toLowerCase()]?.isComingSoon || false}
+                                                            onCheckedChange={() => handleToggleActive(type, "isComingSoon", pricingData[type.toLowerCase()]?.isComingSoon || false)}
+                                                            disabled={loadingCategories[type.toLowerCase()]}
+                                                            className={pricingData[type.toLowerCase()]?.isComingSoon ? "data-[state=checked]:bg-yellow-500" : ""}
+                                                        />
+                                                    </div>
                                                 </div>
                                                 <Button
                                                     variant="outline"
@@ -391,47 +415,107 @@ export default function FarePricing() {
                                             </div>
                                         </CardHeader>
                                         <CardContent className="pt-6">
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div className="border border-blue-100 rounded-md p-4 bg-white">
-                                                    <h3 className="text-lg font-semibold mb-4 border-b border-blue-100 pb-2">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                {/* Basic Pricing Card */}
+                                                <div className="border border-blue-100 rounded-lg shadow-sm overflow-hidden bg-white hover:shadow-md transition-shadow duration-300">
+                                                    <div className="bg-gradient-to-r from-blue-50 to-blue-100 p-4 border-b border-blue-100">
+                                                    <h3 className="text-lg font-semibold flex items-center text-blue-800">
+                                                        {/* <DollarSign className="mr-2 h-5 w-5 text-blue-600" /> */}
+                                                        ₹
                                                         Basic Pricing
                                                     </h3>
-                                                    <div className="space-y-2">
-                                                        <div className="flex justify-between">
-                                                            <span className="text-gray-600">Base Fare:</span>
-                                                            <span className="font-medium">₹{pricingData[type.toLowerCase()]?.baseFare}</span>
+                                                    </div>
+                                                    <div className="p-5">
+                                                    <div className="space-y-4">
+                                                        <div className="flex items-center p-2 hover:bg-blue-50 rounded-md transition-colors duration-200">
+                                                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 flex-shrink-0">
+                                                            {/* <DollarSign className="h-5 w-5 text-blue-600" /> */}
+                                                            ₹
                                                         </div>
-                                                        <div className="flex justify-between">
-                                                            <span className="text-gray-600">Minimum Fare:</span>
-                                                            <span className="font-medium">₹{pricingData[type.toLowerCase()]?.minimumFare}</span>
+                                                        <div className="ml-4 flex-1">
+                                                            <span className="text-sm text-gray-500">Base Fare</span>
+                                                            <div className="text-lg font-semibold text-blue-800">{pricingData[type.toLowerCase()]?.baseFare}</div>
                                                         </div>
-                                                        <div className="flex justify-between">
-                                                            <span className="text-gray-600">Base Distance:</span>
-                                                            <span className="font-medium">{pricingData[type.toLowerCase()]?.baseDistance} km</span>
                                                         </div>
-                                                        <div className="flex justify-between">
-                                                            <span className="text-gray-600">Max Price Buffer:</span>
-                                                            <span className="font-medium">{pricingData[type.toLowerCase()]?.maxPriceBuffer}%</span>
+                                                        
+                                                        <div className="flex items-center p-2 hover:bg-blue-50 rounded-md transition-colors duration-200">
+                                                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 flex-shrink-0">
+                                                            <Calculator className="h-5 w-5 text-blue-600" />
+                                                        </div>
+                                                        <div className="ml-4 flex-1">
+                                                            <span className="text-sm text-gray-500">Minimum Fare</span>
+                                                            <div className="text-lg font-semibold text-blue-800">₹{pricingData[type.toLowerCase()]?.minimumFare}</div>
+                                                        </div>
+                                                        </div>
+                                                        
+                                                        <div className="flex items-center p-2 hover:bg-blue-50 rounded-md transition-colors duration-200">
+                                                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 flex-shrink-0">
+                                                            <Ruler className="h-5 w-5 text-blue-600" />
+                                                        </div>
+                                                        <div className="ml-4 flex-1">
+                                                            <span className="text-sm text-gray-500">Base Distance</span>
+                                                            <div className="text-lg font-semibold text-blue-800">{pricingData[type.toLowerCase()]?.baseDistance} km</div>
+                                                        </div>
+                                                        </div>
+                                                        
+                                                        <div className="flex items-center p-2 hover:bg-blue-50 rounded-md transition-colors duration-200">
+                                                        <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 flex-shrink-0">
+                                                            <Gauge className="h-5 w-5 text-blue-600" />
+                                                        </div>
+                                                        <div className="ml-4 flex-1">
+                                                            <span className="text-sm text-gray-500">Price Buffer</span>
+                                                            <div className="text-lg font-semibold text-blue-800">{pricingData[type.toLowerCase()]?.maxPriceBuffer}%</div>
+                                                        </div>
                                                         </div>
                                                     </div>
+                                                    </div>
                                                 </div>
-                                                <div className="border border-blue-100 rounded-md p-4 bg-white">
-                                                    <h3 className="text-lg font-semibold mb-4 border-b border-blue-100 pb-2">
+
+                                                {/* Night Charges Card */}
+                                                <div className="border border-blue-100 rounded-lg shadow-sm overflow-hidden bg-white hover:shadow-md transition-shadow duration-300">
+                                                    <div className="bg-gradient-to-r from-indigo-50 to-indigo-100 p-4 border-b border-blue-100">
+                                                    <h3 className="text-lg font-semibold flex items-center text-indigo-800">
+                                                        <Moon className="mr-2 h-5 w-5 text-indigo-600" />
                                                         Night Charges
                                                     </h3>
-                                                    <div className="space-y-2">
-                                                        <div className="flex justify-between">
-                                                            <span className="text-gray-600">Multiplier:</span>
-                                                            <span className="font-medium">{pricingData[type.toLowerCase()]?.nightCharges?.multiplier}x</span>
+                                                    </div>
+                                                    <div className="p-5">
+                                                    <div className="flex items-center justify-center mb-6">
+                                                        <div className="w-20 h-20 rounded-full bg-indigo-100 border-4 border-indigo-200 flex items-center justify-center">
+                                                        <div className="text-2xl font-bold text-indigo-800">{pricingData[type.toLowerCase()]?.nightCharges?.multiplier}x</div>
                                                         </div>
-                                                        <div className="flex justify-between">
-                                                            <span className="text-gray-600">Start Time:</span>
-                                                            <span className="font-medium">{pricingData[type.toLowerCase()]?.nightCharges?.startTime}:00</span>
+                                                    </div>
+                                                    
+                                                    <div className="relative pt-5">
+                                                        <div className="h-2 bg-indigo-100 rounded-full w-full mb-8">
+                                                        <div className="absolute -top-2 left-0 w-4 h-4 rounded-full bg-indigo-600"></div>
+                                                        <div className="absolute -top-2 right-0 w-4 h-4 rounded-full bg-indigo-600"></div>
                                                         </div>
-                                                        <div className="flex justify-between">
-                                                            <span className="text-gray-600">End Time:</span>
-                                                            <span className="font-medium">{pricingData[type.toLowerCase()]?.nightCharges?.endTime}:00</span>
+                                                        
+                                                        <div className="flex justify-between items-center text-center">
+                                                        <div className="flex-1">
+                                                            <div className="text-xl font-semibold text-indigo-800">
+                                                            {pricingData[type.toLowerCase()]?.nightCharges?.startTime}:00
+                                                            </div>
+                                                            <div className="text-xs text-gray-500 mt-1">Start Time</div>
                                                         </div>
+                                                        
+                                                        <div className="w-16">
+                                                            <div className="h-10 w-px bg-indigo-200 mx-auto"></div>
+                                                        </div>
+                                                        
+                                                        <div className="flex-1">
+                                                            <div className="text-xl font-semibold text-indigo-800">
+                                                            {pricingData[type.toLowerCase()]?.nightCharges?.endTime}:00
+                                                            </div>
+                                                            <div className="text-xs text-gray-500 mt-1">End Time</div>
+                                                        </div>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="mt-5 pt-4 border-t border-indigo-100 text-xs text-center text-gray-500">
+                                                        Night charges apply between these hours
+                                                    </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -440,24 +524,55 @@ export default function FarePricing() {
                                                     Distance Ranges
                                                 </h3>
                                                 <div className="overflow-x-auto">
-                                                    <table className="w-full">
-                                                        <thead>
-                                                            <tr className="bg-blue-50">
-                                                                <th className="px-4 py-2 text-left">Min Distance (km)</th>
-                                                                <th className="px-4 py-2 text-left">Max Distance (km)</th>
-                                                                <th className="px-4 py-2 text-left">Price/km (₹)</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {pricingData[type.toLowerCase()]?.distanceRanges?.map((range, index) => (
-                                                                <tr key={index} className="border-t border-blue-100">
-                                                                    <td className="px-4 py-2">{range.minDistance}</td>
-                                                                    <td className="px-4 py-2">{range.maxDistance}</td>
-                                                                    <td className="px-4 py-2">₹{range.pricePerKm}</td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
+                                                    <div className="bg-white rounded-md border border-blue-100 shadow-sm">
+                                                        <div className="p-4 border-b border-blue-100">
+                                                        <h4 className="font-semibold text-blue-700 flex items-center">
+                                                            <Route className="h-4 w-4 mr-2" />
+                                                            Distance-Based Pricing Tiers
+                                                        </h4>
+                                                        <p className="text-sm text-gray-500 mt-1">Rates vary based on distance traveled</p>
+                                                        </div>
+                                                        
+                                                        <div className="p-4">
+                                                        {pricingData[type.toLowerCase()]?.distanceRanges?.map((range, index) => (
+                                                            <div key={index} className={`flex items-center mb-3 ${index !== 0 ? 'pt-3 border-t border-blue-50' : ''}`}>
+                                                            <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100 text-blue-700 font-bold flex-shrink-0">
+                                                                {index + 1}
+                                                            </div>
+                                                            <div className="flex-1 ml-4">
+                                                                <div className="flex justify-between items-center">
+                                                                <span className="text-sm font-medium text-gray-700">Range {index + 1}</span>
+                                                                <span className="px-3 py-1 bg-blue-600 text-white rounded-full text-sm font-semibold">
+                                                                    ₹{range.pricePerKm}/km
+                                                                </span>
+                                                                </div>
+                                                                <div className="relative mt-2 mb-1">
+                                                                <div className="h-2 bg-blue-100 rounded-full w-full"></div>
+                                                                <div 
+                                                                    className="absolute top-0 h-2 bg-blue-500 rounded-full" 
+                                                                    style={{ 
+                                                                    left: '0%', 
+                                                                    width: '100%', 
+                                                                    background: 'linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%)' 
+                                                                    }}
+                                                                ></div>
+                                                                </div>
+                                                                <div className="flex justify-between text-md text-gray-500">
+                                                                <span>{range.minDistance} km</span>
+                                                                <span>{range.maxDistance} km</span>
+                                                                </div>
+                                                            </div>
+                                                            </div>
+                                                        ))}
+                                                        </div>
+                                                        
+                                                        <div className="bg-blue-50 p-3 border-t border-blue-100 text-xs text-gray-600">
+                                                        <div className="flex items-center">
+                                                            <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+                                                            <span>Price increases based on distance traveled</span>
+                                                        </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </CardContent>
