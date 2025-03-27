@@ -35,6 +35,7 @@ import DriverInfoCharts from '../driverInfo/DriverInfoCharts';
 import BalanceStatement from '../driverInfo/BalanceStatement';
 import { SELLER_URL_LOCAL } from '@/lib/utils';
 import DriverRideLogs from './DriverRideLogs';
+import ChurnPrediction from '@/components/churnPrediction/churnPrediction';
 function Driver() {
     const { id } = useParams();
     console.log("driver param", id)
@@ -191,6 +192,9 @@ function Driver() {
                         <div className="flex flex-col md:flex-row gap-4 p-4">
                             <DriverLicense data={data} />
                             <DriverRC data={data} />
+                        </div>
+                        <div>
+                            <ChurnPrediction id={id} />
                         </div>
                         <div>
                             <DriverRideLogs driverId={id} />
