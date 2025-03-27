@@ -167,7 +167,7 @@ const ChurnPrediction = () => {
   return (
     <div className="px-2 my-4 mx-3 pb-4">
       <div className="rounded-md mb-6">
-        <div className="container mx-auto px-4 py-6">
+        <div className="container mx-auto py-6">
           <div className="flex justify-between items-center">
             <div>
               <Tooltip content={tooltipContent.churnAnalysis || "Analysis of driver churn risk factors and recommendations"}>
@@ -200,7 +200,7 @@ const ChurnPrediction = () => {
       </div>
       
       {dataVisible && (
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto">
             {/* Overview Section */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* Churn Risk Score Card */}
