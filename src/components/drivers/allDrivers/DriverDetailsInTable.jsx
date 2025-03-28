@@ -28,9 +28,14 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [activeTab, setActiveTab] = useState("details");
-    
+
     // Store the initial registration status to compare later
     const [initialRegStatus, setInitialRegStatus] = useState(false);
+
+    const [rotationDegree, setRotationDegree] = useState(0);
+    const handleRotateImage = () => {
+        setRotationDegree((prevDegree) => (prevDegree + 90) % 360);
+    };
 
     const initialFormState = {
         licenseNumber: "",
@@ -110,7 +115,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                 };
 
                 setFormData(newFormData);
-                
+
                 // Store the initial registration status when data is first loaded
                 setInitialRegStatus(driver.isCompleteRegistration || false);
 
@@ -142,7 +147,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
             [field]: value,
         }));
     };
-    
+
     const sendVerificationNotification = async () => {
         try {
             const token = localStorage.getItem('token');
@@ -152,16 +157,16 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                 title: "Account Approved",
                 body: "Congratulations! Your account has been verified and approved. You can now start accepting trips."
             };
-            
+
             console.log("Sending verification notification:", notificationData);
-            
+
             const response = await axios.post(
-                `https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/notifyUsers`, 
+                `https://3n8qx2vb-8055.inc1.devtunnels.ms/admin/notifyUsers`,
                 notificationData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-            
-           
+
+
         } catch (error) {
             console.error("Error sending verification notification:", error);
         }
@@ -171,18 +176,18 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
         try {
             setSaveLoading(true);
             const dataToSend = { ...formData, imageUrls, id: driverId };
-            
+
             // Check if registration status changed from false to true
             const registrationActivated = !initialRegStatus && formData.isCompleteRegistration;
-            
+
             console.log("Save data - Initial registration status:", initialRegStatus);
             console.log("Save data - Current registration status:", formData.isCompleteRegistration);
             console.log("Registration activated:", registrationActivated);
-            
+
             if (!dataToSend.rejectDate) {
                 delete dataToSend.rejectDate;
             }
-            
+
             const token = localStorage.getItem('token');
             const response = await fetch(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/driverTableEdit`, {
                 method: "POST",
@@ -196,15 +201,15 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
             if (response.ok) {
                 const d = await response.json();
                 window.alert("Data saved successfully");
-                
+
                 // If registration was activated in this save operation, send notification
                 if (registrationActivated) {
                     await sendVerificationNotification();
                 }
-                
+
                 // Update the initial registration status to match the current state
                 setInitialRegStatus(formData.isCompleteRegistration);
-                
+
                 onDriverUpdated(d.driver);
             } else {
                 throw new Error(response.statusText);
@@ -244,7 +249,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                     <TabsTrigger value="documents">Documents</TabsTrigger>
                     <TabsTrigger value="notifications">Notifications</TabsTrigger>
                 </TabsList>
-                
+
                 <TabsContent value="details" className="mt-0">
                     <div className="grid grid-cols-3 gap-6">
                         <div className="space-y-4">
@@ -415,7 +420,7 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                                 />
 
                                 <div className="space-x-2 flex justify-end mb-4">
-                                    <Button onClick={handleSave} disabled={saveLoading}> 
+                                    <Button onClick={handleSave} disabled={saveLoading}>
                                         {saveLoading ? 'Saving...' : 'Save'}
                                     </Button>
                                 </div>
@@ -423,13 +428,13 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
                         </div>
                     </div>
                 </TabsContent>
-                
+
                 <TabsContent value="documents" className="mt-0">
                     <div className="w-full border-t-2 border-gray-200 my-2 p-2">
                         <UploadDocuments id={driverId} />
                     </div>
                 </TabsContent>
-                
+
                 <TabsContent value="notifications" className="mt-0">
                     <NotifyUsers driverId={driverId} />
                 </TabsContent>
@@ -438,11 +443,24 @@ const DriverDetails = ({ data, onDriverUpdated }) => {
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
                     {selectedImage && (
-                        <img
-                            src={selectedImage}
-                            alt="Full view"
-                            className="w-full h-auto rounded-lg"
-                        />
+                        <div className="relative">
+                            <img
+                                src={selectedImage}
+                                alt="Full view"
+                                className="w-full h-auto rounded-lg"
+                                style={{
+                                    transform: `rotate(${rotationDegree}deg)`,
+                                    transition: 'transform 0.3s ease'
+                                }}
+                            />
+                            <Button
+                                onClick={handleRotateImage}
+                                className="absolute top-2 right-2"
+                                variant="outline"
+                            >
+                                ↻ Rotate
+                            </Button>
+                        </div>
                     )}
                 </DialogContent>
             </Dialog>

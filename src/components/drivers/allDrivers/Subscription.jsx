@@ -14,13 +14,24 @@ import wallet from '../../../assets/DriverSubscription/wallet.svg'
 
 function Subscription({ data }) {
     const { otherInfo, driverInfo } = data;
+    console.log(driverInfo, "driver info in subscription")
     const dates = otherInfo[0]?.rideDates.map((el) => { return new Date(el) })
+    const frequencyMap = dates.reduce((acc, date) => {
+        const key = date.toISOString().split('T')[0];
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+    }, {});
+
+    const subPayCount = Object.values(frequencyMap).filter(freq => freq > 2).length;
+    const subscriptionDates = dates
+        .map(date => date.toISOString().split('T')[0])
+        .filter((date, index, self) => frequencyMap[date] >= 2 && self.indexOf(date) === index)
 
     return (
         <div className='flex flex-row gap-x-4 m-6 justify-center'>
             <Calendar
                 mode="single"
-                selected={dates}
+                selected={subscriptionDates}
                 className="rounded-md border"
 
             />
@@ -29,7 +40,7 @@ function Subscription({ data }) {
 
                     <CardDescription>
                         <img src={subscriptionpay} alt="" className='w-6 h-6' /> <span className='text-[1rem]'>Total Subscription Pay</span></CardDescription>
-                    <span className='font-bold text-xl text-left'>{(dates?.length || 0) * 20}</span>
+                    <span className='font-bold text-xl text-left'>{subPayCount * (driverInfo?.category === "AUTO" ? 20 : driverInfo?.category === "HATCHBACK" ? 50 : 70)}</span>
                 </Card>
                 <Card className='p-6 m-4 min-w-[600px'>
 

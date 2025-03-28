@@ -5,6 +5,7 @@ import loginImage from '../assets/loginPassdn.png';
 import { SELLER_URL_LOCAL } from '@/lib/utils';
 import loginBG from '../assets/loginBG.png'
 import ReCAPTCHA from 'react-google-recaptcha'
+import { setLocalStorage } from '@/common';
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -46,6 +47,7 @@ const Login = () => {
                     localStorage.setItem("role", result.role);
                     localStorage.setItem("username", result.username);
                     localStorage.setItem("userId", result.userId);
+                    setLocalStorage("cityIds", ["ALL"])
 
                     console.log("Login successful:", result);
                     alert("Welcome " + result.admin);

@@ -13,7 +13,6 @@ import {
     DialogTrigger,
     // DialogTrigger,
 } from "@/components/ui/dialog";
-
 import { Button } from "../../ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "../../ui/input";
@@ -57,6 +56,8 @@ import {
 } from "@tanstack/react-table";
 import { Label } from '@/components/ui/label';
 import DriverDetails from './DriverDetailsInTable';
+import { getLocalStorage } from '@/common';
+import { useCities } from './Header';
 
 const DeleteDriverDialog = ({ isOpen, onClose, driverId, onDriverDeleted }) => {
     const [isDeleting, setIsDeleting] = useState(false);
@@ -579,12 +580,12 @@ function DataTableNew() {
     };
 
 
-
+    const { selectedCities } = useCities();
     const fetchDrivers = async () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token')
-            const response = await axios.get(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/getAllDriversNew`, {
+            const response = await axios.post(`${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/getAllDriversNew`, { cityIds: selectedCities }, {
                 params: {
                     startDate,
                     endDate,
@@ -617,7 +618,7 @@ function DataTableNew() {
     useEffect(() => {
         console.log("Fetching drivers - page or applyButton changed");
         fetchDrivers();
-    }, [page, applyButton]);
+    }, [page, applyButton, selectedCities]);
 
     const applyFilters = () => {
         setPage(1); // Reset to first page when applying new filters

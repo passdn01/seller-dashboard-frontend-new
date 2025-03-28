@@ -27,6 +27,7 @@ import {
 } from "@tanstack/react-table";
 import UserEditCard from "./UserEditCard";
 import { useSearchParams } from "react-router-dom";
+import { useCities } from "../drivers/allDrivers/Header";
 
 const AllUserTableNew = () => {
 
@@ -93,7 +94,7 @@ const AllUserTableNew = () => {
             ),
         },
     ]
-
+    const { selectedCities } = useCities();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
     const [exportLoading, setExportLoading] = useState(false);
@@ -119,8 +120,9 @@ const AllUserTableNew = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
-            const response = await axios.get(
+            const response = await axios.post(
                 `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/buyer/getAllUsersNew`,
+                { cityIds: selectedCities },
                 {
                     params: {
                         search,
@@ -242,7 +244,7 @@ const AllUserTableNew = () => {
     useEffect(() => {
         console.log("in use effect")
         fetchUsers();
-    }, [page]);
+    }, [page, selectedCities]);
 
     useEffect(() => {
         // Initialize from URL parameters on first load

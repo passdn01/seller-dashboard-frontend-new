@@ -35,6 +35,7 @@ import DriverInfoCharts from '../driverInfo/DriverInfoCharts';
 import BalanceStatement from '../driverInfo/BalanceStatement';
 import { SELLER_URL_LOCAL } from '@/lib/utils';
 import DriverRideLogs from './DriverRideLogs';
+import DriverLastRides from '../driverInfo/DriverLastRides';
 function Driver() {
     const { id } = useParams();
     console.log("driver param", id)
@@ -201,6 +202,10 @@ function Driver() {
                         <div>
                             <DriverInfoCharts data={data}></DriverInfoCharts>
                         </div>
+                        <div>
+                            <DriverLastRides driverId={id} data={data} />
+                        </div>
+
                         <div className=''>
 
                             <Subscription data={data}></Subscription>

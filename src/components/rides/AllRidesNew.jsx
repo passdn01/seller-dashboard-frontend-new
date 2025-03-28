@@ -42,6 +42,8 @@ import * as XLSX from 'xlsx';
 import { Label } from '../ui/label';
 import { useSearchParams } from 'react-router-dom';
 import UserCashStatement from '../users/UserCashStatement';
+import { useCities } from '../drivers/allDrivers/Header';
+// import { useCities } from '../drivers/allDrivers/Header';
 
 function AllRidesNew() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -84,6 +86,9 @@ function AllRidesNew() {
         setPage(1); // Reset to first page when searching
         fetchRides(); // Fetch data with current filters
     };
+
+    // const { selectedCities } = useCities();
+    const { selectedCities } = useCities();
 
     const options = { timeZone: 'Asia/Kolkata', year: 'numeric', month: 'long', day: 'numeric' };
 
@@ -299,9 +304,10 @@ function AllRidesNew() {
             },
         },
     ];
-
+    console.log("selected cities in ride table", selectedCities)
     const fetchRides = async () => {
         setLoading(true);
+
         try {
             // Build URL with query parameters - using the same parameter names consistently
             const params = new URLSearchParams();
@@ -315,7 +321,7 @@ function AllRidesNew() {
 
             const url = `${import.meta.env.VITE_SELLER_URL_LOCAL}/dashboard/api/seller/getAllRidesNew?${params.toString()}`;
             const token = localStorage.getItem("token");
-            const response = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+            const response = await axios.post(url, { cityIds: selectedCities }, { headers: { Authorization: `Bearer ${token}` } });
 
             setData(response.data.rides);
             setTotalPages(response.data.totalPages);
@@ -369,7 +375,8 @@ function AllRidesNew() {
     useEffect(() => {
         fetchRides();
         updateUrlParams();
-    }, [page]);
+    }, [page, selectedCities]);
+
 
     const tableData = React.useMemo(
         () => (loading ? Array(10).fill({}) : data),

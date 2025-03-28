@@ -27,8 +27,10 @@ import user from '../../assets/CardGridIcons/user.png'
 import userredeem from '../../assets/CardGridIcons/userredeem.png'
 import CustomTimeCardGrid from './CustomTimeCardGrid';
 import { custom } from 'zod';
+import { useCities } from '../drivers/allDrivers/Header';
 
 export default function CardGrid() {
+
     const [todayMetrics, setTodayMetrics] = useState({})
     const [allTimeMetrics, setAllTimeMetrics] = useState({})
     const [lastHourMetrics, setLastHourMetrics] = useState({})
@@ -72,6 +74,12 @@ export default function CardGrid() {
         height: '100px'
     }
 
+    const { selectedCities } = useCities();
+
+    // useEffect(() => {
+    //     sellerSocket.emit("cityHandler", selectedCities)
+
+    // }, [selectedCities])
 
     useEffect(() => {
         const handleMetrics = (data) => {
@@ -100,6 +108,7 @@ export default function CardGrid() {
                 ...data.yesterdayMetrics
             }))
         };
+
 
         sellerSocket.on("rideMetrics", handleMetrics);
         sellerSocket.on("driverMetrics", handleMetrics);

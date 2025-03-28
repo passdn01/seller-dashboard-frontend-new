@@ -40,7 +40,7 @@ import AllContests from './components/contests/AllContests.jsx'
 import ContestView from './components/contests/ContestView.jsx'
 import ContestForm from './components/contests/ContestForm.jsx'
 import CategoryIndex from './components/category/CategoryIndex.jsx'
-
+import DriverPointHistory from './components/contests/DriverPointHistory.jsx'
 function App() {
 
   const [userRole, setUserRole] = useState(null);
@@ -121,6 +121,7 @@ function App() {
           <Route path='/contests/view/:id' element={<ProtectedRoute element={< ContestView />} />} />
           <Route path='/contests/new/' element={<ProtectedRoute element={< ContestForm />} />} />
           <Route path='/contests/edit/:id' element={<ProtectedRoute element={< ContestForm />} />} />
+          <Route path='/contests/view/:contestId/:driverId' element={<ProtectedRoute element={< DriverPointHistory />} />} />
 
 
 

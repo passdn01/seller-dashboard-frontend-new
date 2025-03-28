@@ -20,7 +20,26 @@ const ContestsList = () => {
     const [cities, setCities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedCity, setSelectedCity] = useState(null);
+    const [selectedStatus, setSelectedStatus] = useState('all');
     const navigate = useNavigate();
+
+
+    const getContestStatus = (contest) => {
+        const now = new Date();
+        const startDate = new Date(contest.startDate);
+        const endDate = new Date(contest.endDate);
+
+
+        endDate.setHours(23, 59, 59, 999);
+
+        if (startDate > now) {
+            return 'upcoming';
+        } else if (endDate >= now) {
+            return 'active';
+        } else {
+            return 'inactive';
+        }
+    };
 
     useEffect(() => {
         fetchContests();
@@ -31,36 +50,44 @@ const ContestsList = () => {
         if (contests.length > 0 && cities.length > 0) {
             const updatedContests = contests.map(contest => {
                 const city = cities.find(city => city._id === contest.city);
-                console.log(new Date(contest.endDate), "date in contest end")
-                console.log(new Date().setHours(23, 59, 59, 999), "date now")
-                const isActive = new Date(contest.endDate).setHours(23, 59, 59, 999) >= new Date();
+                const status = getContestStatus(contest);
                 return {
                     ...contest,
                     cityName: city?.name || "Unknown",
-                    isActive
+                    status
                 };
             });
-            setContests(updatedContests);
-            setFilteredContests(updatedContests);
+
+
+            if (JSON.stringify(updatedContests) !== JSON.stringify(contests)) {
+                setContests(updatedContests);
+                setFilteredContests(updatedContests);
+            }
         }
-    }, [cities]);
+    }, [contests, cities]);
 
 
     useEffect(() => {
+        let filtered = contests;
+
         if (selectedCity) {
-            const filtered = contests.filter(contest =>
+            filtered = filtered.filter(contest =>
                 Array.isArray(contest.city) && contest.city.includes(selectedCity)
             );
-            setFilteredContests(filtered);
-        } else {
-            setFilteredContests(contests);
         }
-    }, [selectedCity, contests]);
+
+        if (selectedStatus !== 'all') {
+            filtered = filtered.filter(contest => contest.status === selectedStatus);
+        }
+
+        setFilteredContests(filtered);
+    }, [selectedCity, selectedStatus, contests]);
 
     const fetchContests = async () => {
         try {
             setLoading(true);
             const response = await axios.get('https://3n8qx2vb-8055.inc1.devtunnels.ms/api/contest');
+            console.log(response.data, "contests coming")
             setContests(response.data.data);
             setFilteredContests(response.data.data);
         } catch (error) {
@@ -83,6 +110,7 @@ const ContestsList = () => {
         if (window.confirm('Are you sure you want to delete this contest?')) {
             try {
                 await axios.delete(`https://3n8qx2vb-8055.inc1.devtunnels.ms/api/contest/${id}`);
+
                 fetchContests();
             } catch (error) {
                 console.error('Error deleting contest:', error);
@@ -102,6 +130,12 @@ const ContestsList = () => {
     const getCityName = (cityId) => {
         const city = cities.find(city => city._id === cityId);
         return city?.name || "Unknown";
+    };
+
+    const statusVariants = {
+        'active': 'success',
+        'inactive': 'destructive',
+        'upcoming': 'secondary'
     };
 
     return (
@@ -135,6 +169,32 @@ const ContestsList = () => {
                             </DropdownMenuContent>
                         </DropdownMenu>
 
+                        {/* Status filter dropdown */}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="flex items-center gap-2">
+                                    <Filter size={18} />
+                                    {selectedStatus === 'all'
+                                        ? 'All Statuses'
+                                        : `Status: ${selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}`}
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => setSelectedStatus('all')}>
+                                    All Statuses
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setSelectedStatus('active')}>
+                                    Active
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setSelectedStatus('inactive')}>
+                                    Inactive
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setSelectedStatus('upcoming')}>
+                                    Upcoming
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+
                         <Button onClick={() => navigate('/contests/new')} size="sm">
                             <Plus className="mr-2 h-4 w-4" />
                             Add New Contest
@@ -163,10 +223,12 @@ const ContestsList = () => {
                             <TableBody>
                                 {filteredContests?.length === 0 ? (
                                     <TableRow>
-                                        <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                                            {selectedCity
+                                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                                            {selectedCity && selectedStatus === 'all'
                                                 ? `No contests found for ${getCityName(selectedCity)}`
-                                                : 'No contests found.'}
+                                                : selectedStatus !== 'all'
+                                                    ? `No ${selectedStatus} contests found`
+                                                    : 'No contests found.'}
                                         </TableCell>
                                     </TableRow>
                                 ) : (
@@ -189,13 +251,11 @@ const ContestsList = () => {
                                             </TableCell>
                                             <TableCell>
                                                 {contest?.vehicleType && Array.isArray(contest.vehicleType) ? (
-                                                    contest.vehicleType.map(v => {
-                                                        return (
-                                                            <Badge variant="outline" className="mr-1">
-                                                                {v}
-                                                            </Badge>)
-
-                                                    })
+                                                    contest.vehicleType.map(v => (
+                                                        <Badge key={v} variant="outline" className="mr-1">
+                                                            {v}
+                                                        </Badge>
+                                                    ))
                                                 ) : (
                                                     "No vehicle type assigned"
                                                 )}
@@ -203,8 +263,8 @@ const ContestsList = () => {
                                             <TableCell>{formatDate(contest.startDate)}</TableCell>
                                             <TableCell>{formatDate(contest.endDate)}</TableCell>
                                             <TableCell>
-                                                <Badge variant={contest.isActive ? "success" : "destructive"}>
-                                                    {contest.isActive ? "Active" : "Inactive"}
+                                                <Badge variant={statusVariants[contest.status]}>
+                                                    {contest.status || "na"}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>

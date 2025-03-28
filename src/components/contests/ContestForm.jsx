@@ -28,6 +28,8 @@ const ContestForm = () => {
         city: [],
         rewardList: {},
         vehicleType: [],
+        videoLink: '',
+        tandc: ''
     });
 
     // For new reward entries
@@ -52,6 +54,8 @@ const ContestForm = () => {
                 city: [],
                 rewardList: {},
                 vehicleType: [],
+                videoLink: '',
+                tandc: ''
             });
             fetchContest();
         }
@@ -89,7 +93,9 @@ const ContestForm = () => {
                 rules: contestData?.rules,
                 description: contestData?.description,
                 rewardList: contestData.rewardList || {},
-                vehicleType: contestData.vehicleType || []
+                vehicleType: contestData.vehicleType || [],
+                videoLink: contestData.videoLink || '',
+                tandc: contestData.tandc || ''
             });
             setSelectedCities(contestData.city || [])
         } catch (error) {
@@ -349,6 +355,29 @@ const ContestForm = () => {
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                             </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="videoLink">Video Link</Label>
+                                <Input
+                                    id="videoLink"
+                                    name="videoLink"
+                                    value={formData.videoLink}
+                                    onChange={handleInputChange}
+                                    placeholder="Link"
+                                />
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="tandc">T&C</Label>
+                                <Input
+                                    id="tandc"
+                                    name="tandc"
+                                    value={formData.tandc}
+                                    onChange={handleInputChange}
+                                    placeholder="tandc"
+                                />
+                            </div>
+
 
 
                             <div className="space-y-2">
