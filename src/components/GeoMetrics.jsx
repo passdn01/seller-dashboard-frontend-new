@@ -268,7 +268,7 @@ const GeoMetrics = () => {
     // Socket connection effect
     useEffect(() => {
         const newSocket = io(import.meta.env.VITE_SELLER_URL_LOCAL, {
-            transports: ['websocket'],
+            transports: ['polling'],
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
